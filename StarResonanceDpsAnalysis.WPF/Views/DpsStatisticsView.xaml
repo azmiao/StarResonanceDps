@@ -258,10 +258,10 @@
                     FontSize="10"
                     Foreground="Cyan"
                     IsHitTestVisible="False"
-                    Text="{Binding SkillList.Count, StringFormat='Skills Count: {0}'}"
+                    Text="{Binding Damage.FilteredSkillList.Count, StringFormat='Skills Count: {0}'}"
                     Visibility="{Binding Debug.Enabled, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <!--  Original popup content  -->
-                <ctrl:DpsDetailPopup SkillList="{Binding SkillList}" />
+                <ctrl:DpsDetailPopup SkillList="{Binding Damage.FilteredSkillList}" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="ProgressBarDataTemplate" DataType="{x:Type viewModels:StatisticDataViewModel}">
@@ -632,6 +632,7 @@
                 </Border.Background>
                 <ctrl:SortedDpsControl
                     Padding="0,5,0,5"
+                    ItemClickCommand="{Binding OpenSkillBreakdownCommand}"
                     ItemTemplate="{StaticResource ProgressBarDataTemplate}"
                     ItemsSource="{Binding CurrentStatisticData.Data}"
                     SelectedItem="{Binding CurrentStatisticData.SelectedSlot}" />
