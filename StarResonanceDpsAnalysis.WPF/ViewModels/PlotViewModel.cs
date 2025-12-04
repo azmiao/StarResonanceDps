@@ -94,12 +94,12 @@ public partial class PlotViewModel : BaseViewModel
 
     public void RefreshSeries()
     {
-        _seriesPlotModel.InvalidatePlot(true);
+        SeriesPlotModel.InvalidatePlot(true);
     }
 
     public void RefreshPie()
     {
-        _piePlotModel.InvalidatePlot(true);
+        PiePlotModel.InvalidatePlot(true);
     }
 
     private static List<OxyColor> GenerateDistinctColors(int count)

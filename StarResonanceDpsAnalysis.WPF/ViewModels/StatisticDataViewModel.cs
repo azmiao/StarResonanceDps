@@ -85,17 +85,17 @@ public partial class StatisticDataViewModel(DebugFunctions debug) : BaseViewMode
 
         public event Action<IReadOnlyList<SkillItemViewModel>?>? SkillChanged;
 
-        protected virtual void RaiseSkillChanged(IReadOnlyList<SkillItemViewModel>? obj)
+        protected virtual void RaiseSkillChanged(IReadOnlyList<SkillItemViewModel> obj)
         {
             SkillChanged?.Invoke(obj);
         }
 
-        partial void OnFilteredSkillListChanged(IReadOnlyList<SkillItemViewModel>? value)
+        partial void OnFilteredSkillListChanged(IReadOnlyList<SkillItemViewModel> value)
         {
             RaiseSkillChanged(value);
         }
 
-        partial void OnTotalSkillListChanged(IReadOnlyList<SkillItemViewModel>? value)
+        partial void OnTotalSkillListChanged(IReadOnlyList<SkillItemViewModel> value)
         {
             RaiseSkillChanged(value);
         }
