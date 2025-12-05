@@ -7,7 +7,8 @@ using Microsoft.Extensions.Logging;
 using StarResonanceDpsAnalysis.Core.Data.Models;
 using StarResonanceDpsAnalysis.WPF.Data;
 using StarResonanceDpsAnalysis.WPF.Models;
-using StarResonanceDpsAnalysis.Core; // ? 新增: 引入技能类型判断
+using StarResonanceDpsAnalysis.Core;
+using StarResonanceDpsAnalysis.WPF.Config; // ⭐ 新增：引入配置管理器
 
 namespace StarResonanceDpsAnalysis.WPF.Services;
 
@@ -17,32 +18,36 @@ namespace StarResonanceDpsAnalysis.WPF.Services;
 public class BattleSnapshotService
 {
     private readonly ILogger<BattleSnapshotService> _logger;
+    private readonly IConfigManager _configManager; // ⭐ 新增：配置管理器
     private readonly string _snapshotDirectory;
-    private const int MaxSnapshots = 8; // 最多保存8条快照
-    private const int AbsoluteMinDurationSeconds = 10; // ? 绝对最小战斗时长(秒),低于此值的战斗永远不保存
+    private const int AbsoluteMinDurationSeconds = 10; // 绝对最小战斗时长(秒),低于此值的战斗永远不保存
 
-    public BattleSnapshotService(ILogger<BattleSnapshotService> logger)
+    // ⭐ 修改：从常量改为属性，从配置读取
+    private int MaxSnapshots => _configManager?.CurrentConfig?.MaxHistoryCount ?? 15;
+
+    public BattleSnapshotService(ILogger<BattleSnapshotService> logger, IConfigManager configManager)
     {
         _logger = logger;
+        _configManager = configManager; // ⭐ 新增：注入配置管理器
         _snapshotDirectory = Path.Combine(Environment.CurrentDirectory, "BattleSnapshots");
       
-  // 确保目录存在
-    if (!Directory.Exists(_snapshotDirectory))
-     {
-         Directory.CreateDirectory(_snapshotDirectory);
-        }
+        // 确保目录存在
+if (!Directory.Exists(_snapshotDirectory))
+        {
+  Directory.CreateDirectory(_snapshotDirectory);
+}
 
-      // 启动时加载现有快照
-     LoadSnapshots();
+        // 启动时加载现有快照
+      LoadSnapshots();
     }
 
     /// <summary>
-    /// 当前战斗快照列表(最新的8条)
+    /// 当前战斗快照列表(最新的N条，N由配置决定)
     /// </summary>
     public List<BattleSnapshotData> CurrentSnapshots { get; private set; } = new();
 
     /// <summary>
-    /// 全程快照列表(最新的8条)
+    /// 全程快照列表(最新的N条，N由配置决定)
     /// </summary>
     public List<BattleSnapshotData> TotalSnapshots { get; private set; } = new();
     /// <summary>

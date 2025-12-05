@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+ï»¿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -15,7 +15,7 @@ public sealed class GlobalHotkeyService(
     IMousePenetrationService mousePenetration,
     ITopmostService topmostService,
     DpsStatisticsViewModel dpsStatisticsViewModel,
-    PersonalDpsViewModel personalDpsViewModel)  // ? ĞÂÔö: ×¢Èë¸öÈË´ò×®Ä£Ê½ViewModel
+    PersonalDpsViewModel personalDpsViewModel)  // ? æ–°å¢: æ³¨å…¥ä¸ªäººæ‰“æ¡©æ¨¡å¼ViewModel
     : IGlobalHotkeyService
 {
     private const int WM_HOTKEY = 0x0312;
@@ -239,25 +239,25 @@ public sealed class GlobalHotkeyService(
     {
         try
         {
-            // ? ¹Ø¼üĞŞ¸´: Í¬Ê±¿ØÖÆDPSÍ³¼Æ´°¿ÚºÍ¸öÈËÄ£Ê½´°¿ÚµÄÖÃ¶¥
+            // ? å…³é”®ä¿®å¤: åŒæ—¶æ§åˆ¶DPSç»Ÿè®¡çª—å£å’Œä¸ªäººæ¨¡å¼çª—å£çš„ç½®é¡¶
             var dpsWindow = windowManager.DpsStatisticsView;
             var personalWindow = windowManager.PersonalDpsView;
             
-            // Ê¹ÓÃDPSÍ³¼Æ´°¿ÚµÄµ±Ç°×´Ì¬×÷Îª»ù×¼
+            // ä½¿ç”¨DPSç»Ÿè®¡çª—å£çš„å½“å‰çŠ¶æ€ä½œä¸ºåŸºå‡†
             var newState = !dpsWindow.Topmost;
             
-            // Í¬Ê±ÉèÖÃÁ½¸ö´°¿ÚµÄÖÃ¶¥×´Ì¬
+            // åŒæ—¶è®¾ç½®ä¸¤ä¸ªçª—å£çš„ç½®é¡¶çŠ¶æ€
             topmostService.SetTopmost(dpsWindow, newState);
             if (personalWindow != null)
             {
                 topmostService.SetTopmost(personalWindow, newState);
             }
             
-            // ±£´æÅäÖÃ
+            // ä¿å­˜é…ç½®
             _config.TopmostEnabled = newState;
             _ = configManager.SaveAsync(_config);
             
-            logger.LogInformation("ÖÃ¶¥¿ì½İ¼ü: DPSÍ³¼ÆºÍ¸öÈËÄ£Ê½Í¬Ê±ÇĞ»»µ½ {State}", newState ? "ÖÃ¶¥" : "È¡ÏûÖÃ¶¥");
+            logger.LogInformation("ç½®é¡¶å¿«æ·é”®: DPSç»Ÿè®¡å’Œä¸ªäººæ¨¡å¼åŒæ—¶åˆ‡æ¢åˆ° {State}", newState ? "ç½®é¡¶" : "å–æ¶ˆç½®é¡¶");
         }
         catch (Exception ex)
         {
@@ -269,20 +269,20 @@ public sealed class GlobalHotkeyService(
     {
         try
         {
-            // ? ¹Ø¼üĞŞ¸´: ¼ì²éµ±Ç°¼¤»îµÄ´°¿Ú,¾ö¶¨Çå¿Õ²ßÂÔ
+            // ? å…³é”®ä¿®å¤: æ£€æŸ¥å½“å‰æ¿€æ´»çš„çª—å£,å†³å®šæ¸…ç©ºç­–ç•¥
             var personalWindow = windowManager.PersonalDpsView;
             var isPersonalWindowVisible = personalWindow != null && personalWindow.IsVisible;
 
             if (isPersonalWindowVisible)
             {
-                // ¸öÈËÄ£Ê½´°¿Ú¿É¼û: µ÷ÓÃ¸öÈËÄ£Ê½µÄClearÃüÁî
-                logger.LogInformation("¿ì½İ¼üË¢ĞÂ: ¸öÈËÄ£Ê½´°¿Ú¿É¼û,Ö´ĞĞ¸öÈËÄ£Ê½Çå¿Õ");
+                // ä¸ªäººæ¨¡å¼çª—å£å¯è§: è°ƒç”¨ä¸ªäººæ¨¡å¼çš„Clearå‘½ä»¤
+                logger.LogInformation("å¿«æ·é”®åˆ·æ–°: ä¸ªäººæ¨¡å¼çª—å£å¯è§,æ‰§è¡Œä¸ªäººæ¨¡å¼æ¸…ç©º");
                 personalDpsViewModel.ClearCommand.Execute(null);
             }
             else
             {
-                // DPSÍ³¼Æ´°¿Ú: µ÷ÓÃDPSÍ³¼ÆµÄResetAll
-                logger.LogInformation("¿ì½İ¼üË¢ĞÂ: DPSÍ³¼Æ´°¿Ú,Ö´ĞĞResetAll");
+                // DPSç»Ÿè®¡çª—å£: è°ƒç”¨DPSç»Ÿè®¡çš„ResetAll
+                logger.LogInformation("å¿«æ·é”®åˆ·æ–°: DPSç»Ÿè®¡çª—å£,æ‰§è¡ŒResetAll");
                 dpsStatisticsViewModel.ResetAll();
             }
         }

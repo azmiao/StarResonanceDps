@@ -639,7 +639,6 @@
   <data name="SkillBreakdown_Label_LuckRate" xml:space="preserve">
     <value>Taxa de sorte</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="SkillBreakdown_Label_CritDamage" type="System.Resources.ResXNullRef, System.Windows.Forms">
     <value />
   </data>
@@ -839,5 +838,36 @@ Recomendado: 500-2000 milissegundos</value>
   </data>
   <data name="MainView_Plugin_Training_Description" xml:space="preserve">
     <value />
+  </data>
+  <!--  ⭐ 新增: 开关伤害统计快捷键  -->
+  <data name="Settings_Shortcut_ToggleDps" xml:space="preserve">
+  <value>Alternar Estatísticas de Dano</value>
+  </data>
+  <data name="Settings_Shortcut_ToggleDps_Tooltip" xml:space="preserve">
+    <value>Foque nesta caixa e pressione um atalho (ex: F10). Pressione Delete para limpar.</value>
+  </data>
+  <!--  ⭐ 新增: 角色设置  -->
+  <data name="Settings_Section_Character_Title" xml:space="preserve">
+    <value>Configurações de Personagem</value>
+  </data>
+  <data name="Settings_Section_Character_Sub" xml:space="preserve">
+ <value>Configure o UID do seu personagem para o modo de treino solo</value>
+  </data>
+  <data name="Settings_Character_Uid" xml:space="preserve">
+    <value>UID do Personagem</value>
+  </data>
+  <data name="Settings_Character_Uid_Tooltip" xml:space="preserve">
+    <value>Digite o UID do seu personagem (número)
+Como obter: Após uma luta, seu personagem aparecerá automaticamente na janela de estatísticas</value>
+  </data>
+  <!--  ⭐ 新增: 历史记录保存数量  -->
+  <data name="Settings_Combat_MaxHistoryCount" xml:space="preserve">
+    <value>Limite de Registros de Histórico</value>
+  </data>
+  <data name="Settings_Combat_MaxHistoryCount_Tooltip" xml:space="preserve">
+    <value>Número máximo de registros de batalha a manter (5-50)</value>
+  </data>
+  <data name="Settings_Common_Records" xml:space="preserve">
+    <value>registros</value>
   </data>
 </root>

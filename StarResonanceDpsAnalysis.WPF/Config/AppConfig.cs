@@ -158,6 +158,14 @@ public partial class AppConfig : ObservableObject
     [ObservableProperty]
     private int _dpsUpdateInterval = 1000;
 
+    /// <summary>
+    /// ⭐ 新增: 历史记录最大保存数量
+    /// 默认值：15条
+    /// 范围：5 - 50
+    /// </summary>
+    [ObservableProperty]
+    private int _maxHistoryCount = 15;
+
     public AppConfig Clone()
     {
         // TODO: Add unittest

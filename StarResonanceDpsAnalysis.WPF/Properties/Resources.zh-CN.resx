@@ -760,7 +760,7 @@
     <value>鼠标穿透已启用</value>
   </data>
   <data name="Settings_Shortcut_TopMost" xml:space="preserve">
-    <value>窗口置顶</value>
+    <value>.window置顶</value>
   </data>
   <data name="DpsStatistics_Indicator_WindowTopMost_Tooltip" xml:space="preserve">
     <value>切换置顶</value>
@@ -932,5 +932,15 @@
   <data name="Settings_Character_Uid_Tooltip" xml:space="preserve">
     <value>输入你的角色UID（数字）
 如何获取：在游戏战斗后打开统计窗口，你的角色会自动显示</value>
+  </data>
+  <!--  ⭐ 新增: 历史记录保存数量  -->
+  <data name="Settings_Combat_MaxHistoryCount" xml:space="preserve">
+    <value>历史记录保存数量</value>
+  </data>
+  <data name="Settings_Combat_MaxHistoryCount_Tooltip" xml:space="preserve">
+    <value>设置最多保留多少条历史战斗记录（范围: 5-50条）</value>
+  </data>
+  <data name="Settings_Common_Records" xml:space="preserve">
+    <value>条</value>
   </data>
 </root>

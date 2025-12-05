@@ -33,4 +33,5 @@
     <converters:DamageDisplayTypeToSecondSuffixConverter x:Key="DamageDisplayTypeToSecondSuffixConverter" />
     <converters:SnapshotOrRankConverter x:Key="SnapshotOrRankConverter" />
     <converters:StatisticTypeToSkillListConverter x:Key="StatisticTypeToSkillListConverter" />
+    <converters:MultiBoolToVisibilityConverter x:Key="MultiBoolToVisibilityConverter" />
 </ResourceDictionary>

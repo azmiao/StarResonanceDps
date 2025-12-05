@@ -53,10 +53,12 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
 
     #region Stub Implementations
 
-    // ? 新增: 设计时快照服务
+    // ? 修复: 设计时快照服务（添加 IConfigManager 参数）
     private sealed class DesignBattleSnapshotService : BattleSnapshotService
     {
-        public DesignBattleSnapshotService() : base(NullLogger<BattleSnapshotService>.Instance)
+        public DesignBattleSnapshotService() : base(
+    NullLogger<BattleSnapshotService>.Instance,
+            new DesignConfigManager()) // ? 新增：传入配置管理器
         {
         }
     }
@@ -270,6 +272,9 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
 
     #endregion
 }
+
+
+
 
 
 

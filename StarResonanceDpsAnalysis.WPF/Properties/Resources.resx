@@ -960,4 +960,14 @@ Recommended: 500-2000 milliseconds</value>
     <value>Enter your character UID (number)
 How to get: After a fight, your character will automatically appear in the stats window</value>
   </data>
+  <!--  ⭐ 新增: 历史记录保存数量  -->
+  <data name="Settings_Combat_MaxHistoryCount" xml:space="preserve">
+    <value>History Record Limit</value>
+  </data>
+  <data name="Settings_Combat_MaxHistoryCount_Tooltip" xml:space="preserve">
+    <value>Maximum number of battle records to keep (5-50)</value>
+  </data>
+  <data name="Settings_Common_Records" xml:space="preserve">
+    <value>records</value>
+  </data>
 </root>
