@@ -249,8 +249,11 @@
   <data name="Menu_TemporaryMaskPlayerName" xml:space="preserve">
     <value>Mascaramento temporário</value>
   </data>
-  <data name="Settings_Section_Language_Title" xml:space="preserve">
+  <data name="Settings_Section_Display_Title" xml:space="preserve">
     <value>Configurações de exibição</value>
+  </data>
+  <data name="Settings_Language_Title" xml:space="preserve">
+    <value>Idioma</value>
   </data>
   <data name="Settings_Section_Language_Description" xml:space="preserve">
     <value>Preferências de exibição da interface</value>

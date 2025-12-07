@@ -1758,6 +1758,15 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
+        ///   查找类似 Language 的本地化字符串。
+        /// </summary>
+        public static string Settings_Language_Title {
+            get {
+                return ResourceManager.GetString("Settings_Language_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Capture Adapter 的本地化字符串。
         /// </summary>
         public static string Settings_NetworkAdapter_Label {
@@ -1857,7 +1866,7 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
-        ///   查找类似 Display 的本地化字符串。
+        ///   查找类似 Display Settings 的本地化字符串。
         /// </summary>
         public static string Settings_Section_Display_Title {
             get {

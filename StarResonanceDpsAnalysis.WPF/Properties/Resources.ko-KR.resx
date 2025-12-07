@@ -761,7 +761,7 @@
     <value>받은 피해</value>
   </data>
   <data name="StatisticType_NpcTakenDamage" xml:space="preserve">
-    <value>NPC에게 받은 피해</value>
+    <value>NPC 받은 피해</value>
   </data>
   <data name="ScopeTime_Current" xml:space="preserve">
     <value>현재</value>
@@ -959,5 +959,8 @@
   </data>
   <data name="Settings_Language_Korean" xml:space="preserve">
     <value>한국어</value>
+  </data>
+  <data name="Settings_Language_Title" xml:space="preserve">
+    <value>언어</value>
   </data>
 </root>

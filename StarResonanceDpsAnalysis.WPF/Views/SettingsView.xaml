@@ -267,7 +267,7 @@
                                     <Border x:Name="bb" Style="{StaticResource SectionTitleBorder}">
 
                                         <Grid>
-                                            <TextBlock Style="{StaticResource SectionListTitleText}" Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Language_Title}}" />
+                                            <TextBlock Style="{StaticResource SectionListTitleText}" Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Display_Title}}" />
 
                                             <Border Style="{StaticResource SectionTitlePointer}" />
                                         </Grid>
@@ -395,7 +395,7 @@
                         <StackPanel>
                             <ctrl:CardHeader
                                 x:Name="SectionLanguage"
-                                Title="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Language_Title}}"
+                                Title="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Display_Title}}"
                                 Subtitle="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Language_Description}}" />
 
                             <Border Style="{StaticResource SectionBorder}">
@@ -412,7 +412,7 @@
                                             <TextBlock
                                                 Grid.Column="0"
                                                 Style="{StaticResource FieldName}"
-                                                Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Language_Title}}" />
+                                                Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Language_Title}}" />
                                             <ComboBox
                                                 Grid.Column="2"
                                                 ItemTemplate="{StaticResource LocalizedEnumTextBlockDataTemplate}"
