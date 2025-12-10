@@ -219,26 +219,26 @@
 
                     <!--  Total Value  -->
                     <StackPanel Grid.Column="1">
-                        <TextBlock Style="{StaticResource StatLabelText}" Text="Total" />
+                        <TextBlock Style="{StaticResource StatLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_Total}" />
                         <TextBlock Style="{StaticResource StatValueText}" Text="{Binding TotalDamage, StringFormat={}{0:N0}}" />
                     </StackPanel>
 
                     <!--  Hit Count  -->
                     <StackPanel Grid.Column="2">
-                        <TextBlock Style="{StaticResource StatLabelText}" Text="Hits" />
+                        <TextBlock Style="{StaticResource StatLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_HitCount}" />
                         <TextBlock Style="{StaticResource StatValueText}">
                             <Run Text="{Binding HitCount, Mode=OneWay}" />
                             <Run
                                 FontSize="11"
                                 FontWeight="Normal"
                                 Foreground="#757575"
-                                Text="hits" />
+                                Text="{lex:Loc Key=SkillBreakdown_Unit_Hits}" />
                         </TextBlock>
                     </StackPanel>
 
                     <!--  Crit Rate  -->
                     <StackPanel Grid.Column="3">
-                        <TextBlock Style="{StaticResource StatLabelText}" Text="Crit Rate" />
+                        <TextBlock Style="{StaticResource StatLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_CritRate}" />
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource StatValueText}" Text="{Binding CritRate, StringFormat={}{0:P1}}" />
                             <TextBlock
@@ -252,7 +252,7 @@
 
                     <!--  Average  -->
                     <StackPanel Grid.Column="4">
-                        <TextBlock Style="{StaticResource StatLabelText}" Text="Avg Hit" />
+                        <TextBlock Style="{StaticResource StatLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_AverageDamage}" />
                         <TextBlock Style="{StaticResource StatValueText}" Text="{Binding AvgDamage, StringFormat={}{0:N0}}" />
                     </StackPanel>
                 </Grid>
@@ -390,7 +390,7 @@
                 </TabControl.Resources>
 
                 <!--  DPS Tab  -->
-                <TabItem Header="DPS">
+                <TabItem Header="{lex:Loc Key=SkillBreakdown_Tab_Output}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -414,27 +414,27 @@
 
                                         <StackPanel Grid.Column="0">
                                             <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding DamageStats.Total, StringFormat={}{0:N0}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="Total Damage" />
+                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_TotalDamage}" />
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="1">
                                             <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding DamageStats.Average, StringFormat={}{0:N0}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="Average DPS" />
+                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_AverageDps}" />
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="2">
                                             <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding DamageStats.Hits, StringFormat={}{0:N0}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="Total Hits" />
+                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_TotalHits}" />
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="3">
                                             <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding DamageStats.CritRate, StringFormat={}{0:P1}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="Crit Rate" />
+                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_CritRate}" />
                                         </StackPanel>
                                     </Grid>
                                 </Border>
 
-                                <TextBlock Style="{StaticResource SectionHeaderText}" Text="Damage Skills Analysis" />
+                                <TextBlock Style="{StaticResource SectionHeaderText}" Text="{lex:Loc Key=SkillBreakdown_Section_DamageSkillsAnalysis}" />
 
                                 <ItemsControl
                                     Margin="0,0,0,16"
@@ -454,7 +454,7 @@
                                         <TextBlock
                                             FontSize="14"
                                             Style="{StaticResource CardTitle}"
-                                            Text="Real-time DPS" />
+                                            Text="{lex:Loc Key=SkillBreakdown_Chart_RealTimeDps}" />
                                         <oxy:PlotView Height="300" Model="{Binding DpsPlot.SeriesPlotModel}" />
                                         <Grid>
                                             <Grid.ColumnDefinitions>
@@ -468,7 +468,7 @@
                                                     Command="{Binding ResetZoomCommand}"
                                                     Content="↺"
                                                     Style="{StaticResource AntButtonStyle}"
-                                                    ToolTip="Reset Zoom" />
+                                                    ToolTip="{lex:Loc Key=SkillBreakdown_Tooltip_ResetZoom}" />
                                                 <Button
                                                     Width="32"
                                                     Margin="4"
@@ -492,8 +492,18 @@
                                         <TextBlock
                                             FontSize="14"
                                             Style="{StaticResource CardTitle}"
-                                            Text="Skill Damage Distribution" />
-                                        <oxy:PlotView Height="400" Model="{Binding DpsPlot.PiePlotModel}" />
+                                            Text="{lex:Loc Key=SkillBreakdown_Chart_SkillDamageDistribution}" />
+                                        <oxy:PlotView Height="300" Model="{Binding DpsPlot.PiePlotModel}" />
+                                    </StackPanel>
+                                </Border>
+                                <!--  Hit Type Distribution Bar Chart: Normal / Critical / Lucky  -->
+                                <Border Style="{StaticResource ChartCardBorder}">
+                                    <StackPanel>
+                                        <TextBlock
+                                            FontSize="14"
+                                            Style="{StaticResource CardTitle}"
+                                            Text="{lex:Loc Key=SkillBreakdown_Chart_HitTypeDistribution}" />
+                                        <oxy:PlotView Height="300" Model="{Binding DpsPlot.HitTypeBarPlotModel}" />
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
@@ -502,7 +512,7 @@
                 </TabItem>
 
                 <!--  Healing Tab  -->
-                <TabItem Header="Healing">
+                <TabItem Header="{lex:Loc Key=SkillBreakdown_Tab_Healing}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -526,27 +536,27 @@
 
                                         <StackPanel Grid.Column="0">
                                             <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding HealingStats.Total, StringFormat={}{0:N0}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="Total Healing" />
+                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_TotalHealing}" />
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="1">
                                             <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding HealingStats.Average, StringFormat={}{0:N0}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="Average HPS" />
+                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_AverageHps}" />
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="2">
                                             <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding HealingStats.Hits, StringFormat={}{0:N0}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="Total Heals" />
+                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_TotalHeals}" />
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="3">
                                             <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding HealingStats.CritRate, StringFormat={}{0:F1}%}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="Crit Rate" />
+                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_CritRate}" />
                                         </StackPanel>
                                     </Grid>
                                 </Border>
 
-                                <TextBlock Style="{StaticResource SectionHeaderText}" Text="Healing Skills Analysis" />
+                                <TextBlock Style="{StaticResource SectionHeaderText}" Text="{lex:Loc Key=SkillBreakdown_Section_HealingSkillsAnalysis}" />
 
                                 <ItemsControl
                                     Margin="0,0,0,16"
@@ -566,8 +576,8 @@
                                         <TextBlock
                                             FontSize="14"
                                             Style="{StaticResource CardTitle}"
-                                            Text="Real-time HPS" />
-                                        <oxy:PlotView Height="300" Model="{Binding HpsPlot.LineSeriesData}" />
+                                            Text="{lex:Loc Key=SkillBreakdown_Chart_RealTimeHps}" />
+                                        <oxy:PlotView Height="300" Model="{Binding HpsPlot.SeriesPlotModel}" />
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition />
@@ -580,7 +590,7 @@
                                                     Command="{Binding ResetZoomCommand}"
                                                     Content="↺"
                                                     Style="{StaticResource AntButtonStyle}"
-                                                    ToolTip="Reset Zoom" />
+                                                    ToolTip="{lex:Loc Key=SkillBreakdown_Tooltip_ResetZoom}" />
                                                 <Button
                                                     Width="32"
                                                     Margin="4"
@@ -603,8 +613,18 @@
                                         <TextBlock
                                             FontSize="14"
                                             Style="{StaticResource CardTitle}"
-                                            Text="Healing Distribution" />
-                                        <oxy:PlotView Height="400" Model="{Binding HpsPlot.PiePlotModel}" />
+                                            Text="{lex:Loc Key=SkillBreakdown_Chart_HealingDistribution}" />
+                                        <oxy:PlotView Height="300" Model="{Binding HpsPlot.PiePlotModel}" />
+                                    </StackPanel>
+                                </Border>
+                                <!--  Hit Type Distribution Bar Chart: Normal / Critical / Lucky  -->
+                                <Border Style="{StaticResource ChartCardBorder}">
+                                    <StackPanel>
+                                        <TextBlock
+                                            FontSize="14"
+                                            Style="{StaticResource CardTitle}"
+                                            Text="{lex:Loc Key=SkillBreakdown_Chart_HealTypeDistribution}" />
+                                        <oxy:PlotView Height="300" Model="{Binding HpsPlot.HitTypeBarPlotModel}" />
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
@@ -613,7 +633,7 @@
                 </TabItem>
 
                 <!--  Damage Taken Tab  -->
-                <TabItem Header="Damage Taken">
+                <TabItem Header="{lex:Loc Key=SkillBreakdown_Tab_Tanking}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -637,27 +657,27 @@
 
                                         <StackPanel Grid.Column="0">
                                             <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding TakenDamageStats.Total, StringFormat={}{0:N0}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="Total Damage Taken" />
+                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_TotalDamageTaken}" />
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="1">
                                             <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding TakenDamageStats.Average, StringFormat={}{0:N0}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="Average DTPS" />
+                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_AverageDtps}" />
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="2">
                                             <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding TakenDamageStats.Hits, StringFormat={}{0:N0}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="Total Hits Taken" />
+                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_TotalHitsTaken}" />
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="3">
                                             <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding TakenDamageStats.CritRate, StringFormat={}{0:F1}%}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="Crit Rate" />
+                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_CritRate}" />
                                         </StackPanel>
                                     </Grid>
                                 </Border>
 
-                                <TextBlock Style="{StaticResource SectionHeaderText}" Text="Damage Taken Analysis" />
+                                <TextBlock Style="{StaticResource SectionHeaderText}" Text="{lex:Loc Key=SkillBreakdown_Section_DamageTakenAnalysis}" />
 
                                 <ItemsControl
                                     Margin="0,0,0,16"
@@ -677,7 +697,7 @@
                                         <TextBlock
                                             FontSize="14"
                                             Style="{StaticResource CardTitle}"
-                                            Text="Real-time DTPS" />
+                                            Text="{lex:Loc Key=SkillBreakdown_Chart_RealTimeDtps}" />
                                         <oxy:PlotView Height="300" Model="{Binding DtpsPlot.SeriesPlotModel}" />
                                         <Grid>
                                             <Grid.ColumnDefinitions>
@@ -691,7 +711,7 @@
                                                     Command="{Binding ResetZoomCommand}"
                                                     Content="↺"
                                                     Style="{StaticResource AntButtonStyle}"
-                                                    ToolTip="Reset Zoom" />
+                                                    ToolTip="{lex:Loc Key=SkillBreakdown_Tooltip_ResetZoom}" />
                                                 <Button
                                                     Width="32"
                                                     Margin="4"
@@ -716,8 +736,18 @@
                                         <TextBlock
                                             FontSize="14"
                                             Style="{StaticResource CardTitle}"
-                                            Text="Damage Sources Distribution" />
-                                        <oxy:PlotView Height="400" Model="{Binding DtpsPlot.PiePlotModel}" />
+                                            Text="{lex:Loc Key=SkillBreakdown_Chart_DamageSourcesDistribution}" />
+                                        <oxy:PlotView Height="300" Model="{Binding DtpsPlot.PiePlotModel}" />
+                                    </StackPanel>
+                                </Border>
+                                <!--  Hit Type Distribution Bar Chart: Normal / Critical / Lucky  -->
+                                <Border Style="{StaticResource ChartCardBorder}">
+                                    <StackPanel>
+                                        <TextBlock
+                                            FontSize="14"
+                                            Style="{StaticResource CardTitle}"
+                                            Text="{lex:Loc Key=SkillBreakdown_Chart_HitTypeDistribution}" />
+                                        <oxy:PlotView Height="300" Model="{Binding DtpsPlot.HitTypeBarPlotModel}" />
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
@@ -732,7 +762,7 @@
                 CancelClick="Footer_CancelClick"
                 CancelCommand="{Binding CancelCommand}"
                 ConfirmClick="Footer_ConfirmClick"
-                ConfirmCommand="{Binding ConfirmCommand}" />
+                ConfirmCommand="{Binding RefreshCommand}" />
         </Grid>
     </Border>
 </Window>

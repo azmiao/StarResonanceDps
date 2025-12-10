@@ -57,7 +57,6 @@ public partial class SkillBreakdownView : Window
 
     private void Footer_ConfirmClick(object sender, RoutedEventArgs e)
     {
-        Close();
     }
 
     private void Footer_CancelClick(object sender, RoutedEventArgs e)
