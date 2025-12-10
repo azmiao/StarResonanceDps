@@ -40,9 +40,9 @@ public partial class SkillBreakdownViewModel(ILogger<SkillBreakdownViewModel> lo
         InitializeTimeSeries(slot.Heal.Dps, HpsPlot);
         InitializeTimeSeries(slot.TakenDamage.Dps, DtpsPlot);
 
-        UpdatePieChart(slot.Damage.TotalSkillList, DpsPlot);
-        UpdatePieChart(slot.Heal.TotalSkillList, HpsPlot);
-        UpdatePieChart(slot.TakenDamage.TotalSkillList, DtpsPlot);
+        InitializePie(slot.Damage, DpsPlot);
+        InitializePie(slot.Heal, HpsPlot);
+        InitializePie(slot.TakenDamage, DtpsPlot);
 
         logger.LogDebug("SkillBreakdownViewModel initialized for player: {PlayerName}", PlayerName);
     }
@@ -131,7 +131,7 @@ public partial class SkillBreakdownViewModel(ILogger<SkillBreakdownViewModel> lo
 
     #region Chart Initialization
 
-    private void InitializeTimeSeries(ObservableCollection<(TimeSpan duration, double section, double total)> data,
+    private static void InitializeTimeSeries(ObservableCollection<(TimeSpan duration, double section, double total)> data,
         PlotViewModel target)
     {
         void HandleCollectionChanged(object? sender, NotifyCollectionChangedEventArgs args)
@@ -161,6 +161,17 @@ public partial class SkillBreakdownViewModel(ILogger<SkillBreakdownViewModel> lo
         }
 
         target.RefreshSeries();
+    }
+
+    private static void InitializePie(StatisticDataViewModel.SkillDataCollection data,
+        PlotViewModel target)
+    {
+        data.SkillChanged += list =>
+        {
+            if (list == null) return;
+            UpdatePieChart(list, target);
+        };
+        UpdatePieChart(data.TotalSkillList, target);
     }
 
     private static void UpdatePieChart(IReadOnlyList<SkillItemViewModel> skills, PlotViewModel target)
