@@ -11,6 +11,7 @@ public partial class SkillItemViewModel : BaseViewModel
     [ObservableProperty] private long _totalTakenDamage;
     [ObservableProperty] private int _hitCount;
     [ObservableProperty] private int _critCount;
+    [ObservableProperty] private int _luckyCount;
     [ObservableProperty] private int _avgDamage;
     [ObservableProperty] private int _avgHeal;
     [ObservableProperty] private int _avgTakenDamage;

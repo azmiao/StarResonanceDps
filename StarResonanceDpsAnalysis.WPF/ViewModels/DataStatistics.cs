@@ -8,10 +8,9 @@ namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 public partial class DataStatistics : BaseViewModel
 {
     [ObservableProperty] private long _average;
-
     [ObservableProperty] private double _critRate;
-
+    [ObservableProperty] private int _critCount;
+    [ObservableProperty] private int _luckyCount;
     [ObservableProperty] private int _hits;
-
     [ObservableProperty] private long _total;
 }

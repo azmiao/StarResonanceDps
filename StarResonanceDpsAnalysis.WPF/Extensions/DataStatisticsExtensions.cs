@@ -17,9 +17,11 @@ public static class DataStatisticsExtensions
     {
         stats.Total = skills.Sum(s => s.TotalTakenDamage);
         stats.Hits = skills.Sum(s => s.HitCount);
+        stats.LuckyCount = skills.Sum(s => s.LuckyCount);
 
         var totalCritHits = skills.Sum(s => s.CritCount);
         stats.CritRate = stats.Hits > 0 ? (double)totalCritHits / stats.Hits : 0;
+        stats.CritCount = totalCritHits;
 
         if (durationMs > 0)
         {
@@ -40,9 +42,11 @@ public static class DataStatisticsExtensions
     {
         stats.Total = skills.Sum(s => s.TotalHeal);
         stats.Hits = skills.Sum(s => s.HitCount);
+        stats.LuckyCount = skills.Sum(s => s.LuckyCount);
 
         var totalCritHits = skills.Sum(s => s.CritCount);
         stats.CritRate = stats.Hits > 0 ? (double)totalCritHits / stats.Hits : 0;
+        stats.CritCount = totalCritHits;
 
         if (durationMs > 0)
         {
@@ -62,9 +66,11 @@ public static class DataStatisticsExtensions
     {
         stats.Total = skills.Sum(s => s.TotalDamage);
         stats.Hits = skills.Sum(s => s.HitCount);
+        stats.LuckyCount = skills.Sum(s => s.LuckyCount);
 
         var totalCritHits = skills.Sum(s => s.CritCount);
         stats.CritRate = stats.Hits > 0 ? (double)totalCritHits / stats.Hits : 0;
+        stats.CritCount = totalCritHits;
 
         if (durationMs > 0)
         {
