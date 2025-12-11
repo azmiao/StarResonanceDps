@@ -1092,7 +1092,7 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
             [StatisticType.NpcTakenDamage] = new()
         };
 
-        var currentPlayerUid = _storage.CurrentPlayerUUID;
+        //var currentPlayerUid = _storage.CurrentPlayerUUID;
 
         foreach (var dpsData in data)
         {
@@ -1107,7 +1107,7 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
             var duration = (dpsData.LastLoggedTick - (dpsData.StartLoggedTick ?? 0)).ConvertToUnsigned();
 
             // Build skill lists once for reuse
-            var (filteredDmg, totalDmg, filteredHeal, totalHeal, filteredTaken, totalTaken) =
+            var (totalDmg, totalHeal, totalTaken) =
                 BuildSkillListSnapshot(dpsData);
 
             // ⭐ 修复: Process Damage - 根据IsIncludeNpcData控制NPC数据显示
@@ -1166,15 +1166,13 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
     /// <summary>
     /// Builds skill list snapshot
     /// </summary>
-    private (List<SkillItemViewModel> filtered, List<SkillItemViewModel> total,
-        List<SkillItemViewModel> filteredHeal, List<SkillItemViewModel> totalHeal,
-        List<SkillItemViewModel> filteredTakenDamage, List<SkillItemViewModel> totalTakenDamage)
+    private (List<SkillItemViewModel> totalDamage, List<SkillItemViewModel> totalHeal, List<SkillItemViewModel> totalTakenDamage)
         BuildSkillListSnapshot(DpsData dpsData)
     {
         var battleLogs = dpsData.ReadOnlyBattleLogs;
         if (battleLogs.Count == 0)
         {
-            return ([], [], [], [], [], []);
+            return ([], [], []);
         }
 
         var skillDisplayLimit = CurrentStatisticData?.SkillDisplayLimit ?? 8;
@@ -1239,7 +1237,7 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
         }
 
         // ⭐ 转换伤害技能为ViewModel
-        var damageSkillsOrdered = damageSkillDict
+        var damageSkills = damageSkillDict
             .OrderByDescending(static kvp => kvp.Value.totalValue)
             .Select(kvp =>
             {
@@ -1259,40 +1257,17 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
                     HitCount = useTimes,
                     CritCount = critTimes,
                     AvgDamage = avgDamage,
-                    CritRate = critRate
+                    CritRate = critRate,
+                    LuckyCount = luckyTimes
                 };
-            });
+            }).ToList();
 
-        var damageSkillsList = damageSkillsOrdered.ToList();
-        var filteredDamageSkills = skillDisplayLimit > 0
-            ? damageSkillsList.Take(skillDisplayLimit).ToList()
-            : damageSkillsList;
-
-        // ⭐ 新增: 调试日志 - 输出伤害技能统计信息
         _logger.LogDebug(
-            "BuildSkillListSnapshot [伤害]: UID={UID}, BattleLogs={LogCount}, UniqueSkills={UniqueCount}, DisplayLimit={Limit}, FilteredCount={FilteredCount}",
-            dpsData.UID, battleLogs.Count, damageSkillDict.Count, skillDisplayLimit, filteredDamageSkills.Count);
-
-        // ⭐ 如果过滤后的数量少于预期,输出所有技能的详情
-        if (skillDisplayLimit > 0 && filteredDamageSkills.Count < skillDisplayLimit &&
-            damageSkillDict.Count > filteredDamageSkills.Count)
-        {
-            _logger.LogWarning("技能显示数量异常: 期望显示{Expected}个,实际统计到{Total}个,过滤后{Filtered}个",
-                skillDisplayLimit, damageSkillDict.Count, filteredDamageSkills.Count);
-
-            foreach (var (skillId, skillData) in
-                     damageSkillDict.OrderByDescending(kvp => kvp.Value.totalValue).Take(10))
-            {
-                var skillName = EmbeddedSkillConfig.TryGet(skillId.ToString(), out var def)
-                    ? def.Name
-                    : skillId.ToString();
-                _logger.LogDebug("  - Skill: {Name} (ID:{ID}), Damage={Damage}, Uses={Uses}",
-                    skillName, skillId, skillData.totalValue, skillData.useTimes);
-            }
-        }
+            "BuildSkillListSnapshot [伤害]: UID={UID}, BattleLogs={LogCount}, UniqueSkills={UniqueCount}, DisplayLimit={Limit}",
+            dpsData.UID, battleLogs.Count, damageSkillDict.Count, skillDisplayLimit);
 
         // Convert healing skills to ViewModels
-        var healingSkillsOrdered = healingSkillDict
+        var healingSkills = healingSkillDict
             .OrderByDescending(static kvp => kvp.Value.totalValue)
             .Select(kvp =>
             {
@@ -1312,17 +1287,13 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
                     HitCount = useTimes,
                     CritCount = critTimes,
                     AvgDamage = avgHeal,
-                    CritRate = critRate
+                    CritRate = critRate,
+                    LuckyCount = luckyTimes,
                 };
-            });
-
-        var healingSkillsList = healingSkillsOrdered.ToList();
-        var filteredHealingSkills = skillDisplayLimit > 0
-            ? healingSkillsList.Take(skillDisplayLimit).ToList()
-            : healingSkillsList;
+            }).ToList();
 
         // Convert taken damage skills to ViewModels
-        var takenDamageSkillsOrdered = takenDamageSkillDict
+        var takenDamageSkills = takenDamageSkillDict
             .OrderByDescending(static kvp => kvp.Value.totalValue)
             .Select(kvp =>
             {
@@ -1342,18 +1313,13 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
                     HitCount = useTimes,
                     CritCount = critTimes,
                     AvgDamage = avgDamage,
-                    CritRate = critRate
+                    CritRate = critRate,
+                    LuckyCount = luckyTimes,
                 };
-            });
+            }).ToList();
 
-        var takenDamageSkillsList = takenDamageSkillsOrdered.ToList();
-        var filteredTakenDamageSkills = skillDisplayLimit > 0
-            ? takenDamageSkillsList.Take(skillDisplayLimit).ToList()
-            : takenDamageSkillsList;
 
-        return (filteredDamageSkills, damageSkillsList,
-            filteredHealingSkills, healingSkillsList,
-            filteredTakenDamageSkills, takenDamageSkillsList);
+        return (damageSkills, healingSkills, takenDamageSkills);
     }
 
     /// <summary>
