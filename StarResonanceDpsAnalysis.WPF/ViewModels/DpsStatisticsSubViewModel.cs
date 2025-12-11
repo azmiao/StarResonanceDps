@@ -22,12 +22,9 @@ public readonly record struct DpsDataProcessed(
     DpsData OriginalData,
     ulong Value,
     ulong Duration,
-    List<SkillItemViewModel> FilteredSkillList,
-    List<SkillItemViewModel> TotalSkillList,
-    List<SkillItemViewModel> FilteredHealSkillList,
-    List<SkillItemViewModel> TotalHealSkillList,
-    List<SkillItemViewModel> FilteredTakenDamageSkillList,
-    List<SkillItemViewModel> TotalTakenDamageSkillList,
+    List<SkillItemViewModel> DamageSkillList,
+    List<SkillItemViewModel> HealSkillList,
+    List<SkillItemViewModel> TakenDamageSkillList,
     string PlayerName,
     Classes PlayerClass,
     ClassSpec PlayerSpec,
@@ -36,6 +33,7 @@ public readonly record struct DpsDataProcessed(
 public partial class DpsStatisticsSubViewModel : BaseViewModel
 {
     private readonly DebugFunctions _debugFunctions;
+    private readonly DpsStatisticsViewModel _parent;
     private readonly Dispatcher _dispatcher;
     private readonly ILogger<DpsStatisticsViewModel> _logger;
     private readonly IDataStorage _storage;
@@ -51,13 +49,14 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
 
     public DpsStatisticsSubViewModel(ILogger<DpsStatisticsViewModel> logger, Dispatcher dispatcher, StatisticType type,
         IDataStorage storage,
-        DebugFunctions debugFunctions)
+        DebugFunctions debugFunctions, DpsStatisticsViewModel parent)
     {
         _logger = logger;
         _dispatcher = dispatcher;
         _type = type;
         _storage = storage;
         _debugFunctions = debugFunctions;
+        _parent = parent;
         _data.CollectionChanged += DataChanged;
         return;
 
@@ -185,7 +184,10 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
                     Spec = playerInfo?.Spec ?? ClassSpec.Unknown,
                     IsNpc = dpsData.IsNpcData
                 },
+                // Set the hover action to call parent's SetIndicatorHover
+                SetHoverStateAction = (isHovering) => _parent.SetIndicatorHover(isHovering)
             };
+
             _dispatcher.Invoke(() => { Data.Add(slot); });
         }
 
@@ -212,15 +214,14 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
             slot.Value = processed.Value;
             slot.Duration = processed.Duration;
 
-            // ? 修复: 更新所有三种技能列表数据
-            slot.Damage.FilteredSkillList = processed.FilteredSkillList;
-            slot.Damage.TotalSkillList = processed.TotalSkillList;
+            slot.Damage.TotalSkillList = processed.DamageSkillList;
+            slot.Damage.RefreshFilteredList(SkillDisplayLimit);
 
-            slot.Heal.FilteredSkillList = processed.FilteredHealSkillList;
-            slot.Heal.TotalSkillList = processed.TotalHealSkillList;
+            slot.Heal.TotalSkillList = processed.HealSkillList;
+            slot.Heal.RefreshFilteredList(SkillDisplayLimit);
 
-            slot.TakenDamage.FilteredSkillList = processed.FilteredTakenDamageSkillList;
-            slot.TakenDamage.TotalSkillList = processed.TotalTakenDamageSkillList;
+            slot.TakenDamage.TotalSkillList = processed.TakenDamageSkillList;
+            slot.TakenDamage.RefreshFilteredList(SkillDisplayLimit);
 
             // Update player info
             slot.Player.Name = processed.PlayerName;

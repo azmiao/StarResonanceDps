@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using WPFLocalizeExtension.Providers;
@@ -62,6 +63,19 @@ public class DpsIndicatorControl : Control
     public static readonly DependencyProperty TrackOpacityProperty = DependencyProperty.Register(
         nameof(TrackOpacity), typeof(double), typeof(DpsIndicatorControl), new PropertyMetadata(default(double)));
 
+    public static readonly DependencyProperty SkillDisplayLimitProperty = DependencyProperty.Register(
+        nameof(SkillDisplayLimit), typeof(int), typeof(DpsIndicatorControl), new PropertyMetadata(8));
+
+    public static readonly DependencyProperty MouseEnterCommandProperty = DependencyProperty.Register(
+        nameof(MouseEnterCommand), typeof(ICommand), typeof(DpsIndicatorControl),
+        new PropertyMetadata(default(ICommand?)));
+
+    public static readonly DependencyProperty MouseLeaveCommandProperty = DependencyProperty.Register(
+        nameof(MouseLeaveCommand), typeof(ICommand), typeof(DpsIndicatorControl),
+        new PropertyMetadata(default(ICommand?)));
+
+    private Popup? _popup;
+
     static DpsIndicatorControl()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(DpsIndicatorControl),
@@ -75,10 +89,28 @@ public class DpsIndicatorControl : Control
         MouseLeave += OnMouseLeaveResetHover;
     }
 
+    public ICommand? MouseEnterCommand
+    {
+        get => (ICommand?)GetValue(MouseEnterCommandProperty);
+        set => SetValue(MouseEnterCommandProperty, value);
+    }
+
+    public ICommand? MouseLeaveCommand
+    {
+        get => (ICommand?)GetValue(MouseLeaveCommandProperty);
+        set => SetValue(MouseLeaveCommandProperty, value);
+    }
+
     public double TrackOpacity
     {
         get => (double)GetValue(TrackOpacityProperty);
         set => SetValue(TrackOpacityProperty, value);
+    }
+
+    public int SkillDisplayLimit
+    {
+        get => (int)GetValue(SkillDisplayLimitProperty);
+        set => SetValue(SkillDisplayLimitProperty, value);
     }
 
     public double Percentage
@@ -171,8 +203,6 @@ public class DpsIndicatorControl : Control
         Debug.WriteLine($"[DpsIndicatorControl] PopupContent changed: {oldPlayerName} -> {newPlayerName}");
     }
 
-    private Popup? _popup;
-
     public override void OnApplyTemplate()
     {
         base.OnApplyTemplate();
@@ -185,59 +215,20 @@ public class DpsIndicatorControl : Control
         }
     }
 
-    /// <summary>
-    /// ? 新增: 鼠标进入时刷新tooltip中的技能列表
-    /// </summary>
-    private void OnMouseEnterRefreshTooltip(object sender, System.Windows.Input.MouseEventArgs e)
+    private void OnMouseEnterRefreshTooltip(object sender, MouseEventArgs e)
     {
-        UpdateHoverSorting(true);
-        Debug.WriteLine($"[DpsIndicatorControl] MouseEnter - PopupContent: {PopupContent?.GetType().Name ?? "null"}");
-
-        // ? 关键: 从PopupContent获取StatisticDataViewModel,刷新其FilteredSkillList
-        if (PopupContent is not ViewModels.StatisticDataViewModel slot)
+        if (MouseEnterCommand?.CanExecute(SkillDisplayLimit) == true)
         {
-            return;
+            MouseEnterCommand.Execute(SkillDisplayLimit);
         }
-
-        // 获取当前的技能显示条数限制
-        // 注意: 这里需要从父级DpsStatisticsViewModel获取SkillDisplayLimit
-        // 由于DpsIndicatorControl是独立的Control,我们需要通过DataContext链找到父级ViewModel
-        var window = Window.GetWindow(this);
-        if (window?.DataContext is not ViewModels.DpsStatisticsViewModel parentVm)
-        {
-            Debug.WriteLine("[DpsIndicatorControl] Unable to find parent DpsStatisticsViewModel");
-            return;
-        }
-
-        var skillDisplayLimit = parentVm.CurrentStatisticData?.SkillDisplayLimit ?? 8;
-
-        // ? 刷新三类技能的FilteredSkillList
-        // RefreshFilteredList会触发PropertyChanged,WPF绑定系统会自动更新
-        slot.Damage.RefreshFilteredList(skillDisplayLimit);
-        slot.Heal.RefreshFilteredList(skillDisplayLimit);
-        slot.TakenDamage.RefreshFilteredList(skillDisplayLimit);
-
-        // ? 关键: 递增刷新触发器,强制MultiBinding重新评估
-        slot.SkillListRefreshTrigger++;
-
-        Debug.WriteLine($"[DpsIndicatorControl] Refreshed skill lists for player: {slot.Player.Name}, limit: {skillDisplayLimit}, trigger: {slot.SkillListRefreshTrigger}");
     }
 
-    private void OnMouseLeaveResetHover(object sender, System.Windows.Input.MouseEventArgs e)
+    private void OnMouseLeaveResetHover(object sender, MouseEventArgs e)
     {
-        UpdateHoverSorting(false);
-        Debug.WriteLine("[DpsIndicatorControl] MouseLeave");
-    }
-
-    private void UpdateHoverSorting(bool isHovering)
-    {
-        var window = Window.GetWindow(this);
-        if (window?.DataContext is not ViewModels.DpsStatisticsViewModel vm)
+        if (MouseLeaveCommand?.CanExecute(null) == true)
         {
-            return;
+            MouseLeaveCommand.Execute(null);
         }
-
-        vm.SetIndicatorHover(isHovering);
     }
 
     private CustomPopupPlacement[] PlacePopup(Size popupSize, Size targetSize, Point offset)

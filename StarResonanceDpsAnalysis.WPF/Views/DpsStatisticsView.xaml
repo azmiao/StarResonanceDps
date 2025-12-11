@@ -319,7 +319,10 @@
                             OverlayTemplate="{StaticResource StatisticDetailDataTemplate}"
                             Percentage="{Binding PercentOfMax}"
                             PopupContent="{Binding}"
-                            PopupTemplate="{StaticResource PopupTemplate}">
+                            PopupTemplate="{StaticResource PopupTemplate}"
+                            SkillDisplayLimit="{Binding DataContext.CurrentStatisticData.SkillDisplayLimit, RelativeSource={RelativeSource AncestorType=Window}}"
+                            MouseEnterCommand="{Binding MouseEnterCommand}"
+                            MouseLeaveCommand="{Binding MouseLeaveCommand}">
                             <ctrl:DpsIndicatorControl.TrackOpacity>
                                 <MultiBinding Converter="{StaticResource ConditionalPercentToOpacityConverter}">
                                     <Binding Path="DataContext.AppConfig.Opacity" RelativeSource="{RelativeSource AncestorType=Window}" />

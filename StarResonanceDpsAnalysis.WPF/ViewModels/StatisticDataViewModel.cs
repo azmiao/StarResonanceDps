@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 
@@ -13,10 +14,13 @@ public partial class StatisticDataViewModel(DebugFunctions debug) : BaseViewMode
     [ObservableProperty] private double _percentOfMax;
     [ObservableProperty] private PlayerInfoViewModel _player = new();
     [ObservableProperty] private ulong _value;
-    
+
     // ? 新增: 技能列表刷新触发器
     // 每次FilteredSkillList改变时递增此值,触发绑定更新
     [ObservableProperty] private int _skillListRefreshTrigger = 0;
+
+    // Action to notify parent about hover state change
+    public Action<bool>? SetHoverStateAction { get; set; }
 
     public DebugFunctions Debug { get; } = debug;
     public SkillDataCollection Damage { get; } = new();
@@ -47,6 +51,32 @@ public partial class StatisticDataViewModel(DebugFunctions debug) : BaseViewMode
         Player = new PlayerInfoViewModel();
     }
 
+    /// <summary>
+    /// Refreshes the filtered skill lists for all skill types (Damage, Heal, TakenDamage)
+    /// and triggers the UI update.
+    /// </summary>
+    /// <param name="limit">The maximum number of skills to display (0 for all)</param>
+    public void RefreshSkillLists(int limit)
+    {
+        Damage.RefreshFilteredList(limit);
+        Heal.RefreshFilteredList(limit);
+        TakenDamage.RefreshFilteredList(limit);
+        SkillListRefreshTrigger++;
+    }
+
+    [RelayCommand]
+    private void MouseEnter(int limit)
+    {
+        SetHoverStateAction?.Invoke(true);
+        RefreshSkillLists(limit);
+    }
+
+    [RelayCommand]
+    private void MouseLeave()
+    {
+        SetHoverStateAction?.Invoke(false);
+    }
+
     public partial class SkillDataCollection : BaseViewModel
     {
         [ObservableProperty] private IReadOnlyList<SkillItemViewModel> _filteredSkillList = [];
@@ -60,27 +90,19 @@ public partial class StatisticDataViewModel(DebugFunctions debug) : BaseViewMode
             this.TotalSkillList = [];
             if (Dps.Count > 0) this.Dps.Clear();
         }
-        
+
         /// <summary>
-        /// ? 新增: 从TotalSkillList重新过滤出FilteredSkillList
-        /// 用于鼠标悬停时实时刷新技能列表
+        /// Take top n skills from TotalSkillList to FilteredSkillList<br/>
+        /// 从TotalSkillList重新过滤出FilteredSkillList
         /// </summary>
         /// <param name="limit">显示条数限制,0表示显示全部</param>
-        public void RefreshFilteredList(int limit)
+        public void RefreshFilteredList(int limit = 0)
         {
-            if (TotalSkillList == null || TotalSkillList.Count == 0)
-            {
-                FilteredSkillList = [];
-                return;
-            }
-          
-            // 从TotalSkillList中取Top N
-    var newFiltered = limit > 0 
-        ? TotalSkillList.Take(limit).ToList() 
-     : TotalSkillList.ToList();
-        
-         // ? 关键: 赋值会触发PropertyChanged,通知UI更新
-    FilteredSkillList = newFiltered;
+            var newFiltered = limit > 0
+                ? TotalSkillList.Take(limit).ToList()
+             : TotalSkillList.ToList();
+
+            FilteredSkillList = newFiltered;
         }
 
         public event Action<IReadOnlyList<SkillItemViewModel>?>? SkillChanged;
