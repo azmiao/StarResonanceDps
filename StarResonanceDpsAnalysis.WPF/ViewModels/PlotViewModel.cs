@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
-using StarResonanceDpsAnalysis.Core.Data.Models;
 
 namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 
@@ -14,10 +12,19 @@ public record PlotOptions
     public string? YAxisTitle { get; init; }
     public string? LineSeriesTitle { get; init; }
     public string? PiePlotTitle { get; init; }
+    public string? DistributionPlotTitle { get; set; }
+    public string? HitTypeNormal { get; set; }
+    public string? HitTypeCritical { get; set; }
+    public string? HitTypeLucky { get; set; }
 }
 
 public partial class PlotViewModel : BaseViewModel
 {
+    private readonly CategoryAxis _hitTypeBarCategoryAxis;
+    [ObservableProperty] private PlotModel _hitTypeBarPlotModel;
+    [ObservableProperty] private PlotModel _piePlotModel;
+    [ObservableProperty] private PlotModel _seriesPlotModel;
+
     public PlotViewModel(PlotOptions? options)
     {
         LineSeriesData = new LineSeries
@@ -70,14 +77,11 @@ public partial class PlotViewModel : BaseViewModel
         };
 
         // Bar chart model for hit type percentages (Normal, Critical, Lucky)
-        _hitTypeBarPlotModel = CreateHitTypeBarPlotModel();
+        (_hitTypeBarPlotModel, _hitTypeBarCategoryAxis) = CreateHitTypeBarPlotModel(options);
     }
 
     public LineSeries LineSeriesData { get; }
     public PieSeries PieSeriesData { get; }
-    [ObservableProperty] private PlotModel _seriesPlotModel;
-    [ObservableProperty] private PlotModel _piePlotModel;
-    [ObservableProperty] private PlotModel _hitTypeBarPlotModel;
 
     public void SetPieSeriesData(IReadOnlyList<SkillItemViewModel> skills)
     {
@@ -141,7 +145,7 @@ public partial class PlotViewModel : BaseViewModel
         return colors;
     }
 
-    private static PlotModel CreateHitTypeBarPlotModel()
+    private static (PlotModel model, CategoryAxis cateAxis) CreateHitTypeBarPlotModel(PlotOptions? options)
     {
         var model = new PlotModel
         {
@@ -153,7 +157,11 @@ public partial class PlotViewModel : BaseViewModel
         var categoryAxis = new CategoryAxis
         {
             Position = AxisPosition.Left,
-            ItemsSource = new[] { "Normal", "Critical", "Lucky" }
+            ItemsSource = new[]
+            {
+                options?.HitTypeNormal ?? "Normal", options?.HitTypeCritical ?? "Critical",
+                options?.HitTypeLucky ?? "Lucky"
+            }
         };
 
         // Values on X axis
@@ -162,7 +170,7 @@ public partial class PlotViewModel : BaseViewModel
             Position = AxisPosition.Top,
             Minimum = 0,
             Maximum = 100,
-            Title = "Percentage",
+            Title = options?.DistributionPlotTitle,
             MajorGridlineStyle = LineStyle.Solid,
             MajorGridlineColor = OxyColor.FromRgb(240, 240, 240)
         };
@@ -184,7 +192,7 @@ public partial class PlotViewModel : BaseViewModel
 
         model.Series.Add(series);
 
-        return model;
+        return (model, categoryAxis);
     }
 
     public void ResetModelZoom()
@@ -227,18 +235,47 @@ public partial class PlotViewModel : BaseViewModel
             if (newMin < dataMin)
             {
                 newMin = dataMin;
-                newMax = System.Math.Min(dataMin + visibleRange, dataMax);
+                newMax = Math.Min(dataMin + visibleRange, dataMax);
             }
 
             if (newMax > dataMax)
             {
                 newMax = dataMax;
-                newMin = System.Math.Max(dataMax - visibleRange, dataMin);
+                newMin = Math.Max(dataMax - visibleRange, dataMin);
             }
 
             axis.Zoom(newMin, newMax);
         }
 
         model.InvalidatePlot(true);
+    }
+
+    public void UpdateOption(PlotOptions plotOptions)
+    {
+        SeriesPlotModel.Title = plotOptions.SeriesPlotTitle;
+        LineSeriesData.Title = plotOptions.LineSeriesTitle;
+
+        foreach (var axis in SeriesPlotModel.Axes)
+        {
+            axis.Title = axis.Position switch
+            {
+                AxisPosition.Bottom => plotOptions.XAxisTitle,
+                AxisPosition.Left => plotOptions.YAxisTitle,
+                _ => axis.Title
+            };
+        }
+
+        SeriesPlotModel.InvalidatePlot(true);
+
+        PiePlotModel.Title = plotOptions.PiePlotTitle;
+        PiePlotModel.InvalidatePlot(true);
+
+        //HitTypeBarPlotModel.Title = plotOptions.DistributionPlotTitle;
+        _hitTypeBarCategoryAxis.ItemsSource = new List<string>
+        {
+            plotOptions.HitTypeNormal ?? "Normal", plotOptions.HitTypeCritical ?? "Critical",
+            plotOptions.HitTypeLucky ?? "Lucky"
+        };
+        HitTypeBarPlotModel.InvalidatePlot(true);
     }
 }
