@@ -1381,48 +1381,13 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
 
         foreach (var vm in StatisticData.Values)
         {
-            vm.SkillDisplayLimit = clampedLimit;
-        }
-
-        // ⭐ 关键修复: 立即重新过滤所有现有slot的FilteredSkillList
-        // 遍历所有StatisticType,对每个玩家的三类技能列表都重新过滤
-        foreach (var (statisticType, subViewModel) in StatisticData)
-        {
-            foreach (var slot in subViewModel.Data)
-            {
-                // ⭐ 关键: 对每个slot的三类技能(伤害/治疗/承伤)都重新过滤
-                // 伤害技能
-                var totalDamage = slot.Damage.TotalSkillList;
-                var newFilteredDamage = clampedLimit > 0
-                    ? totalDamage.Take(clampedLimit).ToList()
-                    : totalDamage.ToList();
-                slot.Damage.FilteredSkillList = newFilteredDamage;
-
-                // 治疗技能
-                var totalHeal = slot.Heal.TotalSkillList;
-                var newFilteredHeal = clampedLimit > 0
-                    ? totalHeal.Take(clampedLimit).ToList()
-                    : totalHeal.ToList();
-                slot.Heal.FilteredSkillList = newFilteredHeal;
-
-                // 承伤技能
-                var totalTaken = slot.TakenDamage.TotalSkillList;
-                var newFilteredTaken = clampedLimit > 0
-                    ? totalTaken.Take(clampedLimit).ToList()
-                    : totalTaken.ToList();
-                slot.TakenDamage.FilteredSkillList = newFilteredTaken;
-            }
+            vm.SkillDisplayLimit = clampedLimit; // Displayed skill count will be changed after SkillDisplayLimit is set
         }
 
         // Notify that current data's SkillDisplayLimit changed
         OnPropertyChanged(nameof(CurrentStatisticData));
 
         _logger.LogDebug("SetSkillDisplayLimit: 技能显示条数已更新,所有slot的FilteredSkillList已刷新");
-    }
-
-    protected void AddTestItem()
-    {
-        CurrentStatisticData.AddTestItem();
     }
 
     [RelayCommand]

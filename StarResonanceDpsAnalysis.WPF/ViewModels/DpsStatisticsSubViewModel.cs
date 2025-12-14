@@ -469,4 +469,17 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
         SelectedSlot = null;
         CurrentPlayerSlot = null;
     }
+
+    public void RefreshSkillDisplayLimit()
+    {
+        foreach (var vm in Data)
+        {
+            vm.RefreshSkillLists(SkillDisplayLimit);
+        }
+    }
+
+    partial void OnSkillDisplayLimitChanged(int value)
+    {
+        RefreshSkillDisplayLimit();
+    }
 }

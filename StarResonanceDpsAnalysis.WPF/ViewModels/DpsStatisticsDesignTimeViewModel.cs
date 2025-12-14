@@ -41,7 +41,7 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
         {
             for (var i = 0; i < 15; i++)
             {
-                AddTestItem();
+                CurrentStatisticData.AddTestItem();
             }
         }
         catch
