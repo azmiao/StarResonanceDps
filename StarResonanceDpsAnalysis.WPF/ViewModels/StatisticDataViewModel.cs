@@ -47,9 +47,6 @@ public partial class StatisticDataViewModel(DebugFunctions debug, LocalizationMa
         Damage.Reset();
         Heal.Reset();
         TakenDamage.Reset();
-
-        // Reset player info
-        Player = new PlayerInfoViewModel(localizationManager);
     }
 
     /// <summary>

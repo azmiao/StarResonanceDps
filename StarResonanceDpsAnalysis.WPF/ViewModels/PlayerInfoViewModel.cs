@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using StarResonanceDpsAnalysis.Core.Models;
+using StarResonanceDpsAnalysis.WPF.Helpers;
 using StarResonanceDpsAnalysis.WPF.Localization;
 
 namespace StarResonanceDpsAnalysis.WPF.ViewModels;
@@ -25,6 +26,7 @@ public partial class PlayerInfoViewModel : BaseViewModel
     [ObservableProperty] private int _powerLevel;
     [ObservableProperty] private ClassSpec _spec = ClassSpec.Unknown;
     [ObservableProperty] private long _uid;
+    [ObservableProperty] private bool _mask;
 
     public PlayerInfoViewModel(LocalizationManager localizationManager)
     {
@@ -49,19 +51,21 @@ public partial class PlayerInfoViewModel : BaseViewModel
     private void UpdatePlayerInfo()
     {
         // if player info 
-        if (IsNpc)
-        {
-            PlayerInfo = _localizationManager.GetString($"Monster:{Uid}");
-        }
-        else
-        {
-            // Name - Class Spec (PowerLevel-DreamStrength)
-            PlayerInfo = $"{GetName()} - {GetSpec()} ({PowerLevel}-{DreamStrength})";
-        }
+        PlayerInfo = IsNpc
+            ? _localizationManager.GetString($"Monster:{Uid}")
+            : $"{GetName()} - {GetSpec()} ({PowerLevel}-{DreamStrength})";// Name - Class Spec (PowerLevel-DreamStrength)
+
+        return;
 
         string GetName()
         {
-            return string.IsNullOrWhiteSpace(Name) ? $"UID:{Uid}" : Name;
+            var hasName = !string.IsNullOrWhiteSpace(Name);
+            var name = hasName switch
+            {
+                true => Mask ? NameMasker.Mask(Name) : Name,
+                false => $"UID:{(Mask ? NameMasker.Mask(Uid.ToString()) : Uid.ToString())}",
+            };
+            return name;
         }
 
         string GetSpec()

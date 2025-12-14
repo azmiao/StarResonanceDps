@@ -112,6 +112,14 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
     public Dictionary<long, StatisticDataViewModel> DataDictionary { get; } = new();
     public bool Initialized { get; set; }
 
+    public void SetPlayerInfoMask(bool mask)
+    {
+        foreach (var value in DataDictionary.Values)
+        {
+            value.Player.Mask = mask;
+        }
+    }
+
     /// <summary>
     /// Sorts the slots collection in-place based on the current sort criteria
     /// </summary>
