@@ -966,6 +966,18 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
         TriggerPlayerInfoUpdatedImmediate(playerUid);
     }
 
+    public void SetPlayerSeasonLevel(long playerUid, int seasonLevel)
+    {
+        PlayerInfoData[playerUid].SeasonLevel = seasonLevel;
+        TriggerPlayerInfoUpdatedImmediate(playerUid);
+    }
+
+    public void SetPlayerSeasonStrength(long playerUid, int seasonStrength)
+    {
+        PlayerInfoData[playerUid].SeasonStrength = seasonStrength;
+        TriggerPlayerInfoUpdatedImmediate(playerUid);
+    }
+
     /// <summary>
     /// 设置玩家当前HP
     /// </summary>

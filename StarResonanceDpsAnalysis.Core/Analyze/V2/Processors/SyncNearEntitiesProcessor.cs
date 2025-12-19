@@ -104,10 +104,12 @@ internal sealed class SyncNearEntitiesProcessor : IMessageProcessor
                     _storage.SetPlayerMaxHP(playerUid, reader.ReadInt32());
                     break;
 
-                case (AttrType)0x2CB0: // AttrDreamStrength
-                    _logger?.LogWarning("[SyncNearEntitiesProcessor] Test for get AttrDreamIntensity: targetUuid[{playerUid}], intensity[{value}]", playerUid, reader.ReadInt32());
+                case AttrType.SeasonStrength:
+                    _storage.SetPlayerSeasonStrength(playerUid, reader.ReadInt32());
                     break;
-
+                case AttrType.SeasonLevel:
+                    _storage.SetPlayerSeasonLevel(playerUid, reader.ReadInt32());
+                    break;
                 case AttrType.AttrElementFlag:
                     _storage.SetPlayerElementFlag(playerUid, reader.ReadInt32());
                     break;
@@ -165,8 +167,6 @@ internal sealed class SyncNearEntitiesProcessor : IMessageProcessor
                     case AttrType.AttrMaxHp:
                         var enemyMaxHp = reader.ReadInt32();
                         _storage.SetPlayerMaxHP(enemyUid, enemyMaxHp);
-                        break;
-                    default:
                         break;
                 }
             }

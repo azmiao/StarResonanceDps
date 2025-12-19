@@ -221,7 +221,7 @@
                         <Run Text="(" />
                         <Run Text="{Binding Player.PowerLevel}" />
                         <Run Text="-" />
-                        <Run Text="{Binding Player.DreamStrength}" />
+                        <Run Text="{Binding Player.SeasonStrength}" />
                         <Run Text=")" />
                     </TextBlock>-->
 

@@ -39,4 +39,6 @@ public class PlayerInfo
     public int ReductionLevel { get; internal set; }
     public int EnergyFlag { get; internal set; }
     public int NpcTemplateId { get; internal set; }
+    public int SeasonStrength { get; internal set; }
+    public int SeasonLevel { get; internal set; }
 }

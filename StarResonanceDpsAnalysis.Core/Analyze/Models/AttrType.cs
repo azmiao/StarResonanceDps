@@ -40,6 +40,18 @@ namespace StarResonanceDpsAnalysis.Core.Analyze.Models
         AttrMaxHp = 0x2C38,                 // max hp
 
         /// <summary>
+        /// 表示当前赛季等级的属性。<br/>
+        /// Represents the current season level attribute.
+        /// </summary>
+        SeasonLevel = 0x2756,
+
+        /// <summary>
+        /// 表示某个赛季的强度属性。<br/>
+        /// Represents the strength or intensity of a particular season.
+        /// </summary>
+        SeasonStrength =  0x2CB0,
+
+        /// <summary>
         /// 元素标识位（元素相关的位标志/掩码，如冰/雷/火等；具体 bit 含义按配置表解析）
         /// </summary>
         AttrElementFlag = 0x646D6C,         // element flags (bitmask)
@@ -57,6 +69,7 @@ namespace StarResonanceDpsAnalysis.Core.Analyze.Models
         /// <summary>
         /// 能量标识位（Energy Flag/Charge 状态，通常为位标志；具体定义以协议/配置为准）
         /// </summary>
-        AttrEnergyFlag = 0x543CD3C6         // energy flags (bitmask)
+        AttrEnergyFlag = 0x543CD3C6,         // energy flags (bitmask)
+
     }
 }

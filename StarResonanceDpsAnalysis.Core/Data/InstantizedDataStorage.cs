@@ -473,4 +473,16 @@ public class InstantizedDataStorage : IDataStorage, IDisposable
         EnsurePlayer(playerUid);
         DataStorage.ReadOnlyPlayerInfoDatas[playerUid].NpcTemplateId = templateId;
     }
+
+    public void SetPlayerSeasonLevel(long playerUid, int seasonLevel)
+    {
+        EnsurePlayer(playerUid);
+        DataStorage.ReadOnlyPlayerInfoDatas[playerUid].SeasonLevel = seasonLevel;
+    }
+
+    public void SetPlayerSeasonStrength(long playerUid, int seasonStrength)
+    {
+        EnsurePlayer(playerUid);
+        DataStorage.ReadOnlyPlayerInfoDatas[playerUid].SeasonStrength = seasonStrength;
+    }
 }

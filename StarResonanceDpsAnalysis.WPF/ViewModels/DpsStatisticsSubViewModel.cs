@@ -203,7 +203,8 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
             slot.Player.Class = playerInfo.Class;
             slot.Player.Spec = playerInfo.Spec;
             slot.Player.PowerLevel = playerInfo.CombatPower ?? 0;
-            //slot.Player.DreamStrength
+            slot.Player.SeasonLevel = playerInfo.SeasonLevel;
+            slot.Player.SeasonStrength = playerInfo.SeasonStrength;
         }
         else
         {
@@ -211,7 +212,9 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
             slot.Player.Class = Classes.Unknown;
             slot.Player.Spec = ClassSpec.Unknown;
             slot.Player.PowerLevel = 0;
-            slot.Player.DreamStrength = 0;
+            slot.Player.SeasonStrength = 0;
+            slot.Player.SeasonLevel = 0;
+            slot.Player.SeasonStrength = 0;
         }
 
         return slot;
@@ -252,7 +255,6 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
             slot.Player.Spec = processed.PlayerSpec;
             slot.Player.Uid = uid;
             slot.Player.PowerLevel = processed.PowerLevel;
-            // TODO: implement DreamStrength reading
 
             // Set current player slot if this is the current player
             if (hasCurrentPlayer && uid == currentPlayerUid)

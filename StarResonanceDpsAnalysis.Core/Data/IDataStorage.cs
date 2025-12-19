@@ -62,6 +62,8 @@ public interface IDataStorage : IDisposable
     void SetPlayerReductionLevel(long playerUid, int readInt32);
     void SetPlayerEnergyFlag(long playerUid, int readInt32);
     void SetNpcTemplateId(long playerUid, int templateId);
+    void SetPlayerSeasonLevel(long playerUid, int seasonLevel);
+    void SetPlayerSeasonStrength(long playerUid, int seasonStrength);
 }
 
 public delegate void ServerConnectionStateChangedEventHandler(bool serverConnectionState);

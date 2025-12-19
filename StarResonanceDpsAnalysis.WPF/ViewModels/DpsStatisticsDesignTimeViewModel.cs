@@ -223,6 +223,14 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
         {
         }
 
+        public void SetPlayerSeasonLevel(long playerUid, int seasonLevel)
+        {
+        }
+
+        public void SetPlayerSeasonStrength(long playerUid, int seasonStrength)
+        {
+        }
+
         public void Dispose()
         {
         }

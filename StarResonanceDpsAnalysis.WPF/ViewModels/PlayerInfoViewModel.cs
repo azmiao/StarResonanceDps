@@ -14,9 +14,13 @@ public partial class PlayerInfoViewModel : BaseViewModel
     [ObservableProperty] private Classes _class = Classes.Unknown;
 
     /// <summary>
-    /// 幻梦等级 Dream strength
+    /// 赛季强度 Season Strength
     /// </summary>
-    [ObservableProperty] private int _dreamStrength;
+    [ObservableProperty] private int _seasonStrength;
+    /// <summary>
+    /// 赛季等级 Season Level
+    /// </summary>
+    [ObservableProperty] private int _seasonLevel;
 
     [ObservableProperty] private string _guild = string.Empty;
     [ObservableProperty] private bool _isNpc;
@@ -53,7 +57,7 @@ public partial class PlayerInfoViewModel : BaseViewModel
     {
         PlayerInfo = IsNpc
             ? _localizationManager.GetString($"JsonDictionary:Monster:{NpcTemplateId}", null, "UnknownMonster")
-            : $"{GetName()} - {GetSpec()} ({PowerLevel}-{DreamStrength})";// Name - Class Spec (PowerLevel-DreamStrength)
+            : $"{GetName()} - {GetSpec()} ({PowerLevel}-{SeasonStrength})";
 
         return;
 
