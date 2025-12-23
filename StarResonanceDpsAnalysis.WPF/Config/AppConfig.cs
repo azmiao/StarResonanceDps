@@ -202,6 +202,13 @@ public partial class AppConfig : ObservableObject
     [ObservableProperty]
     private int _minimalDurationInSeconds = 5;
 
+    /// <summary>
+    /// new PlayerStatistics path instead of legacy DpsData
+    /// Default: true (use new architecture)
+    /// </summary>
+    [ObservableProperty]
+    private bool _usePlayerStatisticsPath = true;
+
     public AppConfig Clone()
     {
         // TODO: Add unittest

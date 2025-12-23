@@ -15,7 +15,8 @@ public class DataStorageV2Benchmarks
         AttackerUuid = 123,
         TargetUuid = 456,
         Value = 100,
-        IsAttackerPlayer = true
+        IsAttackerPlayer = true,
+        IsTargetPlayer = false
     };
     private readonly BattleLog[] _logBatch = new BattleLog[1000];
 
@@ -31,6 +32,7 @@ public class DataStorageV2Benchmarks
                 TargetUuid = 999, // Single NPC target
                 Value = 100 + i,
                 IsAttackerPlayer = true,
+                IsTargetPlayer = false,
                 IsCritical = i % 5 == 0,
                 IsLucky = i % 10 == 0
             };
@@ -76,9 +78,11 @@ public class DataStorageV2Benchmarks
         _dataStorage.EnsurePlayer(1L);
     }
 
-    [Benchmark(Description = "GetOrCreateDpsDataByUid")]
-    public void GetOrCreateDpsData()
+    [Benchmark(Description = "Get DPS Data (via ReadOnlyFullDpsDatas)")]
+    public void GetDpsData()
     {
-        _dataStorage.GetOrCreateDpsDataByUid(2L);
+        // New approach: access via StatisticsAdapter through readonly properties
+        var dpsDatas = _dataStorage.ReadOnlyFullDpsDatas;
+        _ = dpsDatas.Count;
     }
 }

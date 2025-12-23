@@ -11,8 +11,16 @@ public class DataStorageV2Tests
     {
         // Arrange
         var storage = new DataStorageV2(NullLogger<DataStorageV2>.Instance);
-        storage.GetOrCreateDpsDataByUid(1);
-        storage.AddBattleLog(new BattleLog { AttackerUuid = 1, Value = 100 });
+        // Use AddBattleLog to populate data through StatisticsAdapter
+        storage.AddBattleLog(new BattleLog 
+        { 
+            AttackerUuid = 1, 
+            TargetUuid = 2,
+            Value = 100, 
+            TimeTicks = DateTime.UtcNow.Ticks,
+            IsAttackerPlayer = true,
+            IsTargetPlayer = false
+        });
 
         bool dpsDataUpdated = false;
         bool dataUpdated = false;
@@ -34,8 +42,15 @@ public class DataStorageV2Tests
     {
         // Arrange
         var storage = new DataStorageV2(NullLogger<DataStorageV2>.Instance);
-        storage.GetOrCreateDpsDataByUid(1);
-        storage.AddBattleLog(new BattleLog { AttackerUuid = 1, Value = 100, TimeTicks = DateTime.Now.Ticks });
+        storage.AddBattleLog(new BattleLog 
+        { 
+            AttackerUuid = 1,
+            TargetUuid = 2,
+            Value = 100, 
+            TimeTicks = DateTime.UtcNow.Ticks,
+            IsAttackerPlayer = true,
+            IsTargetPlayer = false
+        });
 
         bool dpsDataUpdated = false;
         bool dataUpdated = false;
@@ -46,43 +61,35 @@ public class DataStorageV2Tests
         storage.ClearDpsData();
 
         // Assert
-        Assert.NotEmpty(storage.ReadOnlyFullDpsDatas);
-        Assert.Empty(storage.ReadOnlySectionedDpsDatas);
+        Assert.NotEmpty(storage.ReadOnlyFullDpsDatas); // Full data still exists
+        Assert.Empty(storage.ReadOnlySectionedDpsDatas); // Section cleared
         Assert.True(dpsDataUpdated);
         Assert.True(dataUpdated);
     }
-
-    /*
-    [Fact]
-    public void AddBattleLog_CreatesNewSectionOnTimeout()
-    {
-        // Arrange
-        var storage = new DataStorageV2(NullLogger<DataStorageV2>.Instance) { SectionTimeout = TimeSpan.FromMilliseconds(10) };
-        var log1 = new BattleLog { AttackerUuid = 1, Value = 100, TimeTicks = DateTime.UtcNow.Ticks };
-        storage.AddBattleLog(log1);
-
-        bool newSectionCreated = false;
-        storage.NewSectionCreated += () => newSectionCreated = true;
-
-        // Act
-        System.Threading.Thread.Sleep(20);
-        var log2 = new BattleLog { AttackerUuid = 1, Value = 200, TimeTicks = DateTime.UtcNow.Ticks };
-        storage.AddBattleLog(log2);
-
-        // Assert
-        Assert.True(newSectionCreated);
-        Assert.Equal(200, storage.ReadOnlySectionedDpsDatas[1].TotalAttackDamage);
-        Assert.Equal(300, storage.ReadOnlyFullDpsDatas[1].TotalAttackDamage);
-    }
-    */
 
     [Fact]
     public void AddBattleLog_Batched_ProcessesAndFiresEventsCorrectly()
     {
         // Arrange
         var storage = new DataStorageV2(NullLogger<DataStorageV2>.Instance);
-        var log1 = new BattleLog { AttackerUuid = 1, Value = 100, IsAttackerPlayer = true };
-        var log2 = new BattleLog { AttackerUuid = 1, Value = 50, IsAttackerPlayer = true };
+        var log1 = new BattleLog 
+        { 
+            AttackerUuid = 1,
+            TargetUuid = 2,
+            Value = 100, 
+            IsAttackerPlayer = true,
+            IsTargetPlayer = false,
+            TimeTicks = DateTime.UtcNow.Ticks
+        };
+        var log2 = new BattleLog 
+        { 
+            AttackerUuid = 1,
+            TargetUuid = 2,
+            Value = 50, 
+            IsAttackerPlayer = true,
+            IsTargetPlayer = false,
+            TimeTicks = DateTime.UtcNow.Ticks
+        };
 
         int battleLogCreatedCount = 0;
         bool dpsDataUpdated = false;

@@ -295,7 +295,7 @@ public static class DataStorage
         if (LastBattleLog != null)
         {
             // 如果 战斗超时 或 强制创建新战斗分段 时, 创建新分段
-            var prevTt = new TimeSpan(LastBattleLog.Value.TimeTicks);
+            var prevTt = new TimeSpan(LastBattleLog.TimeTicks);
             if (tt - prevTt > SectionTimeout || ForceNewBattleSection)
             {
                 PrivateClearDpsData();

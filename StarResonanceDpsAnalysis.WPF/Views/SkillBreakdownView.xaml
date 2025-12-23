@@ -168,7 +168,7 @@
             TargetType="Border" />
 
         <!--  Skill List Item Template - reusable across all tabs  -->
-        <DataTemplate x:Key="SkillListItemTemplate_Damage" DataType="{x:Type viewModels:SkillItemViewModel}">
+        <DataTemplate x:Key="SkillListItemTemplateDamage" DataType="{x:Type viewModels:SkillItemViewModel}">
             <Border Style="{StaticResource SkillCardBorder}">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -240,7 +240,7 @@
             </Border>
         </DataTemplate>
 
-        <DataTemplate x:Key="SkillListItemTemplate_Healing" DataType="{x:Type viewModels:SkillItemViewModel}">
+        <DataTemplate x:Key="SkillListItemTemplateHealing" DataType="{x:Type viewModels:SkillItemViewModel}">
             <Border Style="{StaticResource SkillCardBorder}">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -312,7 +312,7 @@
             </Border>
         </DataTemplate>
 
-        <DataTemplate x:Key="SkillListItemTemplate_Taken" DataType="{x:Type viewModels:SkillItemViewModel}">
+        <DataTemplate x:Key="SkillListItemTemplateTaken" DataType="{x:Type viewModels:SkillItemViewModel}">
             <Border Style="{StaticResource SkillCardBorder}">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -565,7 +565,7 @@
                                     ItemsSource="{Binding ObservedSlot.Damage.TotalSkillList}"
                                     Tag="#2297F4">
                                     <ItemsControl.ItemTemplate>
-                                        <StaticResource ResourceKey="SkillListItemTemplate_Damage" />
+                                        <StaticResource ResourceKey="SkillListItemTemplateDamage" />
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </StackPanel>
@@ -681,7 +681,7 @@
                                     ItemsSource="{Binding ObservedSlot.Heal.TotalSkillList}"
                                     Tag="#3CB371">
                                     <ItemsControl.ItemTemplate>
-                                        <StaticResource ResourceKey="SkillListItemTemplate_Healing" />
+                                        <StaticResource ResourceKey="SkillListItemTemplateHealing" />
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </StackPanel>
@@ -796,7 +796,7 @@
                                     ItemsSource="{Binding ObservedSlot.TakenDamage.TotalSkillList}"
                                     Tag="#E64A19">
                                     <ItemsControl.ItemTemplate>
-                                        <StaticResource ResourceKey="SkillListItemTemplate_Taken" />
+                                        <StaticResource ResourceKey="SkillListItemTemplateTaken" />
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </StackPanel>

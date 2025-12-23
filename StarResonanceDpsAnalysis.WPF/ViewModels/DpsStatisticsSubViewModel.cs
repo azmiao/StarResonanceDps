@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using StarResonanceDpsAnalysis.Core.Data;
 using StarResonanceDpsAnalysis.Core.Data.Models;
 using StarResonanceDpsAnalysis.Core.Models;
+using StarResonanceDpsAnalysis.Core.Statistics;
 using StarResonanceDpsAnalysis.WPF.Extensions;
 using StarResonanceDpsAnalysis.WPF.Localization;
 using StarResonanceDpsAnalysis.WPF.Models;
@@ -20,6 +21,18 @@ namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 /// </summary>
 public readonly record struct DpsDataProcessed(
     DpsData OriginalData,
+    ulong Value,
+    long DurationTicks,
+    List<SkillItemViewModel> DamageSkillList,
+    List<SkillItemViewModel> HealSkillList,
+    List<SkillItemViewModel> TakenDamageSkillList,
+    long Uid);
+
+/// <summary>
+/// ? NEW: Helper struct using PlayerStatistics (new architecture)
+/// </summary>
+public readonly record struct PlayerStatsProcessed(
+    PlayerStatistics Stats,
     ulong Value,
     long DurationTicks,
     List<SkillItemViewModel> DamageSkillList,
@@ -193,6 +206,38 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
         return slot;
     }
 
+    /// <summary>
+    /// ? NEW: Get or add StatisticDataViewModel from PlayerStatistics (new architecture)
+    /// </summary>
+    protected StatisticDataViewModel GetOrAddStatisticDataViewModel(PlayerStatistics playerStats)
+    {
+        if (DataDictionary.TryGetValue(playerStats.Uid, out var slot)) 
+            return slot;
+
+        var ret = _storage.ReadOnlyPlayerInfoDatas.TryGetValue(playerStats.Uid, out var playerInfo);
+        slot = new StatisticDataViewModel(_debugFunctions, _localizationManager)
+        {
+            Index = 999,
+            Value = 0,
+            DurationTicks = playerStats.LastTick - (playerStats.StartTick ?? 0),
+            Player = new PlayerInfoViewModel(_localizationManager)
+            {
+                Uid = playerStats.Uid,
+                Guild = "Unknown",
+                Name = ret ? playerInfo?.Name ?? $"UID: {playerStats.Uid}" : $"UID: {playerStats.Uid}",
+                Spec = playerInfo?.Spec ?? ClassSpec.Unknown,
+                IsNpc = playerStats.IsNpc,
+                NpcTemplateId = playerInfo?.NpcTemplateId ?? 0,
+                Mask = _parent.AppConfig.MaskPlayerName
+            },
+            SetHoverStateAction = isHovering => _parent.SetIndicatorHover(isHovering)
+        };
+
+        _dispatcher.Invoke(() => { Data.Add(slot); });
+
+        return slot;
+    }
+
     private void UpdatePlayerInfo(StatisticDataViewModel slot, PlayerInfo? playerInfo)
     {
         if (playerInfo != null)
@@ -233,7 +278,70 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
             var slot = GetOrAddStatisticDataViewModel(processed.OriginalData);
 
             // Update player info
-            _storage.ReadOnlyPlayerInfoDatas.TryGetValue(processed.Uid, out var playerInfo);
+            var ret = _storage.ReadOnlyPlayerInfoDatas.TryGetValue(processed.Uid, out var playerInfo);
+            if (!ret) continue;
+            UpdatePlayerInfo(slot, playerInfo);
+
+            // Update slot values with pre-computed data
+            slot.Value = processed.Value;
+            slot.DurationTicks = processed.DurationTicks;
+
+            slot.Damage.TotalSkillList = processed.DamageSkillList;
+            slot.Damage.RefreshFilteredList(SkillDisplayLimit);
+
+            slot.Heal.TotalSkillList = processed.HealSkillList;
+            slot.Heal.RefreshFilteredList(SkillDisplayLimit);
+
+            slot.TakenDamage.TotalSkillList = processed.TakenDamageSkillList;
+            slot.TakenDamage.RefreshFilteredList(SkillDisplayLimit);
+
+            // Set current player slot if this is the current player
+            if (hasCurrentPlayer && uid == currentPlayerUid)
+            {
+                SelectedSlot = slot;
+                CurrentPlayerSlot = slot;
+            }
+        }
+
+        // Batch calculate percentages
+        if (Data.Count > 0)
+        {
+            var maxValue = Data.Max(d => d.Value);
+            var totalValue = Data.Sum(d => Convert.ToDouble(d.Value));
+
+            var hasMaxValue = maxValue > 0;
+            var hasTotalValue = totalValue > 0;
+
+            foreach (var slot in Data)
+            {
+                slot.PercentOfMax = hasMaxValue ? slot.Value / (double)maxValue * 100 : 0;
+                slot.Percent = hasTotalValue ? slot.Value / totalValue : 0;
+            }
+        }
+
+        // Sort data in place 
+        SortSlotsInPlace();
+    }
+
+    /// <summary>
+    /// ? NEW: Updates data with PlayerStatsProcessed (new architecture)
+    /// </summary>
+    internal void UpdateDataOptimized(Dictionary<long, PlayerStatsProcessed> processedData, long currentPlayerUid)
+    {
+        var hasCurrentPlayer = currentPlayerUid != 0;
+
+        // Update all slots with pre-processed data
+        foreach (var (uid, processed) in processedData)
+        {
+            // Skip if this statistic type has no value
+            if (processed.Value == 0)
+                continue;
+
+            var slot = GetOrAddStatisticDataViewModel(processed.Stats);
+
+            // Update player info
+            var ret = _storage.ReadOnlyPlayerInfoDatas.TryGetValue(processed.Uid, out var playerInfo);
+            if (!ret) continue;
             UpdatePlayerInfo(slot, playerInfo);
 
             // Update slot values with pre-computed data
