@@ -7,6 +7,7 @@ using StarResonanceDpsAnalysis.WPF.Localization;
 using StarResonanceDpsAnalysis.WPF.Properties;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using StarResonanceDpsAnalysis.WPF.Models;
 
 namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 
@@ -17,6 +18,7 @@ public partial class SkillBreakdownViewModel : BaseViewModel
 {
     private readonly ILogger<SkillBreakdownViewModel> _logger;
     private readonly LocalizationManager _localizationManager;
+    [ObservableProperty] private StatisticType _statisticIndex;
 
     /// <summary>
     /// ViewModel for the skill breakdown view, showing detailed statistics for a player.
@@ -31,28 +33,31 @@ public partial class SkillBreakdownViewModel : BaseViewModel
             XAxisTitle = xAxis,
             HitTypeCritical = _localizationManager.GetString(ResourcesKeys.Common_HitType_Critical),
             HitTypeNormal = _localizationManager.GetString(ResourcesKeys.Common_HitType_Normal),
-            HitTypeLucky = _localizationManager.GetString(ResourcesKeys.Common_HitType_Lucky)
+            HitTypeLucky = _localizationManager.GetString(ResourcesKeys.Common_HitType_Lucky),
+            StatisticType = StatisticType.Damage
         });
         _hpsPlot = new PlotViewModel(new PlotOptions
         {
             XAxisTitle = xAxis,
             HitTypeCritical = _localizationManager.GetString(ResourcesKeys.Common_HitType_Critical),
             HitTypeNormal = _localizationManager.GetString(ResourcesKeys.Common_HitType_Normal),
-            HitTypeLucky = _localizationManager.GetString(ResourcesKeys.Common_HitType_Lucky)
+            HitTypeLucky = _localizationManager.GetString(ResourcesKeys.Common_HitType_Lucky),
+            StatisticType = StatisticType.Healing
         });
         _dtpsPlot = new PlotViewModel(new PlotOptions
         {
             XAxisTitle = xAxis,
             HitTypeCritical = _localizationManager.GetString(ResourcesKeys.Common_HitType_Critical),
             HitTypeNormal = _localizationManager.GetString(ResourcesKeys.Common_HitType_Normal),
-            HitTypeLucky = _localizationManager.GetString(ResourcesKeys.Common_HitType_Lucky)
+            HitTypeLucky = _localizationManager.GetString(ResourcesKeys.Common_HitType_Lucky),
+            StatisticType = StatisticType.TakenDamage
         });
     }
 
     /// <summary>
     /// Initializes the ViewModel from a <see cref="StatisticDataViewModel"/>.
     /// </summary>
-    public void InitializeFrom(StatisticDataViewModel slot)
+    public void InitializeFrom(StatisticDataViewModel slot, StatisticType statisticType)
     {
         _logger.LogDebug("Initializing SkillBreakdownViewModel from StatisticDataViewModel for player {PlayerName}",
             slot.Player.Name);
@@ -63,8 +68,9 @@ public partial class SkillBreakdownViewModel : BaseViewModel
         PlayerName = slot.Player?.Name ?? "Unknown";
         Uid = slot.Player?.Uid ?? 0;
         PowerLevel = slot.Player?.PowerLevel ?? 0;
+        StatisticIndex = statisticType;
 
-        var duration = slot.Duration > 0 ? slot.Duration : 1;
+        var duration = TimeSpan.FromTicks(slot.DurationTicks);
 
         // Calculate statistics from skills
         DamageStats = slot.Damage.TotalSkillList.FromSkillsToDamage(duration);
@@ -99,7 +105,8 @@ public partial class SkillBreakdownViewModel : BaseViewModel
             DistributionPlotTitle = _localizationManager.GetString(ResourcesKeys.SkillBreakdown_Chart_HitTypeDistribution),
             HitTypeCritical = _localizationManager.GetString(ResourcesKeys.Common_HitType_Critical),
             HitTypeNormal = _localizationManager.GetString(ResourcesKeys.Common_HitType_Normal),
-            HitTypeLucky = _localizationManager.GetString(ResourcesKeys.Common_HitType_Lucky)
+            HitTypeLucky = _localizationManager.GetString(ResourcesKeys.Common_HitType_Lucky),
+            StatisticType = StatisticType.Damage
         });
         HpsPlot.UpdateOption(new PlotOptions
         {
@@ -108,7 +115,8 @@ public partial class SkillBreakdownViewModel : BaseViewModel
             DistributionPlotTitle = _localizationManager.GetString(ResourcesKeys.SkillBreakdown_Chart_HealTypeDistribution),
             HitTypeCritical = _localizationManager.GetString(ResourcesKeys.Common_HitType_Critical),
             HitTypeNormal = _localizationManager.GetString(ResourcesKeys.Common_HitType_Normal),
-            HitTypeLucky = _localizationManager.GetString(ResourcesKeys.Common_HitType_Lucky)
+            HitTypeLucky = _localizationManager.GetString(ResourcesKeys.Common_HitType_Lucky),
+            StatisticType = StatisticType.Healing
         });
         DtpsPlot.UpdateOption(new PlotOptions
         {
@@ -117,7 +125,8 @@ public partial class SkillBreakdownViewModel : BaseViewModel
             DistributionPlotTitle = _localizationManager.GetString(ResourcesKeys.SkillBreakdown_Chart_HitTypeDistribution),
             HitTypeCritical = _localizationManager.GetString(ResourcesKeys.Common_HitType_Critical),
             HitTypeNormal = _localizationManager.GetString(ResourcesKeys.Common_HitType_Normal),
-            HitTypeLucky = _localizationManager.GetString(ResourcesKeys.Common_HitType_Lucky)
+            HitTypeLucky = _localizationManager.GetString(ResourcesKeys.Common_HitType_Lucky),
+            StatisticType = StatisticType.TakenDamage
         });
     }
 
@@ -152,7 +161,8 @@ public partial class SkillBreakdownViewModel : BaseViewModel
     {
         if (ObservedSlot is null) return;
         if (skills is null) return;
-        var duration = ObservedSlot.Duration > 0 ? ObservedSlot.Duration : 1;
+        var duration = TimeSpan.FromTicks(ObservedSlot.DurationTicks);
+
         skills.UpdateDamage(duration, DamageStats);
         UpdateHitTypeDistribution(DamageStats, DpsPlot);
     }
@@ -161,7 +171,7 @@ public partial class SkillBreakdownViewModel : BaseViewModel
     {
         if (ObservedSlot is null) return;
         if (skills is null) return;
-        var duration = ObservedSlot.Duration > 0 ? ObservedSlot.Duration : 1;
+        var duration = TimeSpan.FromTicks(ObservedSlot.DurationTicks);
         skills.UpdateHealing(duration, HealingStats);
         UpdateHitTypeDistribution(HealingStats, HpsPlot);
     }
@@ -170,7 +180,7 @@ public partial class SkillBreakdownViewModel : BaseViewModel
     {
         if (ObservedSlot is null) return;
         if (skills is null) return;
-        var duration = ObservedSlot.Duration > 0 ? ObservedSlot.Duration : 1;
+        var duration = TimeSpan.FromTicks(ObservedSlot.DurationTicks);
         skills.UpdateDamageTaken(duration, TakenDamageStats);
         UpdateHitTypeDistribution(TakenDamageStats, DtpsPlot);
     }

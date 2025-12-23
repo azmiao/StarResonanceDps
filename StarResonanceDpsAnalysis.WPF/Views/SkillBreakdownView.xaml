@@ -74,7 +74,6 @@
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="Margin" Value="0,0,0,10" />
         </Style>
-
         <!--  NEW: Elegant Skill Card Style  -->
         <Style x:Key="SkillCardBorder" TargetType="Border">
             <Setter Property="Background" Value="White" />
@@ -162,24 +161,6 @@
             </Setter>
         </Style>
 
-        <!--  NEW: Summary Stat Style  -->
-        <Style x:Key="SummaryStatText" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontSize" Value="24" />
-            <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-        </Style>
-
-        <Style x:Key="SummaryLabelText" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="Opacity" Value="0.9" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="Margin" Value="0,4,0,0" />
-        </Style>
-
-        <!--  Custom TabControl style: we remove built-in header area because we drive tabs from external selector  -->
-
         <!--  Chart Card Border Style  -->
         <Style
             x:Key="ChartCardBorder"
@@ -187,7 +168,7 @@
             TargetType="Border" />
 
         <!--  Skill List Item Template - reusable across all tabs  -->
-        <DataTemplate x:Key="SkillListItemTemplate" DataType="{x:Type viewModels:SkillItemViewModel}">
+        <DataTemplate x:Key="SkillListItemTemplate_Damage" DataType="{x:Type viewModels:SkillItemViewModel}">
             <Border Style="{StaticResource SkillCardBorder}">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -220,14 +201,14 @@
                     <!--  Total Value  -->
                     <StackPanel Grid.Column="1">
                         <TextBlock Style="{StaticResource StatLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_Total}" />
-                        <TextBlock Style="{StaticResource StatValueText}" Text="{Binding TotalDamage, StringFormat={}{0:N0}}" />
+                        <TextBlock Style="{StaticResource StatValueText}" Text="{Binding Damage.TotalValue, StringFormat={}{0:N0}}" />
                     </StackPanel>
 
                     <!--  Hit Count  -->
                     <StackPanel Grid.Column="2">
                         <TextBlock Style="{StaticResource StatLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_HitCount}" />
                         <TextBlock Style="{StaticResource StatValueText}">
-                            <Run Text="{Binding HitCount, Mode=OneWay}" />
+                            <Run Text="{Binding Damage.HitCount, Mode=OneWay}" />
                             <Run
                                 FontSize="11"
                                 FontWeight="Normal"
@@ -240,24 +221,172 @@
                     <StackPanel Grid.Column="3">
                         <TextBlock Style="{StaticResource StatLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_CritRate}" />
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource StatValueText}" Text="{Binding CritRate, StringFormat={}{0:P1}}" />
+                            <TextBlock Style="{StaticResource StatValueText}" Text="{Binding Damage.CritRate, StringFormat={}{0:P1}}" />
                             <TextBlock
                                 Margin="4,0,0,0"
                                 VerticalAlignment="Bottom"
                                 FontSize="11"
                                 Foreground="#757575"
-                                Text="{Binding CritCount, StringFormat={}({0})}" />
+                                Text="{Binding Damage.CritCount, StringFormat={}({0})}" />
                         </StackPanel>
                     </StackPanel>
 
                     <!--  Average  -->
                     <StackPanel Grid.Column="4">
                         <TextBlock Style="{StaticResource StatLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_AverageDamage}" />
-                        <TextBlock Style="{StaticResource StatValueText}" Text="{Binding AvgDamage, StringFormat={}{0:N0}}" />
+                        <TextBlock Style="{StaticResource StatValueText}" Text="{Binding Damage.Average, StringFormat={}{0:N0}}" />
                     </StackPanel>
                 </Grid>
             </Border>
         </DataTemplate>
+
+        <DataTemplate x:Key="SkillListItemTemplate_Healing" DataType="{x:Type viewModels:SkillItemViewModel}">
+            <Border Style="{StaticResource SkillCardBorder}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" MinWidth="120" />
+                        <ColumnDefinition Width="*" MinWidth="90" />
+                        <ColumnDefinition Width="*" MinWidth="90" />
+                        <ColumnDefinition Width="*" MinWidth="90" />
+                        <ColumnDefinition Width="*" MinWidth="90" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--  Skill Name with Icon  -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <Border
+                            Width="36"
+                            Height="36"
+                            Margin="0,0,12,0"
+                            Background="{Binding Tag, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            CornerRadius="18">
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontSize="16"
+                                FontWeight="Bold"
+                                Foreground="White"
+                                Text="{Binding SkillName, Converter={StaticResource StringFirstCharConverter}}" />
+                        </Border>
+                        <TextBlock Style="{StaticResource SkillNameText}" Text="{Binding SkillName}" />
+                    </StackPanel>
+
+                    <!--  Total Value  -->
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Style="{StaticResource StatLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_Total}" />
+                        <TextBlock Style="{StaticResource StatValueText}" Text="{Binding Heal.TotalValue, StringFormat={}{0:N0}}" />
+                    </StackPanel>
+
+                    <!--  Hit Count  -->
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Style="{StaticResource StatLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_HitCount}" />
+                        <TextBlock Style="{StaticResource StatValueText}">
+                            <Run Text="{Binding Heal.HitCount, Mode=OneWay}" />
+                            <Run
+                                FontSize="11"
+                                FontWeight="Normal"
+                                Foreground="#757575"
+                                Text="{lex:Loc Key=SkillBreakdown_Unit_Hits}" />
+                        </TextBlock>
+                    </StackPanel>
+
+                    <!--  Crit Rate  -->
+                    <StackPanel Grid.Column="3">
+                        <TextBlock Style="{StaticResource StatLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_CritRate}" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource StatValueText}" Text="{Binding Heal.CritRate, StringFormat={}{0:P1}}" />
+                            <TextBlock
+                                Margin="4,0,0,0"
+                                VerticalAlignment="Bottom"
+                                FontSize="11"
+                                Foreground="#757575"
+                                Text="{Binding Heal.CritCount, StringFormat={}({0})}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!--  Average  -->
+                    <StackPanel Grid.Column="4">
+                        <TextBlock Style="{StaticResource StatLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_AverageDamage}" />
+                        <TextBlock Style="{StaticResource StatValueText}" Text="{Binding Heal.Average, StringFormat={}{0:N0}}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="SkillListItemTemplate_Taken" DataType="{x:Type viewModels:SkillItemViewModel}">
+            <Border Style="{StaticResource SkillCardBorder}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" MinWidth="120" />
+                        <ColumnDefinition Width="*" MinWidth="90" />
+                        <ColumnDefinition Width="*" MinWidth="90" />
+                        <ColumnDefinition Width="*" MinWidth="90" />
+                        <ColumnDefinition Width="*" MinWidth="90" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--  Skill Name with Icon  -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <Border
+                            Width="36"
+                            Height="36"
+                            Margin="0,0,12,0"
+                            Background="{Binding Tag, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            CornerRadius="18">
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontSize="16"
+                                FontWeight="Bold"
+                                Foreground="White"
+                                Text="{Binding SkillName, Converter={StaticResource StringFirstCharConverter}}" />
+                        </Border>
+                        <TextBlock Style="{StaticResource SkillNameText}" Text="{Binding SkillName}" />
+                    </StackPanel>
+
+                    <!--  Total Value  -->
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Style="{StaticResource StatLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_Total}" />
+                        <TextBlock Style="{StaticResource StatValueText}" Text="{Binding TakenDamage.TotalValue, StringFormat={}{0:N0}}" />
+                    </StackPanel>
+
+                    <!--  Hit Count  -->
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Style="{StaticResource StatLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_HitCount}" />
+                        <TextBlock Style="{StaticResource StatValueText}">
+                            <Run Text="{Binding TakenDamage.HitCount, Mode=OneWay}" />
+                            <Run
+                                FontSize="11"
+                                FontWeight="Normal"
+                                Foreground="#757575"
+                                Text="{lex:Loc Key=SkillBreakdown_Unit_Hits}" />
+                        </TextBlock>
+                    </StackPanel>
+
+                    <!--  Crit Rate  -->
+                    <StackPanel Grid.Column="3">
+                        <TextBlock Style="{StaticResource StatLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_CritRate}" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource StatValueText}" Text="{Binding TakenDamage.CritRate, StringFormat={}{0:P1}}" />
+                            <TextBlock
+                                Margin="4,0,0,0"
+                                VerticalAlignment="Bottom"
+                                FontSize="11"
+                                Foreground="#757575"
+                                Text="{Binding TakenDamage.CritCount, StringFormat={}({0})}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!--  Average  -->
+                    <StackPanel Grid.Column="4">
+                        <TextBlock Style="{StaticResource StatLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_AverageDamage}" />
+                        <TextBlock Style="{StaticResource StatValueText}" Text="{Binding TakenDamage.Average, StringFormat={}{0:N0}}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </DataTemplate>
+        <Style TargetType="ctrl:SummaryStatDisplay" BasedOn="{StaticResource {x:Type ctrl:SummaryStatDisplay}}">
+            <Setter Property="Width" Value="150"></Setter>
+
+        </Style>
 
         <!--  Simple segmented ToggleButton style used for selector  -->
         <Style x:Key="TabSelectorToggleStyle" TargetType="ToggleButton">
@@ -316,7 +445,6 @@
             </Grid.RowDefinitions>
 
             <ctrl:Header Title="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Header_Title}}" Grid.Row="0" />
-
             <!--  header info bound to VM (unchanged)  -->
             <Grid Grid.Row="1" Style="{StaticResource InfoAndTypeGrid}">
                 <Grid.ColumnDefinitions>
@@ -368,6 +496,8 @@
                             Tag="2" />
                     </StackPanel>
                 </Border>
+
+
             </Grid>
 
             <!--  Content Grid with visibility-based tab switching (prevents chart disposal issues)  -->
@@ -404,34 +534,28 @@
                             <!--  Right Panel: Stats and Skills  -->
                             <StackPanel Grid.Column="2" Margin="4,8,8,8">
                                 <Border Style="{StaticResource SummaryCardBorder}">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
-
-                                        <StackPanel Grid.Column="0">
-                                            <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding DamageStats.Total, StringFormat={}{0:N0}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_TotalDamage}" />
-                                        </StackPanel>
-
-                                        <StackPanel Grid.Column="1">
-                                            <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding DamageStats.Average, StringFormat={}{0:N0}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_AverageDps}" />
-                                        </StackPanel>
-
-                                        <StackPanel Grid.Column="2">
-                                            <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding DamageStats.Hits, StringFormat={}{0:N0}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_TotalHits}" />
-                                        </StackPanel>
-
-                                        <StackPanel Grid.Column="3">
-                                            <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding DamageStats.CritRate, StringFormat={}{0:P1}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_CritRate}" />
-                                        </StackPanel>
-                                    </Grid>
+                                    <WrapPanel DataContext="{Binding Path=DamageStats}">
+                                        <ctrl:SummaryStatDisplay Value="{Binding Total, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                 Label="{lex:Loc Key=SkillBreakdown_Label_TotalDamage}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding Average, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_AverageDps}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding Hits, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_TotalHits}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding CritRate, StringFormat={}{0:P1}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_CritRate}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding CritCount, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_CritCount}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding LuckyRate, StringFormat={}{0:P1}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_LuckRate}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding LuckyCount, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_LuckCount}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding NormalValue, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_NormalDamage}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding CritValue, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_CritDamage}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding LuckyValue, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_LuckDamage}" />
+                                    </WrapPanel>
                                 </Border>
 
                                 <TextBlock Style="{StaticResource SectionHeaderText}" Text="{lex:Loc Key=SkillBreakdown_Section_DamageSkillsAnalysis}" />
@@ -441,7 +565,7 @@
                                     ItemsSource="{Binding ObservedSlot.Damage.TotalSkillList}"
                                     Tag="#2297F4">
                                     <ItemsControl.ItemTemplate>
-                                        <StaticResource ResourceKey="SkillListItemTemplate" />
+                                        <StaticResource ResourceKey="SkillListItemTemplate_Damage" />
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </StackPanel>
@@ -526,34 +650,28 @@
                             <!--  Right Panel: Stats and Skills  -->
                             <StackPanel Grid.Column="2" Margin="4,8,8,8">
                                 <Border Style="{StaticResource SummaryCardBorder}">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
-
-                                        <StackPanel Grid.Column="0">
-                                            <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding HealingStats.Total, StringFormat={}{0:N0}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_TotalHealing}" />
-                                        </StackPanel>
-
-                                        <StackPanel Grid.Column="1">
-                                            <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding HealingStats.Average, StringFormat={}{0:N0}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_AverageHps}" />
-                                        </StackPanel>
-
-                                        <StackPanel Grid.Column="2">
-                                            <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding HealingStats.Hits, StringFormat={}{0:N0}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_TotalHeals}" />
-                                        </StackPanel>
-
-                                        <StackPanel Grid.Column="3">
-                                            <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding HealingStats.CritRate, StringFormat={}{0:F1}%}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_CritRate}" />
-                                        </StackPanel>
-                                    </Grid>
+                                    <WrapPanel>
+                                        <ctrl:SummaryStatDisplay Value="{Binding HealingStats.Total, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_TotalHealing}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding HealingStats.Average, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_AverageHps}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding HealingStats.Hits, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_TotalHits}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding HealingStats.CritRate, StringFormat={}{0:P1}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_CritRate}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding HealingStats.CritCount, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_CritCount}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding HealingStats.LuckyRate, StringFormat={}{0:P1}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_LuckRate}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding HealingStats.LuckyCount, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_LuckCount}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding HealingStats.NormalValue, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_NormalDamage}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding HealingStats.CritValue, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_CritDamage}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding HealingStats.LuckyValue, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_LuckDamage}" />
+                                    </WrapPanel>
                                 </Border>
 
                                 <TextBlock Style="{StaticResource SectionHeaderText}" Text="{lex:Loc Key=SkillBreakdown_Section_HealingSkillsAnalysis}" />
@@ -563,7 +681,7 @@
                                     ItemsSource="{Binding ObservedSlot.Heal.TotalSkillList}"
                                     Tag="#3CB371">
                                     <ItemsControl.ItemTemplate>
-                                        <StaticResource ResourceKey="SkillListItemTemplate" />
+                                        <StaticResource ResourceKey="SkillListItemTemplate_Healing" />
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </StackPanel>
@@ -647,34 +765,28 @@
                             <!--  Right Panel: Stats and Skills  -->
                             <StackPanel Grid.Column="2" Margin="4,8,8,8">
                                 <Border Style="{StaticResource SummaryCardBorder}">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
-
-                                        <StackPanel Grid.Column="0">
-                                            <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding TakenDamageStats.Total, StringFormat={}{0:N0}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_TotalDamageTaken}" />
-                                        </StackPanel>
-
-                                        <StackPanel Grid.Column="1">
-                                            <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding TakenDamageStats.Average, StringFormat={}{0:N0}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_AverageDtps}" />
-                                        </StackPanel>
-
-                                        <StackPanel Grid.Column="2">
-                                            <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding TakenDamageStats.Hits, StringFormat={}{0:N0}}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_TotalHitsTaken}" />
-                                        </StackPanel>
-
-                                        <StackPanel Grid.Column="3">
-                                            <TextBlock Style="{StaticResource SummaryStatText}" Text="{Binding TakenDamageStats.CritRate, StringFormat={}{0:F1}%}" />
-                                            <TextBlock Style="{StaticResource SummaryLabelText}" Text="{lex:Loc Key=SkillBreakdown_Label_CritRate}" />
-                                        </StackPanel>
-                                    </Grid>
+                                    <WrapPanel>
+                                        <ctrl:SummaryStatDisplay Value="{Binding TakenDamageStats.Total, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_TotalDamageTaken}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding TakenDamageStats.Average, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_AverageDtps}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding TakenDamageStats.Hits, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_TotalHitsTaken}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding TakenDamageStats.CritRate, StringFormat={}{0:P1}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_CritRate}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding TakenDamageStats.CritCount, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_CritCount}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding TakenDamageStats.LuckyRate, StringFormat={}{0:P1}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_LuckRate}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding TakenDamageStats.LuckyCount, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_LuckCount}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding TakenDamageStats.NormalValue, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_NormalDamage}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding TakenDamageStats.CritValue, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_CritDamage}" />
+                                        <ctrl:SummaryStatDisplay Value="{Binding TakenDamageStats.LuckyValue, StringFormat={}{0:N0}, FallbackValue=0}"
+                                                                Label="{lex:Loc Key=SkillBreakdown_Label_LuckDamage}" />
+                                    </WrapPanel>
                                 </Border>
 
                                 <TextBlock Style="{StaticResource SectionHeaderText}" Text="{lex:Loc Key=SkillBreakdown_Section_DamageTakenAnalysis}" />
@@ -684,7 +796,7 @@
                                     ItemsSource="{Binding ObservedSlot.TakenDamage.TotalSkillList}"
                                     Tag="#E64A19">
                                     <ItemsControl.ItemTemplate>
-                                        <StaticResource ResourceKey="SkillListItemTemplate" />
+                                        <StaticResource ResourceKey="SkillListItemTemplate_Taken" />
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </StackPanel>

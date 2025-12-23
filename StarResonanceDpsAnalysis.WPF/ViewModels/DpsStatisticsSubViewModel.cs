@@ -21,7 +21,7 @@ namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 public readonly record struct DpsDataProcessed(
     DpsData OriginalData,
     ulong Value,
-    ulong Duration,
+    long DurationTicks,
     List<SkillItemViewModel> DamageSkillList,
     List<SkillItemViewModel> HealSkillList,
     List<SkillItemViewModel> TakenDamageSkillList,
@@ -173,7 +173,7 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
         {
             Index = 999,
             Value = 0,
-            Duration = (dpsData.LastLoggedTick - (dpsData.StartLoggedTick ?? 0)).ConvertToUnsigned(),
+            DurationTicks = dpsData.LastLoggedTick - (dpsData.StartLoggedTick ?? 0),
             Player = new PlayerInfoViewModel(_localizationManager)
             {
                 Uid = dpsData.UID,
@@ -181,7 +181,8 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
                 Name = ret ? playerInfo?.Name ?? $"UID: {dpsData.UID}" : $"UID: {dpsData.UID}",
                 Spec = playerInfo?.Spec ?? ClassSpec.Unknown,
                 IsNpc = dpsData.IsNpcData,
-                NpcTemplateId = playerInfo?.NpcTemplateId ?? 0
+                NpcTemplateId = playerInfo?.NpcTemplateId ?? 0,
+                Mask = _parent.AppConfig.MaskPlayerName
             },
             // Set the hover action to call parent's SetIndicatorHover
             SetHoverStateAction = isHovering => _parent.SetIndicatorHover(isHovering)
@@ -237,7 +238,7 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
 
             // Update slot values with pre-computed data
             slot.Value = processed.Value;
-            slot.Duration = processed.Duration;
+            slot.DurationTicks = processed.DurationTicks;
 
             slot.Damage.TotalSkillList = processed.DamageSkillList;
             slot.Damage.RefreshFilteredList(SkillDisplayLimit);
@@ -307,7 +308,7 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
         {
             Index = slots.Count + 1,
             Value = (ulong)Random.Shared.Next(100, 2000),
-            Duration = 60000,
+            DurationTicks = 60000,
             Player = new PlayerInfoViewModel(LocalizationManager.Instance)
             {
                 Uid = Random.Shared.Next(100, 999),
@@ -322,45 +323,47 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
         [
             new SkillItemViewModel
             {
-                SkillName = "Test Skill A", TotalDamage = 15000, HitCount = 25, CritCount = 8, AvgDamage = 600
+                SkillName = "Test Skill A",
+                Damage = new SkillItemViewModel.SkillValue { TotalValue = 15000, HitCount = 25, CritCount = 8, Average = 600 } },
+            new SkillItemViewModel
+            {
+                SkillName = "Test Skill B",
+                Damage = new SkillItemViewModel.SkillValue { TotalValue = 8500, HitCount = 15, CritCount = 4, Average = 567 }
             },
             new SkillItemViewModel
             {
-                SkillName = "Test Skill B", TotalDamage = 8500, HitCount = 15, CritCount = 4, AvgDamage = 567
-            },
-            new SkillItemViewModel
-            {
-                SkillName = "Test Skill C", TotalDamage = 12300, HitCount = 30, CritCount = 12, AvgDamage = 410
+                SkillName = "Test Skill C",
+                Damage = new SkillItemViewModel.SkillValue { TotalValue = 12300, HitCount = 30, CritCount = 12, Average = 410 }
             }
         ];
         newItem.Heal.FilteredSkillList =
         [
             new SkillItemViewModel
             {
-                SkillName = "Test Heal Skill A", TotalDamage = 15000, HitCount = 25, CritCount = 8, AvgDamage = 600
+                SkillName = "Test Heal Skill A", Heal = new() { TotalValue = 15000, HitCount = 25, CritCount = 8, Average = 600 }
             },
             new SkillItemViewModel
             {
-                SkillName = "Test Heal Skill B", TotalDamage = 8500, HitCount = 15, CritCount = 4, AvgDamage = 567
+                SkillName = "Test Heal Skill B", Heal = new() { TotalValue = 8500, HitCount = 15, CritCount = 4, Average = 567 }
             },
             new SkillItemViewModel
             {
-                SkillName = "Test Heal Skill C", TotalDamage = 12300, HitCount = 30, CritCount = 12, AvgDamage = 410
+                SkillName = "Test Heal Skill C",Heal = new() { TotalValue = 12300, HitCount = 30, CritCount = 12, Average = 410 }
             }
         ];
         newItem.TakenDamage.FilteredSkillList =
         [
             new SkillItemViewModel
             {
-                SkillName = "Test Taken Skill A", TotalDamage = 15000, HitCount = 25, CritCount = 8, AvgDamage = 600
+                SkillName = "Test Taken Skill A", TakenDamage = new() { TotalValue = 15000, HitCount = 25, CritCount = 8, Average = 600 }
             },
             new SkillItemViewModel
             {
-                SkillName = "Test Taken Skill B", TotalDamage = 8500, HitCount = 15, CritCount = 4, AvgDamage = 567
+                SkillName = "Test Taken Skill B", TakenDamage =new() { TotalValue = 8500, HitCount = 15, CritCount = 4, Average = 567 }
             },
             new SkillItemViewModel
             {
-                SkillName = "Test Taken Skill C", TotalDamage = 12300, HitCount = 30, CritCount = 12, AvgDamage = 410
+                SkillName = "Test Taken Skill C", TakenDamage = new() { TotalValue = 12300, HitCount = 30, CritCount = 12, Average = 410 }
             }
         ];
 

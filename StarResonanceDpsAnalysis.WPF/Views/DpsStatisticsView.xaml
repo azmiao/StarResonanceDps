@@ -187,7 +187,7 @@
                             <Setter Property="Foreground" Value="White" />
                         </Style>
                     </StackPanel.Resources>
-                    <TextBlock Style="{StaticResource PlayerInfoTextStyle}" Text="{Binding Player.PlayerInfo}" />
+                    <TextBlock Style="{StaticResource PlayerInfoTextStyle}" Text="{Binding Path=Player.PlayerInfo}" />
 
                     <!--<TextBlock
                             x:Name="PlayerName" >

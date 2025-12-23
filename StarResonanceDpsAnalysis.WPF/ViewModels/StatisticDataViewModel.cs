@@ -9,7 +9,7 @@ namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 [DebuggerDisplay("Name:{Player?.Name};Value:{Value}")]
 public partial class StatisticDataViewModel(DebugFunctions debug, LocalizationManager localizationManager) : BaseViewModel, IComparable<StatisticDataViewModel>
 {
-    [ObservableProperty] private ulong _duration;
+    [ObservableProperty] private long _durationTicks;
     [ObservableProperty] private long _index;
     [ObservableProperty] private double _percent;
     [ObservableProperty] private double _percentOfMax;
@@ -38,7 +38,7 @@ public partial class StatisticDataViewModel(DebugFunctions debug, LocalizationMa
     public void Reset()
     {
         // Reset numeric fields
-        Duration = 0;
+        DurationTicks = 0;
         Index = 0;
         Percent = 0;
         PercentOfMax = 0;
