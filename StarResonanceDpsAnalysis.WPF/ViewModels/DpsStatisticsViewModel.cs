@@ -5,14 +5,12 @@ using System.Windows;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Google.Protobuf;
 using Microsoft.Extensions.Logging;
 using StarResonanceDpsAnalysis.Core;
 using StarResonanceDpsAnalysis.Core.Analyze.Exceptions;
 using StarResonanceDpsAnalysis.Core.Data;
 using StarResonanceDpsAnalysis.Core.Data.Models;
 using StarResonanceDpsAnalysis.Core.Extends.Data;
-using StarResonanceDpsAnalysis.Core.Models;
 using StarResonanceDpsAnalysis.WPF.Config;
 using StarResonanceDpsAnalysis.WPF.Extensions;
 using StarResonanceDpsAnalysis.WPF.Localization;
@@ -255,7 +253,7 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
 
         var vm = _windowManagement.SkillBreakdownView.DataContext as SkillBreakdownViewModel;
         Debug.Assert(vm != null, "vm!=null");
-        vm.InitializeFrom(target);
+        vm.InitializeFrom(target, StatisticIndex);
         _windowManagement.SkillBreakdownView.Show();
         _windowManagement.SkillBreakdownView.Activate();
     }
@@ -1154,6 +1152,34 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
         return result;
     }
 
+    public record struct Data
+    {
+        public int HitCount { get; set; }
+        public long TotalValue { get; set; }
+        public long NormalValue { get; set; }
+        public double Average { get; set; }
+        public double CritRate { get; set; }
+        public long CritValue { get; set; }
+        public int CritCount { get; set; }
+        public long LuckyValue { get; set; }
+        public int LuckyCount { get; set; }
+
+        public readonly void Deconstruct(out int hitCount, out long totalValue, out long normalValue,
+            out double average, out double critRate, out long critValue, out int critCount, out long luckyValue,
+            out int luckyCount)
+        {
+            hitCount = HitCount;
+            totalValue = TotalValue;
+            normalValue = NormalValue;
+            average = Average;
+            critRate = CritRate;
+            critValue = CritValue;
+            critCount = CritCount;
+            luckyValue = LuckyValue;
+            luckyCount = LuckyCount;
+        }
+    }
+
     /// <summary>
     /// Builds skill list snapshot
     /// </summary>
@@ -1169,193 +1195,122 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
 
         var skillDisplayLimit = CurrentStatisticData?.SkillDisplayLimit ?? 8;
 
-        // ⭐ 修复: 从BattleLog中分离三类技能(伤害/治疗/承伤)
-        var damageSkillDict = new Dictionary<long, (long totalValue, int useTimes, int critTimes, int luckyTimes)>();
-        var healingSkillDict = new Dictionary<long, (long totalValue, int useTimes, int critTimes, int luckyTimes)>();
-        var takenDamageSkillDict =
-            new Dictionary<long, (long totalValue, int useTimes, int critTimes, int luckyTimes)>();
+        var damageSkillDict = new Dictionary<long, Data>();
+        var healingSkillDict = new Dictionary<long, Data>();
+        var takenDamageSkillDict = new Dictionary<long, Data>();
 
         // Aggregate skills from battle logs
         foreach (var log in battleLogs)
         {
-            // ⭐ 关键修复: 伤害输出技能 = 攻击者是当前UID 且 不是治疗
             if (log.AttackerUuid == dpsData.UID && !log.IsHeal)
             {
-                // Damage skill (output by this entity)
-                if (!damageSkillDict.TryGetValue(log.SkillID, out var dmgData))
-                {
-                    dmgData = (0, 0, 0, 0);
-                }
-
-                damageSkillDict[log.SkillID] = (
-                    dmgData.totalValue + log.Value,
-                    dmgData.useTimes + 1,
-                    dmgData.critTimes + (log.IsCritical ? 1 : 0),
-                    dmgData.luckyTimes + (log.IsLucky ? 1 : 0)
-                );
+                AddOrUpdateSkill(damageSkillDict, log);
             }
-            // 治疗技能 = 攻击者是当前UID 且 是治疗
             else if (log.AttackerUuid == dpsData.UID && log.IsHeal)
             {
-                // Healing skill
-                if (!healingSkillDict.TryGetValue(log.SkillID, out var healData))
-                {
-                    healData = (0, 0, 0, 0);
-                }
-
-                healingSkillDict[log.SkillID] = (
-                    healData.totalValue + log.Value,
-                    healData.useTimes + 1,
-                    healData.critTimes + (log.IsCritical ? 1 : 0),
-                    healData.luckyTimes + (log.IsLucky ? 1 : 0)
-                );
+                AddOrUpdateSkill(healingSkillDict, log);
             }
-            // 承伤技能 = 目标是当前UID 且 不是治疗
             else if (log.TargetUuid == dpsData.UID && !log.IsHeal)
             {
-                // Taken damage skill (when this entity is the target)
-                if (!takenDamageSkillDict.TryGetValue(log.SkillID, out var takenData))
-                {
-                    takenData = (0, 0, 0, 0);
-                }
-
-                takenDamageSkillDict[log.SkillID] = (
-                    takenData.totalValue + log.Value,
-                    takenData.useTimes + 1,
-                    takenData.critTimes + (log.IsCritical ? 1 : 0),
-                    takenData.luckyTimes + (log.IsLucky ? 1 : 0)
-                );
+                AddOrUpdateSkill(takenDamageSkillDict, log);
             }
         }
 
-        // ⭐ 转换伤害技能为ViewModel
-        var damageSkills = damageSkillDict
-            .OrderByDescending(static kvp => kvp.Value.totalValue)
-            .Select(kvp =>
-            {
-                var (totalValue, useTimes, critTimes, luckyTimes) = kvp.Value;
-                var average = useTimes > 0 ? Math.Round(totalValue / (double)useTimes) : 0d;
-                var avgDamage = average > int.MaxValue ? int.MaxValue : (int)average;
-                var skillIdText = kvp.Key.ToString();
-                var skillName = EmbeddedSkillConfig.TryGet(skillIdText, out var definition)
-                    ? definition.Name
-                    : skillIdText;
-                var critRate = useTimes > 0 ? (double)critTimes / useTimes : 0d;
-
-                return new SkillItemViewModel
-                {
-                    SkillName = skillName,
-                    TotalDamage = totalValue,
-                    HitCount = useTimes,
-                    CritCount = critTimes,
-                    AvgDamage = avgDamage,
-                    CritRate = critRate,
-                    LuckyCount = luckyTimes
-                };
-            }).ToList();
+        var damageSkills = ProjectSkillDict(damageSkillDict, skillDisplayLimit, StatisticType.Damage);
 
         _logger.LogDebug(
             "BuildSkillListSnapshot [伤害]: UID={UID}, BattleLogs={LogCount}, UniqueSkills={UniqueCount}, DisplayLimit={Limit}",
             dpsData.UID, battleLogs.Count, damageSkillDict.Count, skillDisplayLimit);
 
-        // Convert healing skills to ViewModels
-        var healingSkills = healingSkillDict
-            .OrderByDescending(static kvp => kvp.Value.totalValue)
-            .Select(kvp =>
-            {
-                var (totalValue, useTimes, critTimes, luckyTimes) = kvp.Value;
-                var average = useTimes > 0 ? Math.Round(totalValue / (double)useTimes) : 0d;
-                var avgHeal = average > int.MaxValue ? int.MaxValue : (int)average;
-                var skillIdText = kvp.Key.ToString();
-                var skillName = EmbeddedSkillConfig.TryGet(skillIdText, out var definition)
-                    ? definition.Name
-                    : skillIdText;
-                var critRate = useTimes > 0 ? (double)critTimes / useTimes : 0d;
+        var healingSkills = ProjectSkillDict(healingSkillDict, skillDisplayLimit, StatisticType.Healing);
 
-                return new SkillItemViewModel
-                {
-                    SkillName = skillName,
-                    TotalDamage = totalValue,
-                    HitCount = useTimes,
-                    CritCount = critTimes,
-                    AvgDamage = avgHeal,
-                    CritRate = critRate,
-                    LuckyCount = luckyTimes
-                };
-            }).ToList();
-
-        // Convert taken damage skills to ViewModels
-        var takenDamageSkills = takenDamageSkillDict
-            .OrderByDescending(static kvp => kvp.Value.totalValue)
-            .Select(kvp =>
-            {
-                var (totalValue, useTimes, critTimes, luckyTimes) = kvp.Value;
-                var average = useTimes > 0 ? Math.Round(totalValue / (double)useTimes) : 0d;
-                var avgDamage = average > int.MaxValue ? int.MaxValue : (int)average;
-                var skillIdText = kvp.Key.ToString();
-                var skillName = EmbeddedSkillConfig.TryGet(skillIdText, out var definition)
-                    ? definition.Name
-                    : skillIdText;
-                var critRate = useTimes > 0 ? (double)critTimes / useTimes : 0d;
-
-                return new SkillItemViewModel
-                {
-                    SkillName = skillName,
-                    TotalDamage = totalValue,
-                    HitCount = useTimes,
-                    CritCount = critTimes,
-                    AvgDamage = avgDamage,
-                    CritRate = critRate,
-                    LuckyCount = luckyTimes
-                };
-            }).ToList();
-
+        var takenDamageSkills = ProjectSkillDict(takenDamageSkillDict, skillDisplayLimit, StatisticType.TakenDamage);
 
         return (damageSkills, healingSkills, takenDamageSkills);
-    }
 
-    /// <summary>
-    /// Helper method to project skills into ViewModels
-    /// </summary>
-    private (List<SkillItemViewModel> filtered, List<SkillItemViewModel> total) ProjectSkills(
-        IOrderedEnumerable<SkillData> orderedSkills, int skillDisplayLimit)
-    {
-        var projected = orderedSkills.Select(skill =>
+        void AddOrUpdateSkill(Dictionary<long, Data> dict, BattleLog log)
         {
-            var average = skill.UseTimes > 0
-                ? Math.Round(skill.TotalValue / (double)skill.UseTimes)
-                : 0d;
-
-            var avgDamage = average > int.MaxValue
-                ? int.MaxValue
-                : (int)average;
-
-            var skillIdText = skill.SkillId.ToString();
-            var skillName = EmbeddedSkillConfig.TryGet(skillIdText, out var definition)
-                ? definition.Name
-                : skillIdText;
-
-            var critRate = skill.UseTimes > 0
-                ? (double)skill.CritTimes / skill.UseTimes
-                : 0d;
-
-            return new SkillItemViewModel
+            if (!dict.TryGetValue(log.SkillID, out var data))
             {
-                SkillName = skillName,
-                TotalDamage = skill.TotalValue,
-                HitCount = skill.UseTimes,
-                CritCount = skill.CritTimes,
-                AvgDamage = avgDamage,
-                CritRate = critRate
-            };
-        });
+                data = new Data();
+            }
 
-        var list = projected.ToList();
-        var filtered = skillDisplayLimit > 0
-            ? list.Take(skillDisplayLimit).ToList()
-            : list;
+            data.HitCount += 1;
+            data.TotalValue += log.Value;
 
-        return (filtered, list);
+            if (log.IsCritical)
+            {
+                data.CritCount += 1;
+                data.CritValue += log.Value;
+            }
+
+            if (log.IsLucky)
+            {
+                data.LuckyCount += 1;
+                data.LuckyValue += log.Value;
+            }
+
+            if (!log.IsCritical && !log.IsLucky)
+            {
+                data.NormalValue += log.Value;
+            }
+
+            dict[log.SkillID] = data;
+        }
+
+        List<SkillItemViewModel> ProjectSkillDict(Dictionary<long, Data> dict, int displayLimit, StatisticType type)
+        {
+            var ordered = dict.OrderByDescending(static kvp => kvp.Value.TotalValue);
+
+            return ordered
+                .Select(kvp =>
+                {
+                    var data = kvp.Value;
+                    var average = data.HitCount > 0 ? Math.Round(data.TotalValue / (double)data.HitCount) : 0d;
+                    var critRate = data.HitCount > 0 ? data.CritCount / (double)data.HitCount : 0d;
+
+                    var skillIdText = kvp.Key.ToString();
+                    var skillName = EmbeddedSkillConfig.TryGet(skillIdText, out var definition)
+                        ? definition.Name
+                        : skillIdText;
+
+                    var value = new SkillItemViewModel.SkillValue
+                    {
+                        TotalValue = data.TotalValue,
+                        HitCount = data.HitCount,
+                        NormalValue = data.NormalValue,
+                        Average = average,
+                        CritRate = critRate,
+                        CritValue = data.CritValue,
+                        CritCount = data.CritCount,
+                        LuckyValue = data.LuckyValue,
+                        LuckyCount = data.LuckyCount
+                    };
+
+                    var vm = new SkillItemViewModel
+                    {
+                        SkillId = kvp.Key,
+                        SkillName = skillName
+                    };
+
+                    switch (type)
+                    {
+                        case StatisticType.Healing:
+                            vm.Heal = value;
+                            break;
+                        case StatisticType.NpcTakenDamage:
+                        case StatisticType.TakenDamage:
+                            vm.TakenDamage = value;
+                            break;
+                        default:
+                            vm.Damage = value;
+                            break;
+                    }
+
+                    return vm;
+                })
+                .ToList();
+        }
     }
 
     [RelayCommand]
@@ -1372,7 +1327,8 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
 
         foreach (var vm in StatisticData.Values)
         {
-            vm.SkillDisplayLimit = clampedLimit; // Displayed skill count will be changed after SkillDisplayLimit is set
+            vm.SkillDisplayLimit =
+                clampedLimit; // Displayed skill count will be changed after SkillDisplayLimit is set
         }
 
         // Notify that current data's SkillDisplayLimit changed
@@ -1905,9 +1861,9 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
             }
 
             // 构建技能列表
-            var damageSkills = ConvertSnapshotSkillsToViewModel(playerData.DamageSkills);
-            var healingSkills = ConvertSnapshotSkillsToViewModel(playerData.HealingSkills);
-            var takenSkills = ConvertSnapshotSkillsToViewModel(playerData.TakenSkills);
+            var damageSkills = ConvertSnapshotSkillsToViewModel(playerData.DamageSkills, StatisticType.Damage);
+            var healingSkills = ConvertSnapshotSkillsToViewModel(playerData.HealingSkills, StatisticType.Healing);
+            var takenSkills = ConvertSnapshotSkillsToViewModel(playerData.TakenSkills, StatisticType.TakenDamage);
 
             // 解析职业
             //Enum.TryParse<Classes>(playerData.Profession, out var playerClass);
@@ -1979,20 +1935,49 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
     /// <summary>
     /// ⭐ 新增: 将快照技能数据转换为ViewModel
     /// </summary>
-    private List<SkillItemViewModel> ConvertSnapshotSkillsToViewModel(List<SnapshotSkillData> snapshotSkills)
+    private List<SkillItemViewModel> ConvertSnapshotSkillsToViewModel(List<SnapshotSkillData> snapshotSkills,
+        StatisticType statisticType)
     {
         if (snapshotSkills.Count == 0)
             return new List<SkillItemViewModel>();
 
-        return snapshotSkills.Select(s => new SkillItemViewModel
+        return snapshotSkills.Select(s =>
         {
-            SkillName = s.SkillName,
-            TotalDamage = (long)s.TotalValue,
-            HitCount = s.UseTimes,
-            CritCount = s.CritTimes,
-            LuckyCount = s.LuckyTimes,
-            AvgDamage = s.UseTimes > 0 ? (int)(s.TotalValue / (ulong)s.UseTimes) : 0,
-            CritRate = s.UseTimes > 0 ? (double)s.CritTimes / s.UseTimes : 0
+            var average = s.UseTimes > 0 ? Math.Round(s.TotalValue / (double)s.UseTimes) : 0d;
+            var avgValue = average > int.MaxValue ? int.MaxValue : (int)average;
+            var critRate = s.UseTimes > 0 ? (double)s.CritTimes / s.UseTimes : 0d;
+
+            var value = new SkillItemViewModel.SkillValue
+            {
+                TotalValue = (long)s.TotalValue,
+                HitCount = s.UseTimes,
+                CritCount = s.CritTimes,
+                LuckyCount = s.LuckyTimes,
+                Average = avgValue,
+                CritRate = critRate
+            };
+
+            var vm = new SkillItemViewModel
+            {
+                SkillId = s.SkillId,
+                SkillName = s.SkillName
+            };
+
+            switch (statisticType)
+            {
+                case StatisticType.Healing:
+                    vm.Heal = value;
+                    break;
+                case StatisticType.TakenDamage:
+                case StatisticType.NpcTakenDamage:
+                    vm.TakenDamage = value;
+                    break;
+                default:
+                    vm.Damage = value;
+                    break;
+            }
+
+            return vm;
         }).ToList();
     }
 

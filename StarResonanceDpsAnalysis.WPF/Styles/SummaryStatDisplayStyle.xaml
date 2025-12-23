@@ -3,14 +3,14 @@
                     xmlns:ctrl="clr-namespace:StarResonanceDpsAnalysis.WPF.Controls">
 
     <Style x:Key="SummaryStatText" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="LightGray" />
+        <Setter Property="Foreground" Value="White" />
         <Setter Property="FontSize" Value="24" />
         <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="HorizontalAlignment" Value="Center" />
     </Style>
 
     <Style x:Key="SummaryLabelText" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="LightGray" />
+        <Setter Property="Foreground" Value="White" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="Opacity" Value="0.9" />
         <Setter Property="HorizontalAlignment" Value="Center" />

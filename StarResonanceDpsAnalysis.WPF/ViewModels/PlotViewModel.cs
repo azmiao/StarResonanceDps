@@ -17,6 +17,7 @@ public record PlotOptions
     public string? HitTypeNormal { get; set; }
     public string? HitTypeCritical { get; set; }
     public string? HitTypeLucky { get; set; }
+    public required StatisticType StatisticType { get; set; }
 }
 
 public partial class PlotViewModel : BaseViewModel
@@ -27,9 +28,9 @@ public partial class PlotViewModel : BaseViewModel
     [ObservableProperty] private PlotModel _piePlotModel;
     [ObservableProperty] private PlotModel _seriesPlotModel;
 
-    public PlotViewModel(PlotOptions? options, StatisticType statisticType)
+    public PlotViewModel(PlotOptions? options)
     {
-        _statisticType = statisticType;
+        _statisticType = options?.StatisticType ?? StatisticType.TakenDamage;
         LineSeriesData = new LineSeries
         {
             Title = options?.LineSeriesTitle,

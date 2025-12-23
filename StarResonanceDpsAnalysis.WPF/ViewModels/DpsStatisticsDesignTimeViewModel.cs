@@ -31,7 +31,7 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
             new DesignOptionsMonitor(),
             null!,
             LocalizationManager.Instance),
-        new DesignBattleSnapshotService(), LocalizationManager.Instance) // ? 添加设计时快照服务
+        new DesignBattleSnapshotService(), LocalizationManager.Instance, new MessageDialogService(null!)) 
     {
         // Initialize AppConfig
         AppConfig = new AppConfig { DebugEnabled = true };
