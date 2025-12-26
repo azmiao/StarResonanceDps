@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+
 namespace StarResonanceDpsAnalysis.Core.Statistics;
 
 /// <summary>
@@ -13,11 +15,11 @@ public sealed class PlayerStatistics(long uid)
     public StatisticValues TakenDamage { get; } = new();
     public StatisticValues Healing { get; } = new();
 
-    // Skill breakdown
-    public Dictionary<long, SkillStatistics> Skills { get; } = new();
+    // Skill breakdown - using ConcurrentDictionary for thread-safe access
+    public ConcurrentDictionary<long, SkillStatistics> Skills { get; } = new();
     
     // ? NEW: Track skills that hit this player (for taken damage breakdown)
-    public Dictionary<long, SkillStatistics> TakenDamageSkills { get; } = new();
+    public ConcurrentDictionary<long, SkillStatistics> TakenDamageSkills { get; } = new();
 
     // Timing info
     public long? StartTick { get; set; }
@@ -31,13 +33,7 @@ public sealed class PlayerStatistics(long uid)
     /// </summary>
     public SkillStatistics GetOrCreateSkill(long skillId)
     {
-        if (!Skills.TryGetValue(skillId, out var stats))
-        {
-            stats = new SkillStatistics(skillId);
-            Skills[skillId] = stats;
-        }
-
-        return stats;
+        return Skills.GetOrAdd(skillId, static id => new SkillStatistics(id));
     }
     
     /// <summary>
@@ -45,13 +41,7 @@ public sealed class PlayerStatistics(long uid)
     /// </summary>
     public SkillStatistics GetOrCreateTakenSkill(long skillId)
     {
-        if (!TakenDamageSkills.TryGetValue(skillId, out var stats))
-        {
-            stats = new SkillStatistics(skillId);
-            TakenDamageSkills[skillId] = stats;
-        }
-
-        return stats;
+        return TakenDamageSkills.GetOrAdd(skillId, static id => new SkillStatistics(id));
     }
 
     public long ElapsedTicks()

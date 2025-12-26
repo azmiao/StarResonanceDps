@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
-using StarResonanceDpsAnalysis.Core.Data.Models;
-using StarResonanceDpsAnalysis.WPF.Models;
 using StarResonanceDpsAnalysis.Core;
 using StarResonanceDpsAnalysis.Core.Data;
+using StarResonanceDpsAnalysis.Core.Data.Models;
 using StarResonanceDpsAnalysis.Core.Statistics;
-using StarResonanceDpsAnalysis.WPF.Config; // ⭐ 新增：引入配置管理器
+using StarResonanceDpsAnalysis.WPF.Config;
 
 namespace StarResonanceDpsAnalysis.WPF.Services;
 
@@ -18,18 +15,15 @@ namespace StarResonanceDpsAnalysis.WPF.Services;
 /// </summary>
 public class BattleSnapshotService
 {
-    private readonly ILogger<BattleSnapshotService> _logger;
-    private readonly IConfigManager _configManager; // ⭐ 新增：配置管理器
-    private readonly string _snapshotDirectory;
     private const int AbsoluteMinDurationSeconds = 10; // 绝对最小战斗时长(秒),低于此值的战斗永远不保存
-
-    // ⭐ 修改：从常量改为属性，从配置读取
-    private int MaxSnapshots => _configManager?.CurrentConfig?.MaxHistoryCount ?? 15;
+    private readonly IConfigManager _configManager;
+    private readonly ILogger<BattleSnapshotService> _logger;
+    private readonly string _snapshotDirectory;
 
     public BattleSnapshotService(ILogger<BattleSnapshotService> logger, IConfigManager configManager)
     {
         _logger = logger;
-        _configManager = configManager; // ⭐ 新增：注入配置管理器
+        _configManager = configManager;
         _snapshotDirectory = Path.Combine(Environment.CurrentDirectory, "BattleSnapshots");
 
         // 确保目录存在
@@ -42,23 +36,27 @@ public class BattleSnapshotService
         LoadSnapshots();
     }
 
+    private int MaxSnapshots => _configManager.CurrentConfig.MaxHistoryCount;
+
     /// <summary>
     /// 当前战斗快照列表(最新的N条，N由配置决定)
     /// </summary>
-    public List<BattleSnapshotData> CurrentSnapshots { get; private set; } = new();
+    public List<BattleSnapshotData> CurrentSnapshots { get; } = new();
 
     /// <summary>
     /// 全程快照列表(最新的N条，N由配置决定)
     /// </summary>
-    public List<BattleSnapshotData> TotalSnapshots { get; private set; } = new();
+    public List<BattleSnapshotData> TotalSnapshots { get; } = new();
+
     /// <summary>
     /// 保存当前战斗快照
     /// </summary>
     /// <param name="storage">数据存储</param>
     /// <param name="duration">战斗时长</param>
     /// <param name="minDurationSeconds">用户设置的最小时长(秒),0表示记录所有(默认记录所有)</param>
-    /// <param name="forceUseFullData">⭐ 新增: 强制使用FullDpsData(用于脱战时sectioned数据已被清空的情况)</param>
-    public void SaveCurrentSnapshot(IDataStorage storage, TimeSpan duration, int minDurationSeconds = 0, bool forceUseFullData = false)
+    /// <param name="forceUseFullData">强制使用FullDpsData(用于脱战时sectioned数据已被清空的情况)</param>
+    public void SaveCurrentSnapshot(IDataStorage storage, TimeSpan duration, int minDurationSeconds = 0,
+        bool forceUseFullData = false)
     {
         // ⭐ 硬性限制: 低于10秒的战斗永远不保存
         if (duration.TotalSeconds < AbsoluteMinDurationSeconds)
@@ -112,7 +110,7 @@ public class BattleSnapshotService
     }
 
     /// <summary>
-    /// ⭐ 新增: 强制从FullDpsData创建快照(用于脱战时sectioned数据已被清空的场景)
+    /// 强制从FullDpsData创建快照(用于脱战时sectioned数据已被清空的场景)
     /// </summary>
     private BattleSnapshotData CreateSnapshotFromFullData(IDataStorage storage, TimeSpan duration, ScopeType scopeType)
     {
@@ -139,7 +137,8 @@ public class BattleSnapshotService
             teamTotalTaken += taken;
 
             var elapsedTicks = dpsData.ElapsedTicks();
-            var elapsedSeconds = elapsedTicks > 0 ? TimeSpan.FromTicks(elapsedTicks).TotalSeconds : duration.TotalSeconds;
+            var elapsedSeconds =
+                elapsedTicks > 0 ? TimeSpan.FromTicks(elapsedTicks).TotalSeconds : duration.TotalSeconds;
 
             // ⭐ 保存技能数据
             var damageSkills = BuildSkillSnapshot(dpsData.Skills, SkillType.Damage);
@@ -192,7 +191,7 @@ public class BattleSnapshotService
         if (duration.TotalSeconds < AbsoluteMinDurationSeconds)
         {
             _logger.LogInformation("战斗时长不足{Min}秒({Actual:F1}秒),跳过保存全程快照(硬性限制)",
-        AbsoluteMinDurationSeconds, duration.TotalSeconds);
+                AbsoluteMinDurationSeconds, duration.TotalSeconds);
             return;
         }
 
@@ -200,7 +199,7 @@ public class BattleSnapshotService
         if (minDurationSeconds > 0 && duration.TotalSeconds < minDurationSeconds)
         {
             _logger.LogInformation("战斗时长不足用户设置的{UserMin}秒({Actual:F1}秒),跳过保存全程快照(用户设置)",
-       minDurationSeconds, duration.TotalSeconds);
+                minDurationSeconds, duration.TotalSeconds);
             return;
         }
 
@@ -227,7 +226,7 @@ public class BattleSnapshotService
             }
 
             _logger.LogInformation("保存全程快照成功: {Time}, 时长: {Duration:F1}秒, 当前保存数量: {Count}/{Max}",
-                  snapshot.StartedAt, duration.TotalSeconds, TotalSnapshots.Count, MaxSnapshots);
+                snapshot.StartedAt, duration.TotalSeconds, TotalSnapshots.Count, MaxSnapshots);
         }
         catch (Exception ex)
         {
@@ -263,7 +262,8 @@ public class BattleSnapshotService
             teamTotalTaken += taken;
 
             var elapsedTicks = dpsData.ElapsedTicks();
-            var elapsedSeconds = elapsedTicks > 0 ? TimeSpan.FromTicks(elapsedTicks).TotalSeconds : duration.TotalSeconds;
+            var elapsedSeconds =
+                elapsedTicks > 0 ? TimeSpan.FromTicks(elapsedTicks).TotalSeconds : duration.TotalSeconds;
 
             // ? 新增: 保存技能数据
             var damageSkills = BuildSkillSnapshot(dpsData.Skills, SkillType.Damage);
@@ -305,9 +305,9 @@ public class BattleSnapshotService
     }
 
     /// <summary>
-    /// ? 新增: 从技能列表构建伤害技能快照
+    /// 从技能列表构建伤害技能快照
     /// </summary>
-    private List<SnapshotSkillData> BuildSkillSnapshot(Dictionary<long, SkillStatistics> skills, SkillType targetType)
+    private List<SnapshotSkillData> BuildSkillSnapshot(IDictionary<long, SkillStatistics> skills, SkillType targetType)
     {
         var result = new List<SnapshotSkillData>();
 
@@ -333,7 +333,7 @@ public class BattleSnapshotService
     }
 
     /// <summary>
-    /// ? 新增: 从战斗日志构建承伤技能快照
+    /// 从战斗日志构建承伤技能快照
     /// </summary>
     private List<SnapshotSkillData> BuildTakenSkillSnapshot(IReadOnlyList<BattleLog> logs, long targetUid)
     {
@@ -394,8 +394,8 @@ public class BattleSnapshotService
             }
 
             var files = Directory.GetFiles(_snapshotDirectory, "*.json")
-        .OrderByDescending(f => File.GetCreationTime(f))
-           .ToList();
+                .OrderByDescending(f => File.GetCreationTime(f))
+                .ToList();
 
             foreach (var file in files)
             {
@@ -440,12 +440,18 @@ public class BattleSnapshotService
                 {
                     _logger.LogWarning(ex, "加载快照文件失败: {File}", file);
                     // 损坏的文件直接删除
-                    try { File.Delete(file); } catch { }
+                    try
+                    {
+                        File.Delete(file);
+                    }
+                    catch
+                    {
+                    }
                 }
             }
 
             _logger.LogInformation("加载快照完成: 当前={Current}/{MaxCurrent}, 全程={Total}/{MaxTotal}",
-                        CurrentSnapshots.Count, MaxSnapshots, TotalSnapshots.Count, MaxSnapshots);
+                CurrentSnapshots.Count, MaxSnapshots, TotalSnapshots.Count, MaxSnapshots);
         }
         catch (Exception ex)
         {
@@ -490,13 +496,13 @@ public class BattleSnapshotData
     /// <summary>
     /// 文件路径(不序列化)
     /// </summary>
-    [System.Text.Json.Serialization.JsonIgnore]
+    [JsonIgnore]
     public string FilePath { get; set; } = "";
 
     /// <summary>
     /// 显示标签
     /// </summary>
-    [System.Text.Json.Serialization.JsonIgnore]
+    [JsonIgnore]
     public string DisplayLabel =>
         $"{(ScopeType == ScopeType.Current ? "当前" : "全程")} {StartedAt:HH:mm:ss} ({Duration:mm\\:ss})";
 }
@@ -518,7 +524,6 @@ public class SnapshotPlayerData
     public ulong TakenDamage { get; set; }
     public bool IsNpc { get; set; }
 
-    // ? 新增: 技能数据列表
     public List<SnapshotSkillData> DamageSkills { get; set; } = new();
     public List<SnapshotSkillData> HealingSkills { get; set; } = new();
     public List<SnapshotSkillData> TakenSkills { get; set; } = new();
