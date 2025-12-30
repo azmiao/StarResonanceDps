@@ -1,0 +1,302 @@
+<Window x:Class="StarResonanceDpsAnalysis.WPF.Views.SkillLogView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:StarResonanceDpsAnalysis.WPF.ViewModels"
+        xmlns:models="clr-namespace:StarResonanceDpsAnalysis.WPF.Models"
+        xmlns:converters="clr-namespace:StarResonanceDpsAnalysis.WPF.Converters"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance vm:SkillLogViewModel}"
+        Title="Battle Log" Height="600" Width="450"
+        Style="{StaticResource TransparentWindow}"
+        ResizeMode="CanResizeWithGrip">
+
+    <Window.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        
+        <!-- Sci-Fi Dark Theme Colors -->
+        <Color x:Key="SciFiBgColor">#0F1115</Color>
+        <SolidColorBrush x:Key="SciFiBgBrush" Color="{StaticResource SciFiBgColor}"/>
+        <SolidColorBrush x:Key="SciFiCardBrush" Color="#161920"/>
+        <SolidColorBrush x:Key="SciFiBorderBrush" Color="#333842"/>
+        <SolidColorBrush x:Key="SciFiAccentBrush" Color="#FF9F0A"/> <!-- Orange -->
+        <SolidColorBrush x:Key="SciFiTextMainBrush" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="SciFiTextSubBrush" Color="#8890A0"/>
+        
+        <!-- ScrollBar Style -->
+        <Style x:Key="SciFiScrollBar" TargetType="{x:Type ScrollBar}">
+            <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false"/>
+            <Setter Property="Stylus.IsFlicksEnabled" Value="false"/>
+            <Setter Property="Width" Value="6"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollBar}">
+                        <Grid x:Name="Bg" SnapsToDevicePixels="true" Background="Transparent">
+                            <Track x:Name="PART_Track" IsDirectionReversed="true">
+                                <Track.Thumb>
+                                    <Thumb Style="{DynamicResource SciFiScrollBarThumbStyle}"/>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="SciFiScrollBarThumbStyle" TargetType="{x:Type Thumb}">
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="IsTabStop" Value="false"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Border x:Name="rectangle" CornerRadius="3" Background="#33FFFFFF" Height="{TemplateBinding Height}" SnapsToDevicePixels="True"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="rectangle" Property="Background" Value="#55FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsDragging" Value="true">
+                                <Setter TargetName="rectangle" Property="Background" Value="#77FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <!-- Main Container -->
+    <Border Background="{StaticResource SciFiBgBrush}" 
+            BorderBrush="{StaticResource SciFiBorderBrush}" 
+            BorderThickness="1" 
+            CornerRadius="4" 
+            Margin="5">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="10" ShadowDepth="0" Opacity="0.5" Color="Black"/>
+        </Border.Effect>
+        
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/> <!-- Header -->
+                <RowDefinition Height="*"/>    <!-- List -->
+                <RowDefinition Height="Auto"/> <!-- Footer -->
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0" Padding="20,15" MouseDown="Header_MouseDown" Background="Transparent">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- Title Area -->
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Border Background="{StaticResource SciFiAccentBrush}" Width="4" Height="16" CornerRadius="2" Margin="0,0,10,0"/>
+                        <TextBlock Text="BATTLE LOG" Foreground="{StaticResource SciFiTextMainBrush}" FontWeight="Bold" FontSize="16" FontFamily="Microsoft YaHei UI"/>
+                        <TextBlock Text="SYSTEM ONLINE" Foreground="{StaticResource SciFiTextSubBrush}" FontSize="10" VerticalAlignment="Bottom" Margin="8,0,0,2" FontFamily="Consolas"/>
+                    </StackPanel>
+
+                    <!-- Top Right Decoration -->
+                    <TextBlock Grid.Column="1" Text="SYSTEM ONLINE" Foreground="#445566" FontSize="9" VerticalAlignment="Center" FontFamily="Consolas"/>
+                </Grid>
+            </Border>
+
+            <!-- Log List -->
+            <ListBox Grid.Row="1" ItemsSource="{Binding Logs}" 
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     BorderThickness="0" Padding="10,0" Background="Transparent">
+                <ListBox.Resources>
+                    <Style TargetType="ScrollBar" BasedOn="{StaticResource SciFiScrollBar}"/>
+                </ListBox.Resources>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="Margin" Value="0,4"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Border x:Name="ItemBorder" Background="{StaticResource SciFiCardBrush}" CornerRadius="4" SnapsToDevicePixels="true">
+                                        <ContentPresenter/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="ItemBorder" Property="Background" Value="#202530"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="ItemBorder" Property="Background" Value="#2A303E"/>
+                                            <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{StaticResource SciFiAccentBrush}"/>
+                                            <Setter TargetName="ItemBorder" Property="BorderThickness" Value="1"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type models:SkillLogItem}">
+                        <Grid Height="50">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="4"/>   <!-- Color Strip -->
+                                <ColumnDefinition Width="Auto"/> <!-- Icon/Time -->
+                                <ColumnDefinition Width="*"/>    <!-- Name -->
+                                <ColumnDefinition Width="Auto"/> <!-- Value -->
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Left Strip -->
+                            <Border Grid.Column="0" Background="#333842" CornerRadius="4,0,0,4"/>
+
+                            <!-- Time / Icon Placeholder -->
+                            <Border Grid.Column="1" Width="40" Margin="10,0,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Timestamp, StringFormat=mm:ss}" 
+                                           Foreground="{StaticResource SciFiTextSubBrush}" 
+                                           FontSize="11" FontFamily="Consolas"
+                                           HorizontalAlignment="Center"/>
+                            </Border>
+
+                            <!-- Skill Name & Tags -->
+                            <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="15,0">
+                                <TextBlock Text="{Binding SkillName}" Foreground="{StaticResource SciFiTextMainBrush}" 
+                                           FontWeight="SemiBold" FontSize="14" FontFamily="Microsoft YaHei UI"/>
+                                
+                                <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                    <!-- Crit Tag -->
+                                    <Border Background="#33FF9F0A" CornerRadius="2" Padding="4,1" Margin="0,0,5,0"
+                                            Visibility="{Binding HasCrit, Converter={StaticResource BoolToVisibilityConverter}}">
+                                        <TextBlock Text="CRIT" Foreground="{StaticResource SciFiAccentBrush}" FontSize="9" FontWeight="Bold"/>
+                                    </Border>
+                                    <!-- Lucky Tag -->
+                                    <Border Background="#339F55FF" CornerRadius="2" Padding="4,1" Margin="0,0,5,0"
+                                            Visibility="{Binding HasLucky, Converter={StaticResource BoolToVisibilityConverter}}">
+                                        <TextBlock Text="LUCKY" Foreground="#D488FF" FontSize="9" FontWeight="Bold"/>
+                                    </Border>
+                                    <!-- Count Tag -->
+                                    <TextBlock Text="{Binding Count, StringFormat='{}x{0}'}" Foreground="{StaticResource SciFiTextSubBrush}" FontSize="10"
+                                               Visibility="{Binding IsMultiHit, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- Value -->
+                            <StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="0,0,15,0" HorizontalAlignment="Right">
+                                <TextBlock Text="{Binding TotalValue, StringFormat=N0}" 
+                                           FontSize="18" FontWeight="Bold" FontFamily="Consolas"
+                                           HorizontalAlignment="Right">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{StaticResource SciFiTextMainBrush}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsHeal}" Value="True">
+                                                    <Setter Property="Foreground" Value="#52C41A"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding HasCrit}" Value="True">
+                                                    <Setter Property="Foreground" Value="{StaticResource SciFiAccentBrush}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Foreground="{StaticResource SciFiTextSubBrush}" FontSize="9" HorizontalAlignment="Right">
+                                     <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Text" Value="DMG"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsHeal}" Value="True">
+                                                    <Setter Property="Text" Value="HEAL"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                     </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <!-- Footer -->
+            <Border Grid.Row="2" Padding="15" Background="#0B0D10" BorderBrush="{StaticResource SciFiBorderBrush}" BorderThickness="0,1,0,0" CornerRadius="0,0,4,4">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- Status Text -->
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="CONNECTION: STABLE" Foreground="#445566" FontSize="10" FontFamily="Consolas"/>
+                        <TextBlock Text="LOGGING ENABLED" Foreground="#2A3340" FontSize="10" FontFamily="Consolas" Margin="0,2,0,0"/>
+                    </StackPanel>
+                    
+                    <!-- Buttons (Preserved Style) -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <!-- Refresh/Clear Button -->
+                        <Button Command="{Binding ClearCommand}" Margin="0,0,15,0" 
+                                Width="36" Height="36" Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                ToolTip="Clear Log">
+                            <Grid>
+                                <Ellipse Fill="#2196F3" Width="36" Height="36">
+                                    <Ellipse.Effect>
+                                        <DropShadowEffect BlurRadius="8" ShadowDepth="0" Opacity="0.4" Color="#2196F3"/>
+                                    </Ellipse.Effect>
+                                </Ellipse>
+                                <Path Data="M12,4V1L8,5l4,4V6c3.31,0,6,2.69,6,6c0,1.01-0.25,1.97-0.7,2.8l1.46,1.46C19.54,15.03,20,13.57,20,12c0-4.42-3.58-8-8-8z M12,18c-3.31,0-6-2.69-6-6c0-1.01,0.25-1.97,0.7-2.8L5.24,7.74C4.46,8.97,4,10.43,4,12c0,4.42,3.58,8,8,8v3l4-4l-4-4V18z" 
+                                      Fill="White" Stretch="Uniform" Margin="9"/>
+                            </Grid>
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Grid>
+                                        <ContentPresenter/>
+                                        <Border x:Name="Overlay" Background="White" Opacity="0" CornerRadius="20" IsHitTestVisible="False"/>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Overlay" Property="Opacity" Value="0.2"/>
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter TargetName="Overlay" Property="Opacity" Value="0.4"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        
+                        <!-- Close Button -->
+                        <Button Command="{Binding CloseCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                                Width="36" Height="36" Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                ToolTip="Close">
+                            <Grid>
+                                <Ellipse Fill="#F44336" Width="36" Height="36">
+                                    <Ellipse.Effect>
+                                        <DropShadowEffect BlurRadius="8" ShadowDepth="0" Opacity="0.4" Color="#F44336"/>
+                                    </Ellipse.Effect>
+                                </Ellipse>
+                                <Path Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41z" 
+                                      Fill="White" Stretch="Uniform" Margin="10"/>
+                            </Grid>
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Grid>
+                                        <ContentPresenter/>
+                                        <Border x:Name="Overlay" Background="White" Opacity="0" CornerRadius="20" IsHitTestVisible="False"/>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Overlay" Property="Opacity" Value="0.2"/>
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter TargetName="Overlay" Property="Opacity" Value="0.4"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
