@@ -65,29 +65,7 @@ public partial class PersonalDpsViewModel : BaseViewModel
         // ⭐ 订阅配置更新事件以响应主题颜色变化
         _configManager.ConfigurationUpdated += OnConfigurationUpdated;
 
-        //throw new NotImplementedException();
-
-        /*
-        // 订阅DPS数据更新事件
-        _dataStorage.DpsDataUpdated += OnDpsDataUpdated;
-        _dataStorage.BattleLogCreated += OnBattleLogCreated;
-
-        // ⭐ 订阅脱战事件
-        _dataStorage.NewSectionCreated += OnNewSectionCreated;
-
-        // ⭐ 从配置加载上次选择的木桩类型
-        var savedDummyTarget = _configManager.CurrentConfig.DefaultDummyTarget;
-        if (Enum.IsDefined(typeof(DummyTargetType), savedDummyTarget))
-        {
-            SelectedDummyTarget = (DummyTargetType)savedDummyTarget;
-            _logger?.LogInformation("从配置加载木桩类型: {Type}", SelectedDummyTarget);
-        }
-
-        // 立即尝试更新一次显示
-        UpdatePersonalDpsDisplay();
-
         _logger?.LogInformation("PersonalDpsViewModel initialized");
-        */
     }
 
     public TimeSpan TimeLimit { get; } = TimeSpan.FromMinutes(3);
@@ -185,6 +163,39 @@ public partial class PersonalDpsViewModel : BaseViewModel
             DummyTargetType.TDummy => targetNpcId == 179,  // T木桩 ID=179 ⭐ 修正
             _ => true // 默认统计所有
         };
+    }
+
+    [RelayCommand]
+    private void Loaded()
+    {
+        // 订阅DPS数据更新事件
+        _dataStorage.DpsDataUpdated += OnDpsDataUpdated;
+        _dataStorage.BattleLogCreated += OnBattleLogCreated;
+
+        // ⭐ 订阅脱战事件
+        _dataStorage.NewSectionCreated += OnNewSectionCreated;
+
+        // ⭐ 从配置加载上次选择的木桩类型
+        var savedDummyTarget = _configManager.CurrentConfig.DefaultDummyTarget;
+        if (Enum.IsDefined(typeof(DummyTargetType), savedDummyTarget))
+        {
+            SelectedDummyTarget = (DummyTargetType)savedDummyTarget;
+            _logger?.LogInformation("从配置加载木桩类型: {Type}", SelectedDummyTarget);
+        }
+
+        // 立即尝试更新一次显示
+        UpdatePersonalDpsDisplay();
+    }
+
+    [RelayCommand]
+    private void UnLoaded()
+    {
+        // 订阅DPS数据更新事件
+        _dataStorage.DpsDataUpdated -= OnDpsDataUpdated;
+        _dataStorage.BattleLogCreated -= OnBattleLogCreated;
+
+        // ⭐ 订阅脱战事件
+        _dataStorage.NewSectionCreated -= OnNewSectionCreated;
     }
 
     /// <summary>
