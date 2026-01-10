@@ -2532,6 +2532,15 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
+        ///   查找类似 Skill(Name) 的本地化字符串。
+        /// </summary>
+        public static string SkillBreakdown_Label_SkillName {
+            get {
+                return ResourceManager.GetString("SkillBreakdown_Label_SkillName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Total 的本地化字符串。
         /// </summary>
         public static string SkillBreakdown_Label_Total {
@@ -2703,7 +2712,7 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
-        ///   查找类似 crits 的本地化字符串。
+        ///   查找类似 crits Number 的本地化字符串。
         /// </summary>
         public static string SkillBreakdown_Suffix_Crits {
             get {
@@ -2712,7 +2721,7 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
-        ///   查找类似 lucky 的本地化字符串。
+        ///   查找类似 Luck rate 的本地化字符串。
         /// </summary>
         public static string SkillBreakdown_Suffix_Lucky {
             get {

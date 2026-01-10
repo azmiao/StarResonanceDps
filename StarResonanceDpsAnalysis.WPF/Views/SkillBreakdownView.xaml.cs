@@ -82,4 +82,10 @@ public partial class SkillBreakdownView : Window
             Close();
         }
     }
+
+    private void Header_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton == MouseButton.Left)
+            this.DragMove();
+    }
 }

@@ -32,6 +32,15 @@
 
     <Window.Resources>
         <ResourceDictionary>
+            <!-- White Theme Colors -->
+            <Color x:Key="SciFiBgColor">#FFFFFF</Color>
+            <SolidColorBrush x:Key="SciFiBgBrush" Color="{StaticResource SciFiBgColor}"/>
+            <SolidColorBrush x:Key="SciFiCardBrush" Color="#F5F5F5"/>
+            <SolidColorBrush x:Key="SciFiBorderBrush" Color="#E0E0E0"/>
+            <SolidColorBrush x:Key="SciFiAccentBrush" Color="#FF9F0A"/>
+            <SolidColorBrush x:Key="SciFiTextMainBrush" Color="#333333"/>
+            <SolidColorBrush x:Key="SciFiTextSubBrush" Color="#666666"/>
+
             <Style x:Key="InfoAndTypeGrid" TargetType="Grid">
                 <Setter Property="Height" Value="60" />
                 <Setter Property="Background" Value="#FFF" />
@@ -124,12 +133,13 @@
                     <Border Style="{StaticResource SkillCardBorder}" BorderThickness="0" Effect="{x:Null}">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2.5*" MinWidth="180" SharedSizeGroup="ColSkill" />
-                                <ColumnDefinition Width="1.2*" MinWidth="100" SharedSizeGroup="ColTotal" />
-                                <ColumnDefinition Width="1*" MinWidth="80" SharedSizeGroup="ColHits" />
-                                <ColumnDefinition Width="1*" MinWidth="80" SharedSizeGroup="ColCrit" />
-                                <ColumnDefinition Width="1*" MinWidth="80" SharedSizeGroup="ColAvg" />
-                                <ColumnDefinition Width="1*" MinWidth="80" SharedSizeGroup="ColPercentage" />
+                                <ColumnDefinition Width="2*" MinWidth="150" SharedSizeGroup="ColSkill" />
+                                <ColumnDefinition Width="1*" MinWidth="90" SharedSizeGroup="ColTotal" />
+                                <ColumnDefinition Width="0.8*" MinWidth="70" SharedSizeGroup="ColDps" />
+                                <ColumnDefinition Width="0.8*" MinWidth="70" SharedSizeGroup="ColHits" />
+                                <ColumnDefinition Width="0.8*" MinWidth="70" SharedSizeGroup="ColCrit" />
+                                <ColumnDefinition Width="0.8*" MinWidth="70" SharedSizeGroup="ColAvg" />
+                                <ColumnDefinition Width="0.8*" MinWidth="70" SharedSizeGroup="ColPercentage" />
                             </Grid.ColumnDefinitions>
 
                             <!--  Skill Name with Icon  -->
@@ -166,12 +176,30 @@
 
                             <!--  Total Value  -->
                             <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch">
-                                <TextBlock Style="{StaticResource StatValueText}" HorizontalAlignment="Right"
-                                           Text="{Binding Damage.TotalValue, StringFormat={}{0:N0}}" />
+                                <TextBlock Style="{StaticResource StatValueText}" HorizontalAlignment="Right">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
+                                            <Binding Path="Damage.TotalValue" />
+                                            <Binding Path="DataContext.AppConfig.DamageDisplayType" RelativeSource="{RelativeSource AncestorType=Window}" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </StackPanel>
+
+                            <!--  DPS Per Second  -->
+                            <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                                <TextBlock Style="{StaticResource StatValueText}" HorizontalAlignment="Right" FontWeight="Light">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
+                                            <Binding Path="Damage.ValuePerSecond" />
+                                            <Binding Path="DataContext.AppConfig.DamageDisplayType" RelativeSource="{RelativeSource AncestorType=Window}" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
                             </StackPanel>
 
                             <!--  Hit Count  -->
-                            <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                            <StackPanel Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                 <TextBlock Style="{StaticResource StatValueText}" HorizontalAlignment="Right">
                                     <Run Text="{Binding Damage.HitCount, Mode=OneWay}" FontWeight="Light" />
                                     <Run
@@ -183,7 +211,7 @@
                             </StackPanel>
 
                             <!--  Crit Rate  -->
-                            <StackPanel Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                            <StackPanel Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                     <TextBlock x:Name="CritRateText" Style="{StaticResource StatValueText}"
                                                FontWeight="Light"
@@ -199,13 +227,20 @@
                             </StackPanel>
 
                             <!--  Average  -->
-                            <StackPanel Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                            <StackPanel Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                 <TextBlock Style="{StaticResource StatValueText}" HorizontalAlignment="Right"
-                                           FontWeight="Light" Text="{Binding Damage.Average, StringFormat={}{0:N0}}" />
+                                           FontWeight="Light">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
+                                            <Binding Path="Damage.Average" />
+                                            <Binding Path="DataContext.AppConfig.DamageDisplayType" RelativeSource="{RelativeSource AncestorType=Window}" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
                             </StackPanel>
 
                             <!--  Percentage  -->
-                            <StackPanel Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                            <StackPanel Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                 <TextBlock Style="{StaticResource StatValueText}" HorizontalAlignment="Right"
                                            FontWeight="Light"
                                            Text="{Binding Damage.PercentToTotal, StringFormat={}{0:P1}}" />
@@ -234,8 +269,8 @@
                     <!-- Background Progress Bar -->
                     <Border HorizontalAlignment="Left" Background="#F0FFF4" CornerRadius="4" Height="50">
                         <Border.Width>
-                            <MultiBinding Converter="{StaticResource PercentToWidthConverter}">
-                                <Binding Path="PercentToTotal" />
+                            <MultiBinding Converter="{StaticResource RateToWidthConverter}">
+                                <Binding Path="Heal.PercentToTotal" />
                                 <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=Grid}" />
                             </MultiBinding>
                         </Border.Width>
@@ -244,12 +279,13 @@
                     <Border Style="{StaticResource SkillCardBorder}" BorderThickness="0" Effect="{x:Null}">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2.5*" MinWidth="180" SharedSizeGroup="ColSkill" />
-                                <ColumnDefinition Width="1.2*" MinWidth="100" SharedSizeGroup="ColTotal" />
-                                <ColumnDefinition Width="1*" MinWidth="80" SharedSizeGroup="ColHits" />
-                                <ColumnDefinition Width="1*" MinWidth="80" SharedSizeGroup="ColCrit" />
-                                <ColumnDefinition Width="1*" MinWidth="80" SharedSizeGroup="ColAvg" />
-                                <ColumnDefinition Width="1*" MinWidth="80" SharedSizeGroup="ColPercentage" />
+                                <ColumnDefinition Width="2*" MinWidth="150" SharedSizeGroup="ColSkill" />
+                                <ColumnDefinition Width="1*" MinWidth="90" SharedSizeGroup="ColTotal" />
+                                <ColumnDefinition Width="0.8*" MinWidth="70" SharedSizeGroup="ColDps" />
+                                <ColumnDefinition Width="0.8*" MinWidth="70" SharedSizeGroup="ColHits" />
+                                <ColumnDefinition Width="0.8*" MinWidth="70" SharedSizeGroup="ColCrit" />
+                                <ColumnDefinition Width="0.8*" MinWidth="70" SharedSizeGroup="ColAvg" />
+                                <ColumnDefinition Width="0.8*" MinWidth="70" SharedSizeGroup="ColPercentage" />
                             </Grid.ColumnDefinitions>
 
                             <!--  Skill Name with Icon  -->
@@ -286,12 +322,30 @@
 
                             <!--  Total Value  -->
                             <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch">
-                                <TextBlock Style="{StaticResource StatValueText}" HorizontalAlignment="Right"
-                                           Text="{Binding Heal.TotalValue, StringFormat={}{0:N0}}" />
+                                <TextBlock Style="{StaticResource StatValueText}" HorizontalAlignment="Right">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
+                                            <Binding Path="Heal.TotalValue" />
+                                            <Binding Path="DataContext.AppConfig.DamageDisplayType" RelativeSource="{RelativeSource AncestorType=Window}" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </StackPanel>
+
+                            <!--  HPS Per Second  -->
+                            <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                                <TextBlock Style="{StaticResource StatValueText}" HorizontalAlignment="Right" FontWeight="Light">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
+                                            <Binding Path="Heal.ValuePerSecond" />
+                                            <Binding Path="DataContext.AppConfig.DamageDisplayType" RelativeSource="{RelativeSource AncestorType=Window}" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
                             </StackPanel>
 
                             <!--  Hit Count  -->
-                            <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                            <StackPanel Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                 <TextBlock Style="{StaticResource StatValueText}" HorizontalAlignment="Right">
                                     <Run Text="{Binding Heal.HitCount, Mode=OneWay}" FontWeight="Light" />
                                     <Run
@@ -303,7 +357,7 @@
                             </StackPanel>
 
                             <!--  Crit Rate  -->
-                            <StackPanel Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                            <StackPanel Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                     <TextBlock x:Name="CritRateText" Style="{StaticResource StatValueText}"
                                                FontWeight="Light" Text="{Binding Heal.CritRate, StringFormat={}{0:P1}}" />
@@ -318,13 +372,20 @@
                             </StackPanel>
 
                             <!--  Average  -->
-                            <StackPanel Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                            <StackPanel Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                 <TextBlock Style="{StaticResource StatValueText}" HorizontalAlignment="Right"
-                                           FontWeight="Light" Text="{Binding Heal.Average, StringFormat={}{0:N0}}" />
+                                           FontWeight="Light">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
+                                            <Binding Path="Heal.Average" />
+                                            <Binding Path="DataContext.AppConfig.DamageDisplayType" RelativeSource="{RelativeSource AncestorType=Window}" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
                             </StackPanel>
 
                             <!--  Percentage  -->
-                            <StackPanel Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                            <StackPanel Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                 <TextBlock Style="{StaticResource StatValueText}" HorizontalAlignment="Right"
                                            FontWeight="Light"
                                            Text="{Binding Heal.PercentToTotal, StringFormat={}{0:P1}}" />
@@ -352,8 +413,8 @@
                     <!-- Background Progress Bar -->
                     <Border HorizontalAlignment="Left" Background="#FFF5F0" CornerRadius="4" Height="50">
                         <Border.Width>
-                            <MultiBinding Converter="{StaticResource PercentToWidthConverter}">
-                                <Binding Path="Percentage" />
+                            <MultiBinding Converter="{StaticResource RateToWidthConverter}">
+                                <Binding Path="TakenDamage.PercentToTotal" />
                                 <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=Grid}" />
                             </MultiBinding>
                         </Border.Width>
@@ -404,12 +465,30 @@
 
                             <!--  Total Value  -->
                             <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch">
-                                <TextBlock Style="{StaticResource StatValueText}" HorizontalAlignment="Right"
-                                           Text="{Binding TakenDamage.TotalValue, StringFormat={}{0:N0}}" />
+                                <TextBlock Style="{StaticResource StatValueText}" HorizontalAlignment="Right">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
+                                            <Binding Path="TakenDamage.TotalValue" />
+                                            <Binding Path="DataContext.AppConfig.DamageDisplayType" RelativeSource="{RelativeSource AncestorType=Window}" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </StackPanel>
+
+                            <!--  DTPS Per Second  -->
+                            <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                                <TextBlock Style="{StaticResource StatValueText}" HorizontalAlignment="Right" FontWeight="Light">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
+                                            <Binding Path="TakenDamage.ValuePerSecond" />
+                                            <Binding Path="DataContext.AppConfig.DamageDisplayType" RelativeSource="{RelativeSource AncestorType=Window}" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
                             </StackPanel>
 
                             <!--  Hit Count  -->
-                            <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                            <StackPanel Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                 <TextBlock Style="{StaticResource StatValueText}" HorizontalAlignment="Right">
                                     <Run Text="{Binding TakenDamage.HitCount, Mode=OneWay}" FontWeight="Light" />
                                     <Run
@@ -421,7 +500,7 @@
                             </StackPanel>
 
                             <!--  Crit Rate  -->
-                            <StackPanel Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                            <StackPanel Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                     <TextBlock x:Name="CritRateText" Style="{StaticResource StatValueText}"
                                                FontWeight="Light"
@@ -437,14 +516,20 @@
                             </StackPanel>
 
                             <!--  Average  -->
-                            <StackPanel Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                            <StackPanel Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                 <TextBlock Style="{StaticResource StatValueText}" HorizontalAlignment="Right"
-                                           FontWeight="Light"
-                                           Text="{Binding TakenDamage.Average, StringFormat={}{0:N0}}" />
+                                           FontWeight="Light">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
+                                            <Binding Path="TakenDamage.Average" />
+                                            <Binding Path="DataContext.AppConfig.DamageDisplayType" RelativeSource="{RelativeSource AncestorType=Window}" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
                             </StackPanel>
 
                             <!--  Percentage  -->
-                            <StackPanel Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                            <StackPanel Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                 <TextBlock Style="{StaticResource StatValueText}" HorizontalAlignment="Right"
                                            FontWeight="Light"
                                            Text="{Binding TakenDamage.PercentToTotal, StringFormat={}{0:P1}}" />
@@ -470,7 +555,7 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Border Background="#F5F5F5" Style="{StaticResource ShadowWindowBorder}">
+    <Border Background="{StaticResource SciFiBgBrush}" Style="{StaticResource ShadowWindowBorder}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -479,7 +564,25 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <ctrl:Header Title="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Header_Title}}" Grid.Row="0" />
+            <!-- Header -->
+            <Border Grid.Row="0" Padding="20,15" Background="Transparent" MouseLeftButtonDown="Header_MouseDown">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- Title Area -->
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Border Background="{StaticResource SciFiAccentBrush}" Width="4" Height="16" CornerRadius="2" Margin="0,0,10,0"/>
+                        <TextBlock Text="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Header_Title}}" Foreground="{StaticResource SciFiTextMainBrush}" FontWeight="Bold" FontSize="16" FontFamily="Microsoft YaHei UI"/>
+                    </StackPanel>
+
+                    <!-- Top Right Decoration -->
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="0" VerticalAlignment="Bottom" Height="1" Background="#E8E8E8" />
 
             <Grid Grid.Row="1" Style="{StaticResource InfoAndTypeGrid}">
                 <Grid.ColumnDefinitions>
@@ -495,16 +598,12 @@
                     Style="{StaticResource InfoNameText}"
                     Text="{Binding PlayerName}"
                     d:Text="JohnSmith"/>
-                <TextBlock
-                    Grid.Column="1"
-                    Style="{StaticResource InfoText}"
-                    Text="{Binding Uid, StringFormat=UID: {0}}" 
-                    d:Text="UID: 12345678"/>
-                <TextBlock
-                    Grid.Column="2"
-                    Style="{StaticResource InfoText}"
-                    Text="{Binding PowerLevel, StringFormat=Power: {0}}" 
-                    d:Text="Power: 42000"/>
+                <TextBlock Grid.Column="1" Style="{StaticResource InfoText}">
+                    <Run Text="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_Uid}}" /><Run Text=": " /><Run Text="{Binding Uid}" />
+                </TextBlock>
+                <TextBlock Grid.Column="2" Style="{StaticResource InfoText}">
+                    <Run Text="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_Power}}" /><Run Text=": " /><Run Text="{Binding PowerLevel}" />
+                </TextBlock>
 
                 <Border
                     Grid.Column="4"
@@ -580,8 +679,11 @@
                         LuckyCountLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_LuckCount}}"
                         HitsLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_HitCount}}"
                         Hits="{Binding Stats.Hits}"
-                        TotalLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_Total}}"
+                        TotalLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_TotalDamage}}"
                         Total="{Binding Stats.Total}"
+                        NormalDamage="{Binding Stats.NormalValue}"
+                        CritDamage="{Binding Stats.CritValue}"
+                        LuckyDamage="{Binding Stats.LuckyValue}"
                         NormalCount="{Binding Stats.NormalCount}"
                         NormalRate="{Binding Stats.NormalRate, StringFormat=\{0:P1\}}"
                         SeriesTitle="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Chart_RealTimeDps}}"
@@ -608,8 +710,11 @@
                         LuckyCountLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_LuckCount}}"
                         HitsLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_HitCount}}"
                         Hits="{Binding Stats.Hits}"
-                        TotalLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_Total}}"
+                        TotalLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_TotalDamage}}"
                         Total="{Binding Stats.Total}"
+                        NormalDamage="{Binding Stats.NormalValue}"
+                        CritDamage="{Binding Stats.CritValue}"
+                        LuckyDamage="{Binding Stats.LuckyValue}"
                         NormalCount="{Binding Stats.NormalCount}"
                         NormalRate="{Binding Stats.NormalRate, StringFormat=\{0:P1\}}"
                         SeriesTitle="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Chart_RealTimeDps}}"
@@ -618,6 +723,7 @@
                         SkillListTitle="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Section_DamageSkillsAnalysis}}"
                         SkillItems="{Binding SkillList.SkillItems}"
                         IconColor="{Binding SkillList.IconColor}"
+                        PlotViewModel="{Binding Plot}"
                         ItemTemplate="{StaticResource SkillListItemTemplateHealing}" />
                 </TabItem>
 
@@ -635,8 +741,11 @@
                         LuckyCountLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_LuckCount}}"
                         HitsLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_HitCount}}"
                         Hits="{Binding Stats.Hits}"
-                        TotalLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_Total}}"
+                        TotalLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_TotalDamage}}"
                         Total="{Binding Stats.Total}"
+                        NormalDamage="{Binding Stats.NormalValue}"
+                        CritDamage="{Binding Stats.CritValue}"
+                        LuckyDamage="{Binding Stats.LuckyValue}"
                         NormalCount="{Binding Stats.NormalCount}"
                         NormalRate="{Binding Stats.NormalRate, StringFormat=\{0:P1\}}"
                         SeriesTitle="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Chart_RealTimeDps}}"
@@ -645,6 +754,7 @@
                         SkillListTitle="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Section_DamageSkillsAnalysis}}"
                         SkillItems="{Binding SkillList.SkillItems}"
                         IconColor="{Binding SkillList.IconColor}"
+                        PlotViewModel="{Binding Plot}"
                         ItemTemplate="{StaticResource SkillListItemTemplateTaken}" />
                 </TabItem>
             </TabControl>

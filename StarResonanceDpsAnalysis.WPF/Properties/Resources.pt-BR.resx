@@ -1146,6 +1146,9 @@ Como obter: Após uma luta, seu personagem aparecerá automaticamente na janela 
   <data name="SkillLog_Popup_LuckyDamage" xml:space="preserve">
     <value>Dano de sorte</value>
   </data>
+  <data name="SkillBreakdown_Label_Percentage" xml:space="preserve">
+    <value>Proporção</value>
+  </data>
   <data name="Menu_Training_Personal" xml:space="preserve">
     <value>Treino Solo</value>
   </data>
@@ -1155,7 +1158,7 @@ Como obter: Após uma luta, seu personagem aparecerá automaticamente na janela 
   <data name="Menu_Training_Extreme" xml:space="preserve">
     <value>Treino Extremo</value>
   </data>
-  <data name="SkillBreakdown_Label_Percentage" xml:space="preserve">
-    <value>Proporção</value>
+  <data name="SkillBreakdown_Label_SkillName" xml:space="preserve">
+    <value>Habilidade(Nome)</value>
   </data>
 </root>

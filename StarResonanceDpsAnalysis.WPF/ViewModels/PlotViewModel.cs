@@ -25,6 +25,7 @@ public partial class PlotViewModel : BaseViewModel
 {
     private readonly StatisticType _statisticType;
     private readonly CategoryAxis _hitTypeBarCategoryAxis;
+    
     [ObservableProperty] private PlotModel _hitTypeBarPlotModel;
     [ObservableProperty] private PlotModel _piePlotModel;
     [ObservableProperty] private PlotModel _seriesPlotModel;
@@ -46,7 +47,7 @@ public partial class PlotViewModel : BaseViewModel
         
         _seriesPlotModel = new PlotModel
         {
-            Title = options?.SeriesPlotTitle,
+            // Title = options?.SeriesPlotTitle,
             Background = OxyColors.Transparent,
             PlotAreaBorderColor = OxyColor.FromRgb(224, 224, 224),
             Axes =
@@ -63,7 +64,9 @@ public partial class PlotViewModel : BaseViewModel
                     Position = AxisPosition.Left,
                     Title = options?.YAxisTitle,
                     MajorGridlineStyle = LineStyle.Solid,
-                    MajorGridlineColor = OxyColor.FromRgb(240, 240, 240)
+                    MajorGridlineColor = OxyColor.FromRgb(240, 240, 240),
+                    // ⭐ 添加自定义格式化器，避免科学计数法显示
+                    LabelFormatter = value => FormatAxisValue(value)
                 }
             },
             Series = { LineSeriesData }
@@ -71,33 +74,39 @@ public partial class PlotViewModel : BaseViewModel
 
         PieSeriesData = new PieSeries
         {
-            StrokeThickness = 3,
-            InsideLabelPosition = 0.6,
+            StrokeThickness = 2,
+            InsideLabelPosition = 0.5,
             AngleSpan = 360,
             StartAngle = -90,
+            // ⭐ Configure labels to be visible
             InsideLabelColor = OxyColors.White,
-            InsideLabelFormat = "{1}\n{2:0}%",
+            InsideLabelFormat = "{1:0.0}%",
             Stroke = OxyColors.White,
-            FontSize = 12,
-            FontWeight = 700 // Bold
+            FontSize = 11,
+            FontWeight = 600,
+            // ⭐ Set tooltip format to show skill name and percentage on hover
+            TrackerFormatString = "{0}\n{1}: {2:0.#}\n{3:0.0}%"
         };
         _piePlotModel = new PlotModel
         {
-            Title = options?.PiePlotTitle,
+            // Title = options?.PiePlotTitle, // Use XAML title instead
             Background = OxyColors.Transparent,
             Series = { PieSeriesData }
         };
         
-        // Add Legend
+        // Add Legend to show all skills - move to right side for better layout
         _piePlotModel.Legends.Add(new Legend
         {
-            LegendPosition = LegendPosition.BottomCenter,
-            LegendOrientation = LegendOrientation.Horizontal,
+            LegendPosition = LegendPosition.RightMiddle,
+            LegendOrientation = LegendOrientation.Vertical,
             LegendPlacement = LegendPlacement.Outside,
             LegendBorderThickness = 0,
-            LegendFontSize = 12,
+            LegendFontSize = 10,
             LegendTextColor = OxyColor.Parse("#666666"),
-            LegendSymbolPlacement = LegendSymbolPlacement.Left
+            LegendSymbolPlacement = LegendSymbolPlacement.Left,
+            LegendItemSpacing = 8,
+            LegendSymbolLength = 16,
+            LegendSymbolMargin = 8
         });
 
         // Bar chart model for hit type percentages (Normal, Critical, Lucky)
@@ -112,11 +121,30 @@ public partial class PlotViewModel : BaseViewModel
     /// </summary>
     public StatisticType StatisticType => _statisticType;
 
+    /// <summary>
+    /// ⭐ 格式化坐标轴数值，避免科学计数法
+    /// </summary>
+    private static string FormatAxisValue(double value)
+    {
+        if (value == 0) return "0";
+        
+        var absValue = Math.Abs(value);
+        
+        // 使用K/M/B格式化
+        if (absValue >= 1_000_000_000)
+            return $"{value / 1_000_000_000:0.#}B";
+        if (absValue >= 1_000_000)
+            return $"{value / 1_000_000:0.#}M";
+        if (absValue >= 1_000)
+            return $"{value / 1_000:0.#}K";
+        
+        return value.ToString("0.#");
+    }
+
     public void SetPieSeriesData(IReadOnlyList<SkillItemViewModel> skills)
     {
-        var colors = GenerateDistinctColors(skills.Count);
-
         PieSeriesData.Slices.Clear();
+        
         for (var i = 0; i < skills.Count; i++)
         {
             var skill = skills[i];
@@ -128,10 +156,11 @@ public partial class PlotViewModel : BaseViewModel
                 StatisticType.NpcTakenDamage => skill.TakenDamage,
                 _ => throw new ArgumentOutOfRangeException()
             };
+            
             PieSeriesData.Slices.Add(new PieSlice(skill.SkillName, value.TotalValue)
             {
                 IsExploded = false,
-                Fill = colors[i]
+                Fill = GetPaletteColor(i)
             });
         }
 
@@ -180,6 +209,29 @@ public partial class PlotViewModel : BaseViewModel
         }
 
         return colors;
+    }
+
+    private static OxyColor GetPaletteColor(int index)
+    {
+        // Google Material Design Colors (approx)
+        var palette = new[]
+        {
+            OxyColor.Parse("#F44336"), // Red
+            OxyColor.Parse("#4CAF50"), // Green
+            OxyColor.Parse("#2196F3"), // Blue
+            OxyColor.Parse("#FFC107"), // Amber
+            OxyColor.Parse("#9C27B0"), // Purple
+            OxyColor.Parse("#00BCD4"), // Cyan
+            OxyColor.Parse("#FF9800"), // Orange
+            OxyColor.Parse("#E91E63"), // Pink
+            OxyColor.Parse("#3F51B5"), // Indigo
+            OxyColor.Parse("#009688"), // Teal
+            OxyColor.Parse("#CDDC39"), // Lime
+            OxyColor.Parse("#673AB7"), // Deep Purple
+            OxyColor.Parse("#795548"), // Brown
+            OxyColor.Parse("#607D8B")  // Blue Grey
+        };
+        return palette[index % palette.Length];
     }
 
     private static (PlotModel model, CategoryAxis cateAxis) CreateHitTypeBarPlotModel(PlotOptions? options)
@@ -286,7 +338,7 @@ public partial class PlotViewModel : BaseViewModel
 
     public void UpdateOption(PlotOptions plotOptions)
     {
-        SeriesPlotModel.Title = plotOptions.SeriesPlotTitle;
+        // SeriesPlotModel.Title = plotOptions.SeriesPlotTitle;
         LineSeriesData.Title = plotOptions.LineSeriesTitle;
 
         foreach (var axis in SeriesPlotModel.Axes)
@@ -301,7 +353,7 @@ public partial class PlotViewModel : BaseViewModel
 
         SeriesPlotModel.InvalidatePlot(true);
 
-        PiePlotModel.Title = plotOptions.PiePlotTitle;
+        // PiePlotModel.Title = plotOptions.PiePlotTitle;
         PiePlotModel.InvalidatePlot(true);
 
         _hitTypeBarCategoryAxis.ItemsSource = new List<string>

@@ -156,6 +156,66 @@ public class TabContentPanel : Control
         set => SetValue(NormalRateProperty, value);
     }
 
+    // ? 新增：普通伤害
+    public static readonly DependencyProperty NormalDamageProperty = DependencyProperty.Register(
+        nameof(NormalDamage), typeof(long), typeof(TabContentPanel), new PropertyMetadata(default(long)));
+
+    public long NormalDamage
+    {
+        get => (long)GetValue(NormalDamageProperty);
+        set => SetValue(NormalDamageProperty, value);
+    }
+
+    // ? 新增：暴击伤害
+    public static readonly DependencyProperty CritDamageProperty = DependencyProperty.Register(
+        nameof(CritDamage), typeof(long), typeof(TabContentPanel), new PropertyMetadata(default(long)));
+
+    public long CritDamage
+    {
+        get => (long)GetValue(CritDamageProperty);
+        set => SetValue(CritDamageProperty, value);
+    }
+
+    // ? 新增：幸运伤害
+    public static readonly DependencyProperty LuckyDamageProperty = DependencyProperty.Register(
+        nameof(LuckyDamage), typeof(long), typeof(TabContentPanel), new PropertyMetadata(default(long)));
+
+    public long LuckyDamage
+    {
+        get => (long)GetValue(LuckyDamageProperty);
+        set => SetValue(LuckyDamageProperty, value);
+    }
+
+    // ? 新增：普通数据标签
+    public static readonly DependencyProperty NormalLabelProperty = DependencyProperty.Register(
+        nameof(NormalLabel), typeof(string), typeof(TabContentPanel), new PropertyMetadata(default(string?)));
+
+    public string? NormalLabel
+    {
+        get => (string?)GetValue(NormalLabelProperty);
+        set => SetValue(NormalLabelProperty, value);
+    }
+
+    // ? 新增：暴击数据标签
+    public static readonly DependencyProperty CritLabelProperty = DependencyProperty.Register(
+        nameof(CritLabel), typeof(string), typeof(TabContentPanel), new PropertyMetadata(default(string?)));
+
+    public string? CritLabel
+    {
+        get => (string?)GetValue(CritLabelProperty);
+        set => SetValue(CritLabelProperty, value);
+    }
+
+    // ? 新增：幸运数据标签
+    public static readonly DependencyProperty LuckyLabelProperty = DependencyProperty.Register(
+        nameof(LuckyLabel), typeof(string), typeof(TabContentPanel), new PropertyMetadata(default(string?)));
+
+    public string? LuckyLabel
+    {
+        get => (string?)GetValue(LuckyLabelProperty);
+        set => SetValue(LuckyLabelProperty, value);
+    }
+
     #endregion
 
     #region SkillList

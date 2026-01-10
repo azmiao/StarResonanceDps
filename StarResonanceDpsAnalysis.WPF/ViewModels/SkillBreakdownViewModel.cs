@@ -24,6 +24,9 @@ public partial class SkillBreakdownViewModel : BaseViewModel, IDisposable
     [ObservableProperty] private StatisticType _statisticIndex;
     private PlayerStatistics? _playerStatistics;
     
+    // NEW: App configuration for number formatting
+    [ObservableProperty] private Config.AppConfig _appConfig;
+    
     // ? 新增：实时更新定时器
     private DispatcherTimer? _updateTimer;
     private const int UpdateIntervalMs = 1000; // 每秒更新一次
@@ -39,11 +42,13 @@ public partial class SkillBreakdownViewModel : BaseViewModel, IDisposable
     public SkillBreakdownViewModel(
         ILogger<SkillBreakdownViewModel> logger, 
         LocalizationManager localizationManager,
-        IDataStorage storage)
+        IDataStorage storage,
+        Config.IConfigManager configManager)
     {
         _logger = logger;
         _localizationManager = localizationManager;
         _storage = storage;
+        _appConfig = configManager.CurrentConfig;
 
         var xAxis = GetXAxisName();
         _dpsTabViewModel = new TabContentViewModel(CreatePlotViewModel(xAxis, StatisticType.Damage));
@@ -203,15 +208,16 @@ public partial class SkillBreakdownViewModel : BaseViewModel, IDisposable
         var (damageSkills, healingSkills, takenSkills) =
             StatisticsToViewModelConverter.BuildSkillListsFromPlayerStats(_playerStatistics);
 
-        // Update damage statistics
+        // ? 关键修复：分别更新三个Tab，每个Tab使用对应的技能列表
+        // Update damage statistics (使用damageSkills)
         UpdateStatisticSet(DpsTabViewModel,
             _playerStatistics.AttackDamage, damageSkills, duration, _playerStatistics.GetDeltaDpsSamples());
 
-        // Update healing statistics
+        // Update healing statistics (使用healingSkills)
         UpdateStatisticSet(HealingTabViewModel,
             _playerStatistics.Healing, healingSkills, duration, _playerStatistics.GetDeltaHpsSamples());
 
-        // Update taken damage statistics
+        // Update taken damage statistics (使用takenSkills)
         UpdateStatisticSet(TankingTabViewModel,
             _playerStatistics.TakenDamage, takenSkills, duration, _playerStatistics.GetDeltaDtpsSamples());
     }
@@ -229,6 +235,26 @@ public partial class SkillBreakdownViewModel : BaseViewModel, IDisposable
         // Convert and set statistics
         var stats = statisticValues.ToDataStatistics(duration);
         tabViewModel.Stats = stats;
+        
+        // ? 关键修复：计算每个技能的ValuePerSecond（基于战斗时长）
+        var durationSeconds = duration.TotalSeconds;
+        foreach (var skill in skills)
+        {
+            // 根据统计类型计算DPS/HPS/DTPS
+            if (skill.Damage != null && skill.Damage.TotalValue > 0)
+            {
+                skill.Damage.ValuePerSecond = durationSeconds > 0 ? skill.Damage.TotalValue / durationSeconds : 0;
+            }
+            if (skill.Heal != null && skill.Heal.TotalValue > 0)
+            {
+                skill.Heal.ValuePerSecond = durationSeconds > 0 ? skill.Heal.TotalValue / durationSeconds : 0;
+            }
+            if (skill.TakenDamage != null && skill.TakenDamage.TotalValue > 0)
+            {
+                skill.TakenDamage.ValuePerSecond = durationSeconds > 0 ? skill.TakenDamage.TotalValue / durationSeconds : 0;
+            }
+        }
+        
         PopulateSkills(tabViewModel.SkillList.SkillItems, skills);
 
         // Update charts

@@ -96,6 +96,7 @@ public static class StatisticsToViewModelConverter
             CritCount = stats.CritTimes,
             LuckyCount = totalLucky,
             Average = stats.UseTimes > 0 ? stats.TotalValue / (double)stats.UseTimes : 0,
+            ValuePerSecond = 0, // ? 将在ViewModel层计算（基于战斗时长）
             CritRate = GetRate(stats.CritTimes, stats.UseTimes),
             LuckyRate = GetRate(totalLucky, stats.UseTimes),
             CritValue = stats.CritValue,

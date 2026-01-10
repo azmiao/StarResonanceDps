@@ -1101,4 +1101,7 @@
   <data name="SkillLog_Title" type="System.Resources.ResXNullRef, System.Windows.Forms">
     <value />
   </data>
+  <data name="SkillBreakdown_Label_SkillName" xml:space="preserve">
+    <value>스킬 (이름)</value>
+  </data>
 </root>
