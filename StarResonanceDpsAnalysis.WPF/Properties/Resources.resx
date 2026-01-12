@@ -1120,10 +1120,10 @@ How to get: After a fight, your character will automatically appear in the stats
     <value>casts</value>
   </data>
   <data name="SkillBreakdown_Suffix_Crits" xml:space="preserve">
-    <value>crits</value>
+    <value>crits Number</value>
   </data>
   <data name="SkillBreakdown_Suffix_Lucky" xml:space="preserve">
-    <value>lucky</value>
+    <value>Luck rate</value>
   </data>
   <data name="SkillBreakdown_Label_Average" xml:space="preserve">
     <value>Average</value>
@@ -1178,6 +1178,15 @@ How to get: After a fight, your character will automatically appear in the stats
   </data>
   <data name="SkillBreakdown_Label_Percentage" xml:space="preserve">
     <value>Percentage</value>
+  </data>
+  <data name="SkillBreakdown_Label_SkillName" xml:space="preserve">
+    <value>Skill(Name)</value>
+  </data>
+  <data name="SkillBreakdown_Label_Uid" xml:space="preserve">
+    <value>UID</value>
+  </data>
+  <data name="SkillBreakdown_Label_Power" xml:space="preserve">
+    <value>Power</value>
   </data>
   <data name="SkillBreakdown_Label_ValuePercentToTotal" xml:space="preserve">
     <value>Percent</value>

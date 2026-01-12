@@ -101,7 +101,7 @@
                                                 <RowDefinition Height="Auto"/>
                                             </SelectiveScrollingGrid.RowDefinitions>
 
-                                            <DataGridCellsPresenter Grid.Column="1"
+                                            <DataGridCellsPresenter Grid.Column="1" Grid.Row="0"
                                                                     ItemsPanel="{TemplateBinding ItemsPanel}"
                                                                     SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
 
@@ -109,7 +109,7 @@
                                                                       SelectiveScrollingGrid.SelectiveScrollingOrientation="{Binding AreRowDetailsFrozen, ConverterParameter={x:Static SelectiveScrollingOrientation.Vertical}, Converter={x:Static DataGrid.RowDetailsScrollingConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
                                                                       Visibility="{TemplateBinding DetailsVisibility}"/>
 
-                                            <DataGridRowHeader Grid.RowSpan="2"
+                                            <DataGridRowHeader Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
                                                                SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical"
                                                                Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Row}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
                                         </SelectiveScrollingGrid>
@@ -216,7 +216,7 @@
                                         <RadioButton
                                             Content="{lex:Loc Key=SkillBreakdown_Label_Total}"
                                             GroupName="SortGroup"
-                                            IsChecked="{Binding SortMode, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Total}"
+                                            IsChecked="{Binding SortMode, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static skillBreakdown:SkillSortMode.Total}}"
                                             Style="{StaticResource SortRadioButtonStyle}" />
 
                                         <Border
@@ -230,7 +230,7 @@
                                         <RadioButton
                                             Content="{lex:Loc Key=SkillBreakdown_Label_AverageDps}"
                                             GroupName="SortGroup"
-                                            IsChecked="{Binding SortMode, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=AverageDps}"
+                                            IsChecked="{Binding SortMode, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static skillBreakdown:SkillSortMode.AverageDamage}}"
                                             Style="{StaticResource SortRadioButtonStyle}" />
                                     </StackPanel>
                                 </Border>
@@ -248,7 +248,6 @@
                                     <DataGridTemplateColumn Width="*" Header="SKILL (NAME)">
                                         <DataGridTemplateColumn.HeaderStyle>
                                             <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource SkillListColumnHeaderStyle}">
-                                                <Setter Property="HorizontalContentAlignment" Value="Left" />
                                             </Style>
                                         </DataGridTemplateColumn.HeaderStyle>
                                         <DataGridTemplateColumn.CellTemplate>
@@ -291,7 +290,7 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate DataType="{x:Type viewModels:SkillItemViewModel}">
                                                 <Border Padding="16,8">
-                                                    <TextBlock HorizontalAlignment="Right" Style="{StaticResource StatColumnText}" FontWeight="Bold"
+                                                    <TextBlock Style="{StaticResource StatColumnText}" 
                                                                Text="{Binding TotalValue, StringFormat={}{0:N0}}" />
                                                 </Border>
                                             </DataTemplate>
@@ -356,7 +355,8 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate DataType="{x:Type viewModels:SkillItemViewModel}">
                                                 <Border Padding="16,8">
-                                                    <TextBlock x:Name="AverageText" HorizontalAlignment="Right" Style="{StaticResource StatColumnText}"
+                                                    <TextBlock x:Name="AverageText"
+                                                               Style="{StaticResource StatColumnText}"
                                                                Text="{Binding Average, StringFormat={}{0:N0}}" />
                                                 </Border>
                                             </DataTemplate>
@@ -375,7 +375,8 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate DataType="{x:Type viewModels:SkillItemViewModel}">
                                                 <Border Padding="16,8">
-                                                    <TextBlock x:Name="PercentToTotalText" HorizontalAlignment="Right" Style="{StaticResource StatColumnText}"
+                                                    <TextBlock x:Name="PercentToTotalText"
+                                                               Style="{StaticResource StatColumnText}"
                                                                Text="{Binding RateToTotal, StringFormat={}{0:P1}}" />
                                                 </Border>
                                             </DataTemplate>

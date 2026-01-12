@@ -9,36 +9,81 @@
             <Setter.Value>
                 <ControlTemplate TargetType="skillBreakdown:SkillStatsSummaryPanel">
                     <UniformGrid Rows="1" Columns="5">
+                        <!-- 1. 总伤害 -->
                         <Border Style="{StaticResource StatCardBorder}">
                             <StackPanel>
-                                <TextBlock Style="{StaticResource StatValueText}" Text="{Binding Total, StringFormat={}{0:N0}, RelativeSource={RelativeSource TemplatedParent}}" />
+                                <TextBlock Style="{StaticResource StatValueText}">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
+                                            <Binding Path="Total" RelativeSource="{RelativeSource TemplatedParent}" />
+                                            <Binding Path="DataContext.AppConfig.DamageDisplayType" RelativeSource="{RelativeSource AncestorType=skillBreakdown:TabContentPanel}" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
                                 <TextBlock Style="{StaticResource StatLabelText}" Text="{TemplateBinding TotalLabel}" />
-                                <TextBlock Style="{StaticResource StatSubText}">
-                                    <Run Text="0.0% " />
-                                    <Run Text="{lex:Loc Key=SkillBreakdown_Suffix_Progress}" />
+                                <TextBlock Style="{StaticResource StatSubText}" Foreground="#6B7280" HorizontalAlignment="Center">
+                                    <Run>
+                                        <Run.Text>
+                                            <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
+                                                <Binding Path="NormalDamage" RelativeSource="{RelativeSource TemplatedParent}" />
+                                                <Binding Path="DataContext.AppConfig.DamageDisplayType" RelativeSource="{RelativeSource AncestorType=skillBreakdown:TabContentPanel}" />
+                                            </MultiBinding>
+                                        </Run.Text>
+                                    </Run>
+                                    <Run Text=" " />
+                                    <Run Text="{lex:Loc Key={x:Static properties:ResourcesKeys.Common_HitType_Normal}}" />
                                 </TextBlock>
                             </StackPanel>
                         </Border>
+                        
+                        <!-- 2. 平均DPS -->
                         <Border Style="{StaticResource StatCardBorder}">
                             <StackPanel>
-                                <TextBlock Style="{StaticResource StatValueText}" Foreground="#2563EB" Text="{Binding Average, StringFormat={}{0:N0}, RelativeSource={RelativeSource TemplatedParent}}" />
+                                <TextBlock Style="{StaticResource StatValueText}" Foreground="#2563EB">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
+                                            <Binding Path="Average" RelativeSource="{RelativeSource TemplatedParent}" />
+                                            <Binding Path="DataContext.AppConfig.DamageDisplayType" RelativeSource="{RelativeSource AncestorType=skillBreakdown:TabContentPanel}" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
                                 <TextBlock Style="{StaticResource StatLabelText}" Text="{TemplateBinding AverageLabel}" />
-                                <TextBlock Style="{StaticResource StatSubText}">
-                                    <Run Text="0 " />
-                                    <Run Text="{lex:Loc Key=SkillBreakdown_Suffix_Casts}" />
+                                <TextBlock Style="{StaticResource StatSubText}" Foreground="#F59E0B" HorizontalAlignment="Center">
+                                    <Run>
+                                        <Run.Text>
+                                            <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
+                                                <Binding Path="LuckyDamage" RelativeSource="{RelativeSource TemplatedParent}" />
+                                                <Binding Path="DataContext.AppConfig.DamageDisplayType" RelativeSource="{RelativeSource AncestorType=skillBreakdown:TabContentPanel}" />
+                                            </MultiBinding>
+                                        </Run.Text>
+                                    </Run>
+                                    <Run Text=" " />
+                                    <Run Text="{lex:Loc Key={x:Static properties:ResourcesKeys.Common_HitType_Lucky}}" />
                                 </TextBlock>
                             </StackPanel>
                         </Border>
+                        
+                        <!-- 3. 总命中次数 -->
                         <Border Style="{StaticResource StatCardBorder}">
                             <StackPanel>
                                 <TextBlock Style="{StaticResource StatValueText}" Text="{Binding Hits, StringFormat={}{0:N0}, RelativeSource={RelativeSource TemplatedParent}}" />
                                 <TextBlock Style="{StaticResource StatLabelText}" Text="{TemplateBinding HitsLabel}" />
-                                <TextBlock Style="{StaticResource StatSubText}">
-                                    <Run Text="0 " />
-                                    <Run Text="{lex:Loc Key=SkillBreakdown_Suffix_Progress}" />
+                                <TextBlock Style="{StaticResource StatSubText}" Foreground="#EF4444" HorizontalAlignment="Center">
+                                    <Run>
+                                        <Run.Text>
+                                            <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
+                                                <Binding Path="CritDamage" RelativeSource="{RelativeSource TemplatedParent}" />
+                                                <Binding Path="DataContext.AppConfig.DamageDisplayType" RelativeSource="{RelativeSource AncestorType=skillBreakdown:TabContentPanel}" />
+                                            </MultiBinding>
+                                        </Run.Text>
+                                    </Run>
+                                    <Run Text=" " />
+                                    <Run Text="{lex:Loc Key={x:Static properties:ResourcesKeys.Common_HitType_Critical}}" />
                                 </TextBlock>
                             </StackPanel>
                         </Border>
+                        
+                        <!-- 4. 暴击率 -->
                         <Border Style="{StaticResource StatCardBorder}">
                             <StackPanel>
                                 <TextBlock Style="{StaticResource StatValueText}" Foreground="#10B981" Text="{Binding CritRate, StringFormat={}{0:P1}, RelativeSource={RelativeSource TemplatedParent}}" />
@@ -50,11 +95,13 @@
                                 </TextBlock>
                             </StackPanel>
                         </Border>
+                        
+                        <!-- 5. 幸运次数 -->
                         <Border Style="{StaticResource StatCardBorder}">
                             <StackPanel>
-                                <TextBlock Style="{StaticResource StatValueText}" Text="{Binding LuckyCount, StringFormat={}{0:N0}, RelativeSource={RelativeSource TemplatedParent}}" />
+                                <TextBlock Style="{StaticResource StatValueText}" Foreground="#FACC15" Text="{Binding LuckyCount, StringFormat={}{0:N0}, RelativeSource={RelativeSource TemplatedParent}}" />
                                 <TextBlock Style="{StaticResource StatLabelText}" Text="{TemplateBinding LuckyCountLabel}" />
-                                <TextBlock Style="{StaticResource StatSubText}">
+                                <TextBlock Style="{StaticResource StatSubText}" Foreground="#FACC15">
                                     <Run Text="{Binding LuckyRate, StringFormat={}{0:P1}, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
                                     <Run Text=" " />
                                     <Run Text="{lex:Loc Key=SkillBreakdown_Suffix_Lucky}" />

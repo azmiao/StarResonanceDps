@@ -1097,8 +1097,11 @@
   <data name="SkillBreakdown_Label_Average" xml:space="preserve">
     <value>평균</value>
   </data>
-  <data name="SkillLog_Title" type="System.Resources.ResXNullRef, System.Windows.Forms">
+  <data name="SkillLog_Title" xml:space="preserve">
     <value />
+  </data>
+  <data name="SkillBreakdown_Label_SkillName" xml:space="preserve">
+    <value>스킬 (이름)</value>
   </data>
   <data name="SkillBreakdown_Label_ValuePercentToTotal" xml:space="preserve">
     <value>퍼센트</value>

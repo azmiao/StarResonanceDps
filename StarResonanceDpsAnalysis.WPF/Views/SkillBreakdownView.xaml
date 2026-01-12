@@ -9,6 +9,7 @@
     xmlns:loc="clr-namespace:StarResonanceDpsAnalysis.WPF.Properties"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:StarResonanceDpsAnalysis.WPF.ViewModels"
+    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
     Title="{lex:Loc Key={x:Static loc:ResourcesKeys.Window_SkillBreakdown_Title}}"
     Width="1200"
     Height="800"
@@ -30,8 +31,26 @@
             UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
 
+    <b:Interaction.Triggers>
+        <!--<b:EventTrigger EventName="Loaded">
+            <b:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </b:EventTrigger>-->
+        <b:EventTrigger EventName="Unloaded">
+            <b:InvokeCommandAction Command="{Binding UnloadedCommand}" />
+        </b:EventTrigger>
+    </b:Interaction.Triggers>
+
     <Window.Resources>
         <ResourceDictionary>
+            <!-- White Theme Colors -->
+            <Color x:Key="SciFiBgColor">#FFFFFF</Color>
+            <SolidColorBrush x:Key="SciFiBgBrush" Color="{StaticResource SciFiBgColor}"/>
+            <SolidColorBrush x:Key="SciFiCardBrush" Color="#F5F5F5"/>
+            <SolidColorBrush x:Key="SciFiBorderBrush" Color="#E0E0E0"/>
+            <SolidColorBrush x:Key="SciFiAccentBrush" Color="#FF9F0A"/>
+            <SolidColorBrush x:Key="SciFiTextMainBrush" Color="#333333"/>
+            <SolidColorBrush x:Key="SciFiTextSubBrush" Color="#666666"/>
+
             <Style x:Key="InfoAndTypeGrid" TargetType="Grid">
                 <Setter Property="Height" Value="60" />
                 <Setter Property="Background" Value="#FFF" />
@@ -98,20 +117,10 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-
-            <!--  NEW: Stat Label Style  -->
-
-            <!--  NEW: Stat Value Style  -->
-            <Style x:Key="StatValueText" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="14" />
-                <Setter Property="FontWeight" Value="Bold" />
-                <Setter Property="Foreground" Value="#2297F4" />
-            </Style>
-
         </ResourceDictionary>
     </Window.Resources>
 
-    <Border Background="#F5F5F5" Style="{StaticResource ShadowWindowBorder}">
+    <Border Background="{StaticResource SciFiBgBrush}" Style="{StaticResource ShadowWindowBorder}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -120,7 +129,23 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <ctrl:Header Title="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Header_Title}}" Grid.Row="0" />
+            <!-- Header -->
+            <Border Grid.Row="0" Padding="20,15" Background="Transparent" MouseLeftButtonDown="Header_MouseDown">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Title Area -->
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Border Background="{StaticResource SciFiAccentBrush}" Width="4" Height="16" CornerRadius="2" Margin="0,0,10,0"/>
+                        <TextBlock Text="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Header_Title}}" Foreground="{StaticResource SciFiTextMainBrush}" FontWeight="Bold" FontSize="16" FontFamily="Microsoft YaHei UI"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="0" VerticalAlignment="Bottom" Height="1" Background="#E8E8E8" />
 
             <Grid Grid.Row="1" Style="{StaticResource InfoAndTypeGrid}">
                 <Grid.ColumnDefinitions>
@@ -136,16 +161,12 @@
                     Style="{StaticResource InfoNameText}"
                     Text="{Binding PlayerName}"
                     d:Text="JohnSmith"/>
-                <TextBlock
-                    Grid.Column="1"
-                    Style="{StaticResource InfoText}"
-                    Text="{Binding Uid, StringFormat=UID: {0}}" 
-                    d:Text="UID: 12345678"/>
-                <TextBlock
-                    Grid.Column="2"
-                    Style="{StaticResource InfoText}"
-                    Text="{Binding PowerLevel, StringFormat=Power: {0}}" 
-                    d:Text="Power: 42000"/>
+                <TextBlock Grid.Column="1" Style="{StaticResource InfoText}">
+                    <Run Text="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_Uid}}" /><Run Text=": " /><Run Text="{Binding Uid}" />
+                </TextBlock>
+                <TextBlock Grid.Column="2" Style="{StaticResource InfoText}">
+                    <Run Text="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_Power}}" /><Run Text=": " /><Run Text="{Binding PowerLevel}" />
+                </TextBlock>
 
                 <Border
                     Grid.Column="4"
@@ -221,8 +242,11 @@
                         LuckyCountLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_LuckCount}}"
                         HitsLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_HitCount}}"
                         Hits="{Binding Stats.Hits}"
-                        TotalLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_Total}}"
+                        TotalLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_TotalDamage}}"
                         Total="{Binding Stats.Total}"
+                        NormalDamage="{Binding Stats.NormalValue}"
+                        CritDamage="{Binding Stats.CritValue}"
+                        LuckyDamage="{Binding Stats.LuckyValue}"
                         NormalCount="{Binding Stats.NormalCount}"
                         NormalRate="{Binding Stats.NormalRate, StringFormat=\{0:P1\}}"
                         SeriesTitle="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Chart_RealTimeDps}}"
@@ -249,8 +273,11 @@
                         LuckyCountLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_LuckCount}}"
                         HitsLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_HitCount}}"
                         Hits="{Binding Stats.Hits}"
-                        TotalLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_Total}}"
+                        TotalLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_TotalDamage}}"
                         Total="{Binding Stats.Total}"
+                        NormalDamage="{Binding Stats.NormalValue}"
+                        CritDamage="{Binding Stats.CritValue}"
+                        LuckyDamage="{Binding Stats.LuckyValue}"
                         NormalCount="{Binding Stats.NormalCount}"
                         NormalRate="{Binding Stats.NormalRate, StringFormat=\{0:P1\}}"
                         SeriesTitle="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Chart_RealTimeDps}}"
@@ -259,6 +286,7 @@
                         SkillListTitle="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Section_DamageSkillsAnalysis}}"
                         SkillItems="{Binding SkillList.SkillItems}"
                         IconColor="{Binding SkillList.IconColor}"
+                        PlotViewModel="{Binding Plot}"
                         ItemTemplate="{StaticResource SkillListItemTemplateHealing}" />
                 </TabItem>
 
@@ -276,8 +304,11 @@
                         LuckyCountLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_LuckCount}}"
                         HitsLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_HitCount}}"
                         Hits="{Binding Stats.Hits}"
-                        TotalLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_Total}}"
+                        TotalLabel="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Label_TotalDamage}}"
                         Total="{Binding Stats.Total}"
+                        NormalDamage="{Binding Stats.NormalValue}"
+                        CritDamage="{Binding Stats.CritValue}"
+                        LuckyDamage="{Binding Stats.LuckyValue}"
                         NormalCount="{Binding Stats.NormalCount}"
                         NormalRate="{Binding Stats.NormalRate, StringFormat=\{0:P1\}}"
                         SeriesTitle="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Chart_RealTimeDps}}"
@@ -286,6 +317,7 @@
                         SkillListTitle="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Section_DamageSkillsAnalysis}}"
                         SkillItems="{Binding SkillList.SkillItems}"
                         IconColor="{Binding SkillList.IconColor}"
+                        PlotViewModel="{Binding Plot}"
                         ItemTemplate="{StaticResource SkillListItemTemplateTaken}" />
                 </TabItem>
             </TabControl>

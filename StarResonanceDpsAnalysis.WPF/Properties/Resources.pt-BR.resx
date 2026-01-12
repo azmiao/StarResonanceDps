@@ -1161,4 +1161,7 @@ Como obter: Após uma luta, seu personagem aparecerá automaticamente na janela 
   <data name="SkillBreakdown_Label_Percentage" xml:space="preserve">
     <value>Proporção</value>
   </data>
+  <data name="SkillBreakdown_Label_SkillName" xml:space="preserve">
+    <value>Habilidade(Nome)</value>
+  </data>
 </root>

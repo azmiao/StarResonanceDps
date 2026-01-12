@@ -1041,13 +1041,13 @@
     <value>时间（秒）</value>
   </data>
   <data name="Common_HitType_Lucky" xml:space="preserve">
-    <value>幸运</value>
+    <value>幸运伤害</value>
   </data>
   <data name="Common_HitType_Critical" xml:space="preserve">
-    <value>暴击</value>
+    <value>暴击伤害</value>
   </data>
   <data name="Common_HitType_Normal" xml:space="preserve">
-    <value>普通</value>
+    <value>普通伤害</value>
   </data>
   <data name="Settings_PlayerInfoCustomization_Title" xml:space="preserve">
     <value>玩家信息显示</value>
@@ -1147,6 +1147,21 @@
   </data>
   <data name="SkillBreakdown_Label_Percentage" xml:space="preserve">
     <value>占比</value>
+  </data>
+  <data name="SkillBreakdown_Suffix_Crits" xml:space="preserve">
+    <value>暴击次数</value>
+  </data>
+  <data name="SkillBreakdown_Suffix_Lucky" xml:space="preserve">
+    <value>幸运率</value>
+  </data>
+  <data name="SkillBreakdown_Label_SkillName" xml:space="preserve">
+    <value>技能(名称)</value>
+  </data>
+  <data name="SkillBreakdown_Label_Uid" xml:space="preserve">
+    <value>UID</value>
+  </data>
+  <data name="SkillBreakdown_Label_Power" xml:space="preserve">
+    <value>战力</value>
   </data>
   <data name="SkillBreakdown_Label_ValuePercentToTotal" xml:space="preserve">
     <value>百分比</value>

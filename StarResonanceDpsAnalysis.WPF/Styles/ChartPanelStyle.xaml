@@ -52,14 +52,14 @@
 
                         <Border Style="{StaticResource ChartCardBorder}">
                             <StackPanel>
-                                <StackPanel Margin="0,0,0,16" Orientation="Horizontal">
+                                <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
                                     <Path
                                         Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 2.05c3.95.23 7.18 3.25 7.75 7.15h-7.75V4.05zM11 19.95c-3.95-.23-7.18-3.25-7.75-7.15h7.75v7.15zm-1-8.15H2.25c.57-3.9 3.8-6.92 7.75-7.15v7.15z"
                                         Fill="#738192"
                                         Style="{StaticResource ChartIcon}" />
                                     <TextBlock Style="{StaticResource ChartTitle}" Text="{TemplateBinding PieChartTitle}" />
                                 </StackPanel>
-                                <oxy:PlotView Height="280" Model="{Binding PiePlotModel}" />
+                                <oxy:PlotView Height="200" Model="{Binding PiePlotModel}" />
                             </StackPanel>
                         </Border>
 
@@ -86,7 +86,9 @@
                                             </Grid.ColumnDefinitions>
                                             <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="#64748B">
                                                 <Run Text="{lex:Loc Key=Common_HitType_Lucky}" />
-                                                <Run Text=" (Lucky)" FontSize="12" Foreground="#94A3B8" />
+                                                <Run Text=" (" FontSize="12" Foreground="#94A3B8" />
+                                                <Run Text="{lex:Loc Key=SkillBreakdown_Suffix_Lucky}" FontSize="12" Foreground="#94A3B8" />
+                                                <Run Text=")" FontSize="12" Foreground="#94A3B8" />
                                             </TextBlock>
                                             <TextBlock Grid.Column="1" FontSize="13" FontWeight="Bold" Foreground="#1E293B">
                                                 <Run Text="{Binding LuckyCount, StringFormat={}{0:N0}, RelativeSource={RelativeSource TemplatedParent}}" />
@@ -120,7 +122,9 @@
                                             </Grid.ColumnDefinitions>
                                             <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="#64748B">
                                                 <Run Text="{lex:Loc Key=Common_HitType_Critical}" />
-                                                <Run Text=" (Crit)" FontSize="12" Foreground="#94A3B8" />
+                                                <Run Text=" (" FontSize="12" Foreground="#94A3B8" />
+                                                <Run Text="{lex:Loc Key=SkillBreakdown_Suffix_Crits}" FontSize="12" Foreground="#94A3B8" />
+                                                <Run Text=")" FontSize="12" Foreground="#94A3B8" />
                                             </TextBlock>
                                             <TextBlock Grid.Column="1" FontSize="13" FontWeight="Bold" Foreground="#1E293B">
                                                 <Run Text="{Binding CritCount, StringFormat={}{0:N0}, RelativeSource={RelativeSource TemplatedParent}}" />
@@ -154,7 +158,9 @@
                                             </Grid.ColumnDefinitions>
                                             <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="#64748B">
                                                 <Run Text="{lex:Loc Key=Common_HitType_Normal}" />
-                                                <Run Text=" (Normal)" FontSize="12" Foreground="#94A3B8" />
+                                                <Run Text=" (" FontSize="12" Foreground="#94A3B8" />
+                                                <Run Text="{lex:Loc Key=Common_HitType_Normal}" FontSize="12" Foreground="#94A3B8" />
+                                                <Run Text=")" FontSize="12" Foreground="#94A3B8" />
                                             </TextBlock>
                                             <TextBlock Grid.Column="1" FontSize="13" FontWeight="Bold" Foreground="#1E293B">
                                                 <Run Text="{Binding NormalCount, StringFormat={}{0:N0}, RelativeSource={RelativeSource TemplatedParent}}" />
