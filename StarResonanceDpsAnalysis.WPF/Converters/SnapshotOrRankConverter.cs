@@ -1,6 +1,8 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
+using StarResonanceDpsAnalysis.WPF.Localization;
+using StarResonanceDpsAnalysis.WPF.Properties;
 
 namespace StarResonanceDpsAnalysis.WPF.Converters;
 
@@ -10,25 +12,28 @@ public sealed class SnapshotOrRankConverter : IMultiValueConverter
     {
         if (values == null || values.Length < 2)
         {
-            return "[--]";
+            return null;
         }
 
-        // µÚÒ»¸ö²ÎÊý: IsViewingSnapshot (ÊÇ·ñÔÚ¿ìÕÕÄ£Ê½)
+        // ç¬¬ä¸€ä¸ªå‚æ•°: IsViewingSnapshot (æ˜¯å¦åœ¨å¿«ç…§æ¨¡å¼)
         var isSnapshot = values[0] is true;
         
-        // Èç¹ûÊÇ¿ìÕÕÄ£Ê½,ÏÔÊ¾[¿ìÕÕ]
+        // å¦‚æžœæ˜¯å¿«ç…§æ¨¡å¼,æ˜¾ç¤ºæœ¬åœ°åŒ–æ ‡ç­¾
         if (isSnapshot)
         {
-            return "[¿ìÕÕ]";
+            return LocalizationManager.Instance.GetString(
+                ResourcesKeys.DpsStatistics_Snapshot_Label,
+                culture,
+                "[Snapshot]");
         }
 
-        // µÚ¶þ¸ö²ÎÊý: CurrentPlayerRank (Íæ¼ÒÅÅÃû×Ö·û´®,¸ñÊ½ÒÑ¾­ÊÇ"[01]"»ò"[--]")
+        // ç¬¬äºŒä¸ªå‚æ•°: CurrentPlayerRank (çŽ©å®¶æŽ’åå­—ç¬¦ä¸²,æ ¼å¼å·²ç»æ˜¯"[01]"æˆ–"[--]")
         if (values[1] == null || values[1] == DependencyProperty.UnsetValue)
         {
             return null;
         }
 
-        // Õ½¶·Ä£Ê½ÏÂ,Ö±½Ó·µ»ØÅÅÃû×Ö·û´®(ÒÑ¾­°üº¬·½À¨ºÅ)
+        // æˆ˜æ–—æ¨¡å¼ä¸‹,ç›´æŽ¥è¿”å›žæŽ’åå­—ç¬¦ä¸²(å·²ç»åŒ…å«æ–¹æ‹¬å·)
         var rank = values[1]?.ToString();
         return rank;
     }
