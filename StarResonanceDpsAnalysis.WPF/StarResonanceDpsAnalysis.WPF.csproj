@@ -18,6 +18,7 @@
     <MATProjectType>AnonResx</MATProjectType>
     <ApplicationIcon>ApplicationIcon.ico</ApplicationIcon>
     <NeutralLanguage>en-US</NeutralLanguage>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Logging\**" />

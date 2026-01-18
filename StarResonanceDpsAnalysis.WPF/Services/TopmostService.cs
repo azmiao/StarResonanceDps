@@ -26,7 +26,7 @@ public sealed class TopmostService : ITopmostService
     public void SetTopmost(Window window, bool enable)
     {
         // immediate WPF state
-        window.Topmost = enable;
+        if (window.IsVisible) window.Topmost = enable;
 
         void ApplyNative()
         {
