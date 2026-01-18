@@ -1,10 +1,8 @@
-using System.Diagnostics;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using StarResonanceDpsAnalysis.Core.Data;
-using StarResonanceDpsAnalysis.Core.Statistics;
 using StarResonanceDpsAnalysis.WPF.Config;
 using StarResonanceDpsAnalysis.WPF.Localization;
 using StarResonanceDpsAnalysis.WPF.Models;
@@ -134,7 +132,6 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
         AppConfig = _configManager.CurrentConfig;
         LoadDpsStatisticsSettings();
 
-        _timerService.DurationChanged += OnTimerDurationChanged;
         _updateCoordinator.UpdateRequested += OnUpdateRequested;
         
         // Bind team stats manager to show team total setting
@@ -150,7 +147,6 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
     {
         DebugFunctions.SampleDataRequested -= OnSampleDataRequested;
         _configManager.ConfigurationUpdated -= ConfigManagerOnConfigurationUpdated;
-        _timerService.DurationChanged -= OnTimerDurationChanged;
         _updateCoordinator.UpdateRequested -= OnUpdateRequested;
         _timerService.Stop();
         _updateCoordinator.Stop();
@@ -300,13 +296,6 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
     }
 
     // ===== Private Helper Methods =====
-    private void OnTimerDurationChanged(object? sender, TimeSpan duration)
-    {
-        _dispatcher.Invoke(() =>
-        {
-            BattleDuration = duration;
-        });
-    }
 
     private void OnUpdateRequested(object? sender, EventArgs e)
     {
