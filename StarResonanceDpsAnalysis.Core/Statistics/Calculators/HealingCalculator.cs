@@ -32,11 +32,11 @@ public sealed class HealingCalculator : IStatisticsCalculator
     {
         stats.StartTick ??= log.TimeTicks;
         stats.LastTick = log.TimeTicks;
-        var ticks = stats.LastTick - (stats.StartTick ?? 0);
+        var ticks = stats.ElapsedTicks();
 
         var values = stats.Healing;
         values.Total += log.Value;
-        values.ValuePerSecond = ticks > 0 ? (double)values.Total * TimeSpan.TicksPerMillisecond / ticks : double.NaN;
+        values.ValuePerSecond = ticks > 0 ? (double)values.Total * TimeSpan.TicksPerSecond / ticks : double.NaN;
 
         // Update skill breakdown
         var skill = stats.GetOrCreateHealingSkill(log.SkillID);
