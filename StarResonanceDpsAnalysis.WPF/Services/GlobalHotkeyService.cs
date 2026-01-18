@@ -277,7 +277,7 @@ public sealed class GlobalHotkeyService(
             {
                 // 个人模式窗口可见: 调用个人模式的Clear命令
                 logger.LogInformation("快捷键刷新: 个人模式窗口可见,执行个人模式清空");
-                personalDpsViewModel.ClearCommand.Execute(null);
+                personalDpsViewModel.Clear();
             }
             else
             {

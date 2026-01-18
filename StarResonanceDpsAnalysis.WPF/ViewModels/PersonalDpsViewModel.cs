@@ -572,7 +572,7 @@ public partial class PersonalDpsViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private void Clear()
+    public void Clear()
     {
         _logger?.LogInformation("个人模式Clear命令执行");
 

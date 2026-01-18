@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using StarResonanceDpsAnalysis.Core.Statistics;
 using StarResonanceDpsAnalysis.WPF.Logging;
 using StarResonanceDpsAnalysis.WPF.Models;
-using StarResonanceDpsAnalysis.WPF.Services;
 
 namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 
@@ -21,7 +19,7 @@ public partial class DpsStatisticsViewModel
 
         void Do()
         {
-            _logger.LogTrace("DataStorage_DpsDataUpdated called");
+            _logger.LogTrace("Enter UpdateData");
 
             var stat = _storage.GetStatistics(ScopeTime == ScopeTime.Total);
 
