@@ -1050,7 +1050,30 @@
                                                 ItemTemplate="{StaticResource LocalizedEnumTextBlockDataTemplate}"
                                                 ItemsSource="{Binding AvailableNumberDisplayModes}"
                                                 SelectedItem="{Binding SelectedNumberDisplayMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                Style="{StaticResource AntComboBoxStyle}" />
+                                                Style="{StaticResource FieldComboBox}" />
+                                        </Grid>
+                                    </Border>
+
+                                    <Border Style="{StaticResource SectionFieldBorder}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="39*" />
+                                                <ColumnDefinition Width="*" MinWidth="10" />
+                                                <ColumnDefinition Width="60*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock
+                                                Grid.Column="0"
+                                                Style="{StaticResource FieldName}"
+                                                Text="DPS显示模式"
+                                                ToolTip="选择DPS显示的计算方式：累计伤害/战斗时长 或 全程平均秒伤" />
+                                            <Border Grid.Column="2" HorizontalAlignment="Right">
+                                                <ctrl:SwitchControl
+                                                    IsChecked="{Binding AppConfig.UseConverterBasedDps, Mode=TwoWay}"
+                                                    OffContent="全程秒伤"
+                                                    OnContent="累计/时长"
+                                                    ToolTip="开启=累计伤害除以时长, 关闭=全程平均秒伤(ValuePerSecond)" />
+                                            </Border>
                                         </Grid>
                                     </Border>
 
@@ -1280,7 +1303,7 @@
                                                             </Button.Template>
                                                         </Button>
                                                     </WrapPanel>
-                                                    
+
                                                     <!-- ⭐ 新增：自定义颜色按钮（多彩图标） -->
                                                     <Button x:Name="CustomColorButton" 
                                                             Width="30" Height="30"
@@ -1321,7 +1344,7 @@
                                                             </EventTrigger>
                                                         </Button.Triggers>
                                                     </Button>
-                                                    
+
                                                     <!-- ⭐ 颜色选择器 Popup -->
                                                     <Popup x:Name="ColorPickerPopup"
                                                            PlacementTarget="{Binding ElementName=CustomColorButton}"
