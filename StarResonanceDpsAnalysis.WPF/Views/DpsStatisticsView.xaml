@@ -250,6 +250,8 @@
                                 <Binding Path="Value" />
                                 <Binding Path="DataContext.BattleDuration" RelativeSource="{RelativeSource AncestorType=Window}" />
                                 <Binding Path="DataContext.AppConfig.DamageDisplayType" RelativeSource="{RelativeSource AncestorType=Window}" />
+                                <Binding Path="ValuePerSecond" />
+                                <Binding Path="DataContext.AppConfig.UseConverterBasedDps" RelativeSource="{RelativeSource AncestorType=Window}" />
                             </MultiBinding>
                         </Run.Text>
                     </Run>
@@ -269,7 +271,7 @@
         <DataTemplate x:Key="PopupTemplate" DataType="{x:Type viewModels:StatisticDataViewModel}">
             <!--  ⭐ 动态绑定: 根据StatisticType显示对应的技能列表  -->
             <ctrl:DpsDetailPopup
-                PlayerName="{Binding Player.Name}"
+                PlayerName="{Binding Player.PlayerInfo}"
                 PlayerUid="{Binding Player.Uid}"
                 TemporaryMaskPlayerName="{Binding DataContext.TemporaryMaskPlayerName, RelativeSource={RelativeSource AncestorType=Window}}">
                 <ctrl:DpsDetailPopup.SkillList>
