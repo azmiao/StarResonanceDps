@@ -262,18 +262,22 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
             break;
         }
 
+        var prevRank = CurrentPlayerRank;
         if (found)
             CurrentPlayerRank = i + 1;
         else
             CurrentPlayerRank = null;
 
-        // ⭐ 调试日志
-        _logger.LogDebug(
-            "排名更新: UserUID={UserUid}, Rank={Rank}, Total={Total}, Type={Type}",
-            currentPlayerUid,
-            CurrentPlayerRank ?? -1,
-            Data.Count,
-            _type);
+        if (prevRank != CurrentPlayerRank)
+        {
+            // ⭐ 调试日志
+            _logger.LogDebug(
+                "排名更新: UserUID={UserUid}, Rank={Rank}, Total={Total}, Type={Type}",
+                currentPlayerUid,
+                CurrentPlayerRank ?? -1,
+                Data.Count,
+                _type);
+        }
     }
 
     /// <summary>
