@@ -267,7 +267,8 @@ public partial class DpsStatisticsViewModel
                         dummyDpsData,
                         playerData.TotalDamage,
                         0, 
-                        playerData.Uid
+                        playerData.Uid,
+                        0.0  // ValuePerSecond not available in snapshots
                     );
                 }
             }
@@ -280,7 +281,8 @@ public partial class DpsStatisticsViewModel
                     dummyDpsData,
                     playerData.TotalHealing,
                     0, 
-                    playerData.Uid
+                    playerData.Uid,
+                    0.0  // ValuePerSecond not available in snapshots
                 );
             }
 
@@ -295,7 +297,8 @@ public partial class DpsStatisticsViewModel
                         dummyDpsData,
                         playerData.TakenDamage,
                         0, 
-                        playerData.Uid
+                        playerData.Uid,
+                        0.0  // ValuePerSecond not available in snapshots
                     );
                 }
                 else // Player taken damage
@@ -305,7 +308,8 @@ public partial class DpsStatisticsViewModel
                         dummyDpsData,
                         playerData.TakenDamage,
                         0, 
-                        playerData.Uid
+                        playerData.Uid,
+                        0.0  // ValuePerSecond not available in snapshots
                     );
                 }
             }

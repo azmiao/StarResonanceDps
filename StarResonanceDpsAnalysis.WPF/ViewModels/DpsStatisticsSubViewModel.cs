@@ -23,7 +23,8 @@ public readonly record struct DpsDataProcessed(
     PlayerStatistics OriginalData,
     ulong Value,
     long DurationTicks,
-    long Uid);
+    long Uid,
+    double ValuePerSecond);
 
 public partial class DpsStatisticsSubViewModel : BaseViewModel
 {
@@ -304,6 +305,7 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
             // Update slot values with pre-computed data
             slot.Value = processed.Value;
             slot.DurationTicks = processed.DurationTicks;
+            slot.ValuePerSecond = processed.ValuePerSecond;
 
             // Set current player slot if this is the current player
             if (hasCurrentPlayer && uid == currentPlayerUid)

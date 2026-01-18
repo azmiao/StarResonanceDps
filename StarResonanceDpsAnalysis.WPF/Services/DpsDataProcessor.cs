@@ -42,7 +42,7 @@ public class DpsDataProcessor : IDpsDataProcessor
                 if (shouldShowInDamageList)
                 {
                     result[StatisticType.Damage][playerStats.Uid] = new DpsDataProcessed(
-                        playerStats, damageValue, durationTicks, playerStats.Uid);
+                        playerStats, damageValue, durationTicks, playerStats.Uid, playerStats.AttackDamage.ValuePerSecond);
                 }
             }
 
@@ -51,7 +51,7 @@ public class DpsDataProcessor : IDpsDataProcessor
             if (healingValue > 0 && !playerStats.IsNpc)
             {
                 result[StatisticType.Healing][playerStats.Uid] = new DpsDataProcessed(
-                    playerStats, healingValue, durationTicks, playerStats.Uid);
+                    playerStats, healingValue, durationTicks, playerStats.Uid, playerStats.Healing.ValuePerSecond);
             }
 
             // Process TakenDamage
@@ -61,12 +61,12 @@ public class DpsDataProcessor : IDpsDataProcessor
                 if (playerStats.IsNpc)
                 {
                     result[StatisticType.NpcTakenDamage][playerStats.Uid] = new DpsDataProcessed(
-                        playerStats, takenDamageValue, durationTicks, playerStats.Uid);
+                        playerStats, takenDamageValue, durationTicks, playerStats.Uid, playerStats.TakenDamage.ValuePerSecond);
                 }
                 else
                 {
                     result[StatisticType.TakenDamage][playerStats.Uid] = new DpsDataProcessed(
-                        playerStats, takenDamageValue, durationTicks, playerStats.Uid);
+                        playerStats, takenDamageValue, durationTicks, playerStats.Uid, playerStats.TakenDamage.ValuePerSecond);
                 }
             }
         }

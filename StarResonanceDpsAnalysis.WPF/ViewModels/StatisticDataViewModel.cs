@@ -17,6 +17,7 @@ public partial class StatisticDataViewModel(DebugFunctions debug, LocalizationMa
     [ObservableProperty] private double _percentOfMax;
     [ObservableProperty] private PlayerInfoViewModel _player = new(localizationManager);
     [ObservableProperty] private ulong _value;
+    [ObservableProperty] private double _valuePerSecond;
 
     [ObservableProperty] private int _skillListRefreshTrigger = 0;
 
@@ -43,6 +44,7 @@ public partial class StatisticDataViewModel(DebugFunctions debug, LocalizationMa
         Percent = 0;
         PercentOfMax = 0;
         Value = 0;
+        ValuePerSecond = 0;
 
         Damage.Reset();
         Heal.Reset();

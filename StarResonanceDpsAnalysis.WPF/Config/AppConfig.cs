@@ -251,6 +251,15 @@ public partial class AppConfig : ObservableObject
     [ObservableProperty]
     private string _backgroundImagePath = "";
 
+    /// <summary>
+    /// DPS显示计算模式
+    /// true = 使用转换器计算 (value/duration)
+    /// false = 使用预计算值 (ValuePerSecond)
+    /// 默认值：true (转换器模式)
+    /// </summary>
+    [ObservableProperty]
+    private bool _useConverterBasedDps = true;
+
     public AppConfig Clone()
     {
         // TODO: Add unittest
