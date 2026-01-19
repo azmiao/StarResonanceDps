@@ -252,27 +252,33 @@
                                         </DataGridTemplateColumn.HeaderStyle>
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate DataType="{x:Type viewModels:SkillItemViewModel}">
+                                                
                                                 <Border Padding="16,8" Background="Transparent">
                                                     <StackPanel Orientation="Horizontal">
                                                         <Border Style="{StaticResource SkillIconBorder}" Tag="{Binding SkillName}">
                                                             <Border.Background>
-                                                                <MultiBinding Converter="{StaticResource SkillNameToRandomGradientConverter}">
+                                                                <MultiBinding Converter="{StaticResource SkillNameToRandomColorBrushConverter}">
                                                                     <Binding Path="SkillName" />
                                                                     <Binding Path="Tag" RelativeSource="{RelativeSource Self}" />
                                                                 </MultiBinding>
                                                             </Border.Background>
-                                                            <TextBlock Style="{StaticResource SkillIconText}" 
+
+                                                            <Border Style="{StaticResource SkillIconGradientBorder}">
+                                                                <TextBlock Style="{StaticResource SkillIconText}" 
                                                                        Text="{Binding SkillName, Converter={StaticResource StringFirstCharConverter}}" />
+                                                            </Border>
                                                         </Border>
                                                         <TextBlock x:Name="SkillNameText" Style="{StaticResource SkillNameText}" Text="{Binding SkillName}" />
                                                     </StackPanel>
                                                 </Border>
+                                                
                                                 <DataTemplate.Triggers>
                                                     <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=DataGridRow}}" Value="True">
                                                         <Setter TargetName="SkillNameText" Property="Foreground" Value="#1890FF" />
                                                         <Setter TargetName="SkillNameText" Property="FontWeight" Value="SemiBold" />
                                                     </DataTrigger>
                                                 </DataTemplate.Triggers>
+                                                
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>

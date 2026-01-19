@@ -40,7 +40,7 @@
     <converters:RgbToColorConverter x:Key="RgbToColorConverter" />
     <converters:ThemeColorToGradientConverter x:Key="ThemeColorToGradientConverter" />
     <converters:SkillNameToGradientConverter x:Key="SkillNameToGradientConverter" />
-    <converters:SkillNameToRandomGradientConverter x:Key="SkillNameToRandomGradientConverter" />
+    <converters:SkillNameToRandomColorBrushConverter x:Key="SkillNameToRandomColorBrushConverter" />
     <converters:ColorToBrushConverter x:Key="ColorToBrushConverter" />
     <converters:PercentToWidthConverter x:Key="PercentToWidthConverter" />
     <converters:RateToWidthConverter x:Key="RateToWidthConverter" />
