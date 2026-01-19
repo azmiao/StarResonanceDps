@@ -360,7 +360,7 @@
             <!-- ⭐ 新增：背景图片 -->
             <Grid.Background>
                 <ImageBrush 
-              ImageSource="{Binding AppConfig.BackgroundImagePath}"
+              ImageSource="{Binding AppConfig.BackgroundImagePath, Converter={StaticResource EmptyStringToNullConverter}}"
               Stretch="Uniform"
               Opacity="{Binding AppConfig.Opacity, Converter={StaticResource PercentToOpacityConverter}}" />
             </Grid.Background>

@@ -249,7 +249,8 @@ public partial class AppConfig : ObservableObject
     /// 只支持PNG格式
     /// </summary>
     [ObservableProperty]
-    private string _backgroundImagePath = "";
+    [property: Newtonsoft.Json.JsonConverter(typeof(Converters.JsonEmptyStringToNullConverter))]
+    private string? _backgroundImagePath;
 
     /// <summary>
     /// DPS显示计算模式
@@ -259,6 +260,19 @@ public partial class AppConfig : ObservableObject
     /// </summary>
     [ObservableProperty]
     private bool _useConverterBasedDps = true;
+
+    /// <summary>
+    /// Partial method called after BackgroundImagePath has changed.
+    /// Ensures empty strings are converted to null.
+    /// </summary>
+    partial void OnBackgroundImagePathChanged(string? value)
+    {
+        // If somehow an empty string got through, convert it to null
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            _backgroundImagePath = null;
+        }
+    }
 
     public AppConfig Clone()
     {

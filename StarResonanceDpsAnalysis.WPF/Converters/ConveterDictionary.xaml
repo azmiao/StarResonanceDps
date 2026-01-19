@@ -44,4 +44,5 @@
     <converters:ColorToBrushConverter x:Key="ColorToBrushConverter" />
     <converters:PercentToWidthConverter x:Key="PercentToWidthConverter" />
     <converters:RateToWidthConverter x:Key="RateToWidthConverter" />
+    <converters:EmptyStringToNullConverter x:Key="EmptyStringToNullConverter" />
 </ResourceDictionary>

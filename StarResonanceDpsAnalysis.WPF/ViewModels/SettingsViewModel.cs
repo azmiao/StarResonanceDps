@@ -516,7 +516,7 @@ public partial class SettingsViewModel(
     [RelayCommand]
     private void ClearBackgroundImage()
     {
-        AppConfig.BackgroundImagePath = string.Empty;
+        AppConfig.BackgroundImagePath = null;
     }
 
     /// <summary>
