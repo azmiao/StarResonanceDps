@@ -15,10 +15,11 @@
                         <Border Grid.Row="0">
                             <Border.Background>
                                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                    <GradientStop Offset="0" Color="#FFFFFF" />
-                                    <GradientStop Offset="1" Color="#F5F7FA" />
+                                    <GradientStop Offset="0" Color="#F3F4F9" />
+                                    <GradientStop Offset="1" Color="#FFFFFF" />
                                 </LinearGradientBrush>
                             </Border.Background>
+                            
                             <skillBreakdown:SkillStatsSummaryPanel
                                 Margin="16,16,16,16"
                                 AverageLabel="{TemplateBinding AverageLabel}"
@@ -36,6 +37,7 @@
                                 NormalDamage="{TemplateBinding NormalDamage}"
                                 CritDamage="{TemplateBinding CritDamage}"
                                 LuckyDamage="{TemplateBinding LuckyDamage}" />
+                            
                         </Border>
 
                         <Border Grid.Row="1" Height="1" Background="#E8E8E8" />

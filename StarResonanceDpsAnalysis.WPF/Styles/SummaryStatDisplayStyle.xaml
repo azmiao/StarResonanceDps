@@ -2,14 +2,14 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:ctrl="clr-namespace:StarResonanceDpsAnalysis.WPF.Controls">
 
-    <Style x:Key="SummaryStatText" TargetType="TextBlock">
+    <Style x:Key="SummaryStatText" TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
         <Setter Property="Foreground" Value="White" />
         <Setter Property="FontSize" Value="24" />
         <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="HorizontalAlignment" Value="Center" />
     </Style>
 
-    <Style x:Key="SummaryLabelText" TargetType="TextBlock">
+    <Style x:Key="SummaryLabelText" TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
         <Setter Property="Foreground" Value="White" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="Opacity" Value="0.9" />

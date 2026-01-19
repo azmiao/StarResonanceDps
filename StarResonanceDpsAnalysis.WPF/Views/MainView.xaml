@@ -35,7 +35,10 @@
 
     <Window.Resources>
 
-        <Style x:Key="IconFont" TargetType="TextBlock">
+        <Style
+            x:Key="IconFont"
+            BasedOn="{StaticResource NormalTextBlockBaseStyle}"
+            TargetType="TextBlock">
             <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#IconFont" />
         </Style>
 

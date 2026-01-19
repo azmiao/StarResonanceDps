@@ -26,7 +26,7 @@
             <Setter Property="Background" Value="#FFF" />
         </Style>
 
-        <Style x:Key="CollapsibleCardPullIcon" TargetType="TextBlock">
+        <Style x:Key="CollapsibleCardPullIcon" TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Left" />
             <Setter Property="Margin" Value="20,0,0,0" />

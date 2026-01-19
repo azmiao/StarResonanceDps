@@ -42,7 +42,10 @@
 
     <Window.Resources>
 
-        <Style x:Key="SelectedIconfont" TargetType="TextBlock">
+        <Style
+            x:Key="SelectedIconfont"
+            BasedOn="{StaticResource NormalTextBlockBaseStyle}"
+            TargetType="TextBlock">
             <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#IconFont" />
             <Setter Property="Foreground" Value="#FFF" />
             <Setter Property="VerticalAlignment" Value="Center" />

@@ -51,6 +51,12 @@
             <SolidColorBrush x:Key="SciFiTextMainBrush" Color="#333333"/>
             <SolidColorBrush x:Key="SciFiTextSubBrush" Color="#666666"/>
 
+            <Style x:Key="WindowTitleText" TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
+                <Setter Property="Foreground" Value="{StaticResource SciFiTextMainBrush}" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="FontSize" Value="16" />
+            </Style>
+
             <Style x:Key="InfoAndTypeGrid" TargetType="Grid">
                 <Setter Property="Height" Value="60" />
                 <Setter Property="Background" Value="#FFF" />
@@ -140,7 +146,9 @@
                     <!-- Title Area -->
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <Border Background="{StaticResource SciFiAccentBrush}" Width="4" Height="16" CornerRadius="2" Margin="0,0,10,0"/>
-                        <TextBlock Text="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Header_Title}}" Foreground="{StaticResource SciFiTextMainBrush}" FontWeight="Bold" FontSize="16" FontFamily="Microsoft YaHei UI"/>
+                        <TextBlock 
+                            Style="{StaticResource WindowTitleText}" 
+                            Text="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillBreakdown_Header_Title}}" />
                     </StackPanel>
                 </Grid>
             </Border>

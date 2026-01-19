@@ -293,7 +293,7 @@
                                            FontSize="18" FontWeight="Bold" FontFamily="Consolas"
                                            HorizontalAlignment="Right">
                                     <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
                                             <Setter Property="Foreground" Value="{StaticResource SciFiTextMainBrush}"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsHeal}" Value="True">
@@ -308,7 +308,7 @@
                                 </TextBlock>
                                 <TextBlock Foreground="{StaticResource SciFiTextSubBrush}" FontSize="9" HorizontalAlignment="Right">
                                      <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
                                             <Setter Property="Text" Value="{lex:Loc SkillLog_Label_Damage}"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsHeal}" Value="True">

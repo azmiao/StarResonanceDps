@@ -245,7 +245,10 @@
                                 Style="{StaticResource SkillListDataGridStyle}">
                                 <DataGrid.Columns>
                                     <!-- Skill Name Column with Star Sizing -->
-                                    <DataGridTemplateColumn Width="*" Header="SKILL (NAME)">
+                                    <DataGridTemplateColumn Width="*">
+                                        <DataGridTemplateColumn.Header>
+                                            <TextBlock Text="{lex:Loc Key=SkillBreakdown_Label_SkillName}" />
+                                        </DataGridTemplateColumn.Header>
                                         <DataGridTemplateColumn.HeaderStyle>
                                             <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource SkillListColumnHeaderStyle}">
                                             </Style>

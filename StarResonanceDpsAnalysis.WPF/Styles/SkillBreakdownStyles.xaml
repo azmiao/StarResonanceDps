@@ -20,7 +20,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="SectionTitle" TargetType="TextBlock">
+    <Style x:Key="SectionTitle" TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
         <Setter Property="FontSize" Value="16" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="#262626" />
@@ -76,7 +76,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="SkillNameText" TargetType="TextBlock">
+    <Style x:Key="SkillNameText" TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="Foreground" Value="#000000" />
@@ -114,7 +114,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="SkillIconText" TargetType="TextBlock">
+    <Style x:Key="SkillIconText" TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="FontSize" Value="18" />
@@ -122,7 +122,7 @@
         <Setter Property="Foreground" Value="White" />
     </Style>
 
-    <Style x:Key="StatColumnText" TargetType="TextBlock">
+    <Style x:Key="StatColumnText" TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Foreground" Value="#000000" />
         <Setter Property="HorizontalAlignment" Value="Right" />
@@ -130,7 +130,7 @@
         <Setter Property="FontWeight" Value="Bold" />
     </Style>
 
-    <Style x:Key="StatColumnLightText" TargetType="TextBlock">
+    <Style x:Key="StatColumnLightText" TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="Foreground" Value="#8C8C8C" />
         <Setter Property="HorizontalAlignment" Value="Right" />
@@ -601,12 +601,11 @@
         </Setter>
     </Style>
 
-    <Style x:Key="ChartTitle" TargetType="TextBlock">
+    <Style x:Key="ChartTitle" TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
         <Setter Property="Foreground" Value="#262626" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#HarmonyOS Sans SC" />
     </Style>
 
     <Style x:Key="ChartIcon" TargetType="Path">
@@ -617,7 +616,7 @@
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
-    <Style x:Key="ChartSubTitle" TargetType="TextBlock">
+    <Style x:Key="ChartSubTitle" TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
         <Setter Property="Foreground" Value="#8C8C8C" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="Margin" Value="0,0,0,8" />
@@ -812,7 +811,6 @@
 
     <!--  Skill Stats Summary Styles -->
     <Style x:Key="StatCardBorder" TargetType="Border">
-        <Setter Property="Background" Value="Transparent" />
         <Setter Property="Margin" Value="8,0" />
         <Setter Property="Padding" Value="0,20" />
         <Setter Property="CornerRadius" Value="0" />
@@ -820,23 +818,25 @@
         <Setter Property="BorderThickness" Value="0" />
     </Style>
 
-    <Style x:Key="StatValueText" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="32" />
-        <Setter Property="FontWeight" Value="Bold" />
+    <Style x:Key="StatValueText" TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
+        <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#HarmonyOS Sans SC Black" />
+        <Setter Property="FontSize" Value="38" />
+        <Setter Property="FontWeight" Value="ExtraBlack" />
         <Setter Property="Foreground" Value="#1F1F1F" />
         <Setter Property="HorizontalAlignment" Value="Center" />
     </Style>
 
-    <Style x:Key="StatLabelText" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="13" />
+    <Style x:Key="StatLabelText" TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="Foreground" Value="#8C8C8C" />
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="Margin" Value="0,8,0,0" />
     </Style>
 
-    <Style x:Key="StatSubText" TargetType="TextBlock">
+    <Style x:Key="StatSubText" TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="Foreground" Value="#BFBFBF" />
+        <Setter Property="Foreground" Value="#6B7280" />
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="Margin" Value="0,4,0,0" />
     </Style>

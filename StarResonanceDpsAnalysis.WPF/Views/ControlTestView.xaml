@@ -1,0 +1,41 @@
+﻿<Window x:Class="StarResonanceDpsAnalysis.WPF.Views.ControlTestView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:StarResonanceDpsAnalysis.WPF.Views"
+        xmlns:ctrl_sb="clr-namespace:StarResonanceDpsAnalysis.WPF.Controls.SkillBreakdown"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        xmlns:properties="clr-namespace:StarResonanceDpsAnalysis.WPF.Properties"
+        mc:Ignorable="d"
+        Title="ControlTest" Height="450" Width="800">
+    <Grid>
+
+        <!-- 
+        This window is not intended for practical use.
+        it is only used to test custom controls.
+        
+        此窗口不用于实际使用,
+        仅用于测试自定义控件
+        -->
+        
+        <ctrl_sb:SkillStatsSummaryPanel
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Total="{Binding TestTotal}"
+            TotalLabel="{lex:Loc Key={x:Static properties:ResourcesKeys.SkillBreakdown_Label_TotalDamage}}"
+            NormalDamage="{Binding TestNormalDamage}"
+            CritDamage="{Binding TestCritDamage}"
+            LuckyDamage="{Binding TestLuckyDamage}"
+            Average="{Binding TestAverage}"
+            AverageLabel="{lex:Loc Key={x:Static properties:ResourcesKeys.SkillBreakdown_Label_AverageDamage}}"
+            Hits="{Binding TestHits}"
+            HitsLabel="{lex:Loc Key={x:Static properties:ResourcesKeys.SkillBreakdown_Label_HitCount}}"
+            CritRate="{Binding TestCritRate}"
+            CritRateLabel="{lex:Loc Key={x:Static properties:ResourcesKeys.SkillBreakdown_Label_CritRate}}"
+            CritCount="{Binding TestCritCount}"
+            LuckyCount="{Binding TestLuckyCount}"
+            LuckyCountLabel="{lex:Loc Key={x:Static properties:ResourcesKeys.SkillBreakdown_Label_LuckCount}}"
+            LuckyRate="{Binding TestLuckyRate}" />
+    </Grid>
+</Window>

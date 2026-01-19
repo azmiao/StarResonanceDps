@@ -54,7 +54,10 @@
         <converters:DoubleNegateConverter x:Key="DoubleNegateConverter" />
         <converters:DoubleSumConverter x:Key="DoubleSumConverter" />
 
-        <Style x:Key="StatisticTypeText" TargetType="TextBlock">
+        <Style
+            x:Key="StatisticTypeText"
+            BasedOn="{StaticResource NormalTextBlockBaseStyle}"
+            TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Foreground" Value="#FFF" />
             <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#HarmonyOS Sans SC" />
@@ -181,7 +184,10 @@
                 <!--  昵称  -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
                     <StackPanel.Resources>
-                        <Style x:Key="PlayerInfoTextStyle" TargetType="TextBlock">
+                        <Style
+                            x:Key="PlayerInfoTextStyle"
+                            BasedOn="{StaticResource NormalTextBlockBaseStyle}"
+                            TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center" />
                             <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#HarmonyOS Sans SC" />
                             <Setter Property="Foreground" Value="White" />
