@@ -45,9 +45,19 @@
         <Style x:Key="SelectedIconfont" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#IconFont" />
             <Setter Property="Foreground" Value="#FFF" />
-            <Setter Property="VerticalAlignment" Value="Bottom" />
-            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="Margin" Value="2" />
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect
+                        Color="#000"
+                        Direction="0"
+                        ShadowDepth="0"
+                        Opacity="0.75"
+                        BlurRadius="5" />
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <Style x:Key="SettingSectionListBorder" TargetType="Border">
@@ -115,6 +125,15 @@
 
         <Style x:Key="SectionStackPanel" TargetType="StackPanel" />
 
+        <!--
+        "SectionFieldBorder" is the default style with a bottom border.
+        "SectionFieldBorderBase" is the borderless field style.
+        Use this style only when the field is the last one in a section to avoid double borders.
+        
+        "SectionFieldBorder" 为带有底部边框的默认样式
+        "SectionFieldBorderBase" 为无边框的字段样式
+        仅当该字段是当前分区中的最后一个时才使用, 以避免出现双重边框
+        -->
         <Style x:Key="SectionFieldBorderBase" TargetType="Border">
             <Setter Property="Padding" Value="20,10,10,10" />
         </Style>
@@ -171,7 +190,7 @@
             <Setter Property="VerticalAlignment" Value="Top" />
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Margin" Value="0,0,5,0" />
+            <Setter Property="Margin" Value="5,0,0,0" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate>
@@ -843,7 +862,7 @@
                                         </Grid>
                                     </Border>
 
-                                    <Border Style="{StaticResource SectionFieldBorder}">
+                                    <Border Style="{StaticResource SectionFieldBorderBase}">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="39*" />
@@ -1077,7 +1096,7 @@
                                         </Grid>
                                     </Border>
 
-                                    <Border Style="{StaticResource SectionFieldBorderBase}">
+                                    <Border Style="{StaticResource SectionFieldBorder}">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="39*" />
@@ -1112,7 +1131,7 @@
                                         </Grid>
                                     </Border>
 
-                                    <Border Style="{StaticResource SectionFieldBorderBase}">
+                                    <Border Style="{StaticResource SectionFieldBorder}">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="39*" />
@@ -1221,7 +1240,7 @@
                                                 Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Theme_WindowColor}}" />
                                             <Border Grid.Column="2" HorizontalAlignment="Right">
                                                 <StackPanel Orientation="Horizontal">
-                                                    <WrapPanel Margin="0,0,10,0">
+                                                    <WrapPanel>
                                                         <Button Background="#1690F8"
                                                                 Command="{Binding SetThemeColorCommand}"
                                                                 CommandParameter="#1690F8"
@@ -1311,12 +1330,18 @@
                                                             BorderBrush="#EEE" BorderThickness="1"
                                                             ToolTip="自定义颜色">
                                                         <Button.Background>
-                                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                                <GradientStop Color="#FF0000" Offset="0.0"/>
-                                                                <GradientStop Color="#FFFF00" Offset="0.25"/>
-                                                                <GradientStop Color="#00FF00" Offset="0.5"/>
-                                                                <GradientStop Color="#00FFFF" Offset="0.75"/>
-                                                                <GradientStop Color="#0000FF" Offset="1.0"/>
+                                                            <LinearGradientBrush StartPoint="0,0.25" EndPoint="1,0.75">
+                                                                <GradientStop Color="#F00" Offset="0.0"/>
+                                                                <GradientStop Color="#F80" Offset="0.1"/>
+                                                                <GradientStop Color="#FF0" Offset="0.25"/>
+                                                                <GradientStop Color="#8F0" Offset="0.42"/>
+                                                                <GradientStop Color="#0F0" Offset="0.44"/>
+                                                                <GradientStop Color="#0F8" Offset="0.48"/>
+                                                                <GradientStop Color="#0FF" Offset="0.58"/>
+                                                                <GradientStop Color="#08F" Offset="0.68"/>
+                                                                <GradientStop Color="#00F" Offset="0.78"/>
+                                                                <GradientStop Color="#80F" Offset="0.85"/>
+                                                                <GradientStop Color="#F0F" Offset="1"/>
                                                             </LinearGradientBrush>
                                                         </Button.Background>
                                                         <Button.Template>
@@ -1368,7 +1393,7 @@
                                         </Grid>
                                     </Border>
 
-                                    <Border Style="{StaticResource SectionFieldBorder}">
+                                    <Border Style="{StaticResource SectionFieldBorderBase}">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="39*" />
