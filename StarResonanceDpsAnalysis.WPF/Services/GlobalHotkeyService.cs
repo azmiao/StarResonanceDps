@@ -501,28 +501,28 @@ public sealed partial class GlobalHotkeyService(
         return (GetAsyncKeyState(virtualKey) & 0x8000) != 0;
     }
 
-    [LibraryImport("user32.dll", SetLastError = true)]
+    [LibraryImport("user32.dll", SetLastError = true, EntryPoint = "RegisterHotKey")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
 
-    [LibraryImport("user32.dll", SetLastError = true)]
+    [LibraryImport("user32.dll", SetLastError = true, EntryPoint = "UnregisterHotKey")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool UnregisterHotKey(IntPtr hWnd, int id);
 
-    [LibraryImport("user32.dll", SetLastError = true)]
+    [LibraryImport("user32.dll", EntryPoint = "SetWindowsHookExW", SetLastError = true)]
     private static partial IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
 
-    [LibraryImport("user32.dll", SetLastError = true)]
+    [LibraryImport("user32.dll", SetLastError = true,EntryPoint = "UnhookWindowsHookEx")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool UnhookWindowsHookEx(IntPtr hhk);
 
-    [LibraryImport("user32.dll", SetLastError = true)]
+    [LibraryImport("user32.dll", SetLastError = true, EntryPoint = "CallNextHookEx")]
     private static partial IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
 
-    [LibraryImport("user32.dll")]
+    [LibraryImport("user32.dll", EntryPoint = "GetAsyncKeyState")]
     private static partial short GetAsyncKeyState(int vKey);
 
-    [LibraryImport("kernel32.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+    [LibraryImport("kernel32.dll", EntryPoint = "GetModuleHandleW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
     private static partial IntPtr GetModuleHandle(string? lpModuleName);
 
     [StructLayout(LayoutKind.Sequential)]
