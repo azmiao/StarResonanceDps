@@ -7,6 +7,7 @@ using OxyPlot.Series;
 using StarResonanceDpsAnalysis.WPF.Controls.SkillBreakdown;
 using StarResonanceDpsAnalysis.WPF.Helpers;
 using StarResonanceDpsAnalysis.WPF.Models;
+using StarResonanceDpsAnalysis.WPF.Properties;
 
 namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 
@@ -154,7 +155,6 @@ public partial class PlotViewModel : BaseViewModel
     private const double PieMergeRangeEndPercent = 90.0;
     private const double PieMergeMinKeepPercent = 6.0;
     private const double PieMergedMaxPercent = 35.0;
-    private const string PieMergedLabel = "其它";
     public void SetPieSeriesData(IReadOnlyList<SkillItemViewModel> skills)
     {
         /*
@@ -224,6 +224,7 @@ public partial class PlotViewModel : BaseViewModel
 
         var mergedTotalValue = 0L;
         var sliceIndex = 0;
+        var mergedLabel = GetPieMergedLabel();
         var culture = CultureInfo.CurrentUICulture;
         var displayMode = DamageDisplayMode;
         var lowPercentSlices = new List<(PieSlice Slice, double Percent)>();
@@ -256,7 +257,7 @@ public partial class PlotViewModel : BaseViewModel
 
         if (mergedTotalValue > 0)
         {
-            var mergedSlice = new PieSlice(PieMergedLabel, mergedTotalValue)
+            var mergedSlice = new PieSlice(mergedLabel, mergedTotalValue)
             {
                 IsExploded = false,
                 Fill = GetPaletteColor(sliceIndex)
@@ -264,7 +265,7 @@ public partial class PlotViewModel : BaseViewModel
 
             PieSeriesData.Slices.Add(mergedSlice);
             PieSeriesData.SliceInfoMap[mergedSlice] = new SkillPieSeries.SliceInfo(
-                PieMergedLabel,
+                mergedLabel,
                 0,
                 mergedTotalValue,
                 NumberFormatHelper.FormatHumanReadable(mergedTotalValue, displayMode, culture));
@@ -312,6 +313,24 @@ public partial class PlotViewModel : BaseViewModel
         }
 
         return selectedPercents.Count == 0 ? 0 : selectedPercents.Average();
+    }
+
+    private static string GetPieMergedLabel()
+    {
+        var label = Resources.ResourceManager.GetString(
+            ResourcesKeys.SkillBreakdown_Label_Others,
+            CultureInfo.CurrentUICulture);
+
+        if (!string.IsNullOrWhiteSpace(label))
+        {
+            return label;
+        }
+
+        label = Resources.ResourceManager.GetString(
+            ResourcesKeys.SkillBreakdown_Label_Others,
+            CultureInfo.InvariantCulture);
+
+        return string.IsNullOrWhiteSpace(label) ? "Others" : label;
     }
 
     public void SetHitTypeDistribution(double normalPercent, double criticalPercent, double luckyPercent)

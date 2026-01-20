@@ -717,6 +717,9 @@
   <data name="SkillBreakdown_Label_LuckDamage" xml:space="preserve">
     <value>Lucky damage</value>
   </data>
+  <data name="SkillBreakdown_Label_Others" xml:space="preserve">
+    <value>Others</value>
+  </data>
   <data name="SkillBreakdown_Value_LuckDamage" xml:space="preserve">
     <value>0</value>
   </data>
