@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
+using StarResonanceDpsAnalysis.WPF.Helpers;
 
 namespace StarResonanceDpsAnalysis.WPF.Converters;
 
@@ -8,7 +9,7 @@ public sealed class DoubleNegateConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        return ConverterNumberHelper.TryToDouble(value, out var number)
+        return NumberFormatHelper.TryToDouble(value, out var number)
             ? -number
             : DependencyProperty.UnsetValue;
     }
@@ -28,7 +29,7 @@ public sealed class DoubleSumConverter : IMultiValueConverter
 
         foreach (var value in values)
         {
-            if (!ConverterNumberHelper.TryToDouble(value, out var number))
+            if (!NumberFormatHelper.TryToDouble(value, out var number))
             {
                 continue;
             }

@@ -1,10 +1,11 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows;
 using StarResonanceDpsAnalysis.WPF.Models;
+using StarResonanceDpsAnalysis.WPF.Properties;
 
-namespace StarResonanceDpsAnalysis.WPF.Converters;
+namespace StarResonanceDpsAnalysis.WPF.Helpers;
 
-internal static class ConverterNumberHelper
+internal static class NumberFormatHelper
 {
     public static bool TryToDouble(object? input, out double value)
     {
@@ -84,10 +85,22 @@ internal static class ConverterNumberHelper
             return fallback;
         }
 
-        return string.Equals(text, "Wan", StringComparison.OrdinalIgnoreCase) ||
-               string.Equals(text, "万", StringComparison.OrdinalIgnoreCase)
-            ? NumberDisplayMode.Wan
-            : NumberDisplayMode.KMB;
+        if (Enum.TryParse<NumberDisplayMode>(text, true, out var parsed))
+        {
+            return parsed;
+        }
+
+        if (IsLocalizedModeName(text, NumberDisplayMode.Wan))
+        {
+            return NumberDisplayMode.Wan;
+        }
+
+        if (IsLocalizedModeName(text, NumberDisplayMode.KMB))
+        {
+            return NumberDisplayMode.KMB;
+        }
+
+        return fallback;
     }
 
     public static string FormatHumanReadable<T>(T value, NumberDisplayMode mode, CultureInfo culture)
@@ -107,34 +120,72 @@ internal static class ConverterNumberHelper
 
         if (mode == NumberDisplayMode.Wan)
         {
+            var suffixWan = GetSuffix("NumberSuffix_Wan", culture);
+            var suffixYi = GetSuffix("NumberSuffix_Yi", culture);
+            var suffixZhao = GetSuffix("NumberSuffix_Zhao", culture);
+
+            if (value >= 1_000_000_000_000d)
+            {
+                return sign + (value / 1_000_000_000_000d).ToString("0.##", culture) + suffixZhao;
+            }
+
             if (value >= 100_000_000)
             {
-                return sign + (value / 100_000_000d).ToString("0.##", culture) + "亿";
+                return sign + (value / 100_000_000d).ToString("0.##", culture) + suffixYi;
             }
 
             if (value >= 10_000)
             {
-                return sign + (value / 10_000d).ToString("0.##", culture) + "万";
+                return sign + (value / 10_000d).ToString("0.##", culture) + suffixWan;
             }
 
             return sign + value.ToString("0.##", culture);
         }
 
+        var suffixB = GetSuffix("NumberSuffix_B", culture);
+        var suffixM = GetSuffix("NumberSuffix_M", culture);
+        var suffixK = GetSuffix("NumberSuffix_K", culture);
+
         if (value >= 1_000_000_000)
         {
-            return sign + (value / 1_000_000_000d).ToString("0.##", culture) + "B";
+            return sign + (value / 1_000_000_000d).ToString("0.##", culture) + suffixB;
         }
 
         if (value >= 1_000_000)
         {
-            return sign + (value / 1_000_000d).ToString("0.##", culture) + "M";
+            return sign + (value / 1_000_000d).ToString("0.##", culture) + suffixM;
         }
 
         if (value >= 1_000)
         {
-            return sign + (value / 1_000d).ToString("0.##", culture) + "K";
+            return sign + (value / 1_000d).ToString("0.##", culture) + suffixK;
         }
 
         return sign + value.ToString("0.##", culture);
+    }
+
+    private static string GetSuffix(string key, CultureInfo culture)
+    {
+        return Resources.ResourceManager.GetString(key, culture)
+               ?? Resources.ResourceManager.GetString(key, CultureInfo.InvariantCulture)
+               ?? string.Empty;
+    }
+
+    private static bool IsLocalizedModeName(string text, NumberDisplayMode mode)
+    {
+        var key = mode == NumberDisplayMode.Wan
+            ? ResourcesKeys.NumberDisplay_Wan
+            : ResourcesKeys.NumberDisplay_KMB;
+
+        var current = Resources.ResourceManager.GetString(key, CultureInfo.CurrentUICulture);
+        if (!string.IsNullOrWhiteSpace(current) &&
+            string.Equals(text, current, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        var invariant = Resources.ResourceManager.GetString(key, CultureInfo.InvariantCulture);
+        return !string.IsNullOrWhiteSpace(invariant) &&
+               string.Equals(text, invariant, StringComparison.OrdinalIgnoreCase);
     }
 }

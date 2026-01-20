@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Windows.Data;
 using StarResonanceDpsAnalysis.WPF.Models;
+using StarResonanceDpsAnalysis.WPF.Helpers;
 
 namespace StarResonanceDpsAnalysis.WPF.Converters;
 
@@ -29,11 +30,11 @@ public sealed class DpsConverter : IMultiValueConverter
         var mode = NumberDisplayMode.KMB;
         if (values.Length > 2 && values[2] != null)
         {
-            mode = ConverterNumberHelper.ParseDisplayMode(values[2], mode);
+            mode = NumberFormatHelper.ParseDisplayMode(values[2], mode);
         }
         else if (parameter != null)
         {
-            mode = ConverterNumberHelper.ParseDisplayMode(parameter, mode);
+            mode = NumberFormatHelper.ParseDisplayMode(parameter, mode);
         }
 
         // Optional toggle: switch between converter-based and direct ValuePerSecond
@@ -45,17 +46,17 @@ public sealed class DpsConverter : IMultiValueConverter
 
         // Optional pre-computed ValuePerSecond
         double? valuePerSecond = null;
-        if (values.Length > 3 && ConverterNumberHelper.TryToDouble(values[3], out var vps))
+        if (values.Length > 3 && NumberFormatHelper.TryToDouble(values[3], out var vps))
         {
             valuePerSecond = vps;
         }
 
         if (!useConverterBased && valuePerSecond.HasValue && double.IsFinite(valuePerSecond.Value))
         {
-            return ConverterNumberHelper.FormatHumanReadable(valuePerSecond.Value, mode, culture);
+            return NumberFormatHelper.FormatHumanReadable(valuePerSecond.Value, mode, culture);
         }
 
-        if (!ConverterNumberHelper.TryToDouble(values[0], out var total))
+        if (!NumberFormatHelper.TryToDouble(values[0], out var total))
         {
             return notAvailable;
         }
@@ -65,7 +66,7 @@ public sealed class DpsConverter : IMultiValueConverter
         {
             seconds = timeSpan.TotalSeconds;
         }
-        else if (!ConverterNumberHelper.TryToDouble(values[1], out seconds))
+        else if (!NumberFormatHelper.TryToDouble(values[1], out seconds))
         {
             return notAvailable;
         }
@@ -76,7 +77,7 @@ public sealed class DpsConverter : IMultiValueConverter
         }
 
         var dps = total / seconds;
-        var formatted = ConverterNumberHelper.FormatHumanReadable(dps, mode, culture);
+        var formatted = NumberFormatHelper.FormatHumanReadable(dps, mode, culture);
         return formatted;
     }
 

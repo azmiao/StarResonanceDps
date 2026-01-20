@@ -303,6 +303,24 @@
   <data name="NumberDisplay_KMB" xml:space="preserve">
     <value>서양식 (KMBT)</value>
   </data>
+  <data name="NumberSuffix_K" xml:space="preserve">
+    <value>K</value>
+  </data>
+  <data name="NumberSuffix_M" xml:space="preserve">
+    <value>M</value>
+  </data>
+  <data name="NumberSuffix_B" xml:space="preserve">
+    <value>B</value>
+  </data>
+  <data name="NumberSuffix_Wan" xml:space="preserve">
+    <value>만</value>
+  </data>
+  <data name="NumberSuffix_Yi" xml:space="preserve">
+    <value>억</value>
+  </data>
+  <data name="NumberSuffix_Zhao" xml:space="preserve">
+    <value>조</value>
+  </data>
   <data name="Window_About_Title" xml:space="preserve">
     <value>정보</value>
   </data>

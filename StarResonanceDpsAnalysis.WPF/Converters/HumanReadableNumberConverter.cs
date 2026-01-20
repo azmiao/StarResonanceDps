@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Windows.Data;
 using StarResonanceDpsAnalysis.WPF.Models;
+using StarResonanceDpsAnalysis.WPF.Helpers;
 
 namespace StarResonanceDpsAnalysis.WPF.Converters;
 
@@ -19,19 +20,19 @@ public class HumanReadableNumberConverter : IValueConverter, IMultiValueConverte
         var mode = NumberDisplayMode.KMB;
         if (values.Length > 1 && values[1] != null)
         {
-            mode = ConverterNumberHelper.ParseDisplayMode(values[1], mode);
+            mode = NumberFormatHelper.ParseDisplayMode(values[1], mode);
         }
         else if (parameter != null)
         {
-            mode = ConverterNumberHelper.ParseDisplayMode(parameter, mode);
+            mode = NumberFormatHelper.ParseDisplayMode(parameter, mode);
         }
 
-        if (!ConverterNumberHelper.TryToDouble(values[0], out var number))
+        if (!NumberFormatHelper.TryToDouble(values[0], out var number))
         {
             return string.Empty;
         }
 
-        return ConverterNumberHelper.FormatHumanReadable(number, mode, culture);
+        return NumberFormatHelper.FormatHumanReadable(number, mode, culture);
     }
 
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
@@ -41,13 +42,13 @@ public class HumanReadableNumberConverter : IValueConverter, IMultiValueConverte
 
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        var mode = ConverterNumberHelper.ParseDisplayMode(parameter);
-        if (!ConverterNumberHelper.TryToDouble(value, out var number))
+        var mode = NumberFormatHelper.ParseDisplayMode(parameter);
+        if (!NumberFormatHelper.TryToDouble(value, out var number))
         {
             return string.Empty;
         }
 
-        return ConverterNumberHelper.FormatHumanReadable(number, mode, culture);
+        return NumberFormatHelper.FormatHumanReadable(number, mode, culture);
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
+using StarResonanceDpsAnalysis.WPF.Helpers;
 
 namespace StarResonanceDpsAnalysis.WPF.Converters;
 
@@ -12,7 +13,7 @@ public sealed class HalfHeightToHorizontalMarginConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (!ConverterNumberHelper.TryToDouble(value, out var height))
+        if (!NumberFormatHelper.TryToDouble(value, out var height))
         {
             height = 0d;
         }

@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
+using StarResonanceDpsAnalysis.WPF.Helpers;
 
 namespace StarResonanceDpsAnalysis.WPF.Converters;
 
@@ -9,7 +10,7 @@ public class HalfValueConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (!ConverterNumberHelper.TryToDouble(value, out var original))
+        if (!NumberFormatHelper.TryToDouble(value, out var original))
         {
             original = 0d;
         }

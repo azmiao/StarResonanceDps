@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
+using StarResonanceDpsAnalysis.WPF.Helpers;
 
 namespace StarResonanceDpsAnalysis.WPF.Converters;
 
@@ -17,8 +18,8 @@ public sealed class DivisionMultiValueConverter : IMultiValueConverter
             return DependencyProperty.UnsetValue;
         }
 
-        if (!ConverterNumberHelper.TryToDouble(values[0], out var numerator) ||
-            !ConverterNumberHelper.TryToDouble(values[1], out var denominator))
+        if (!NumberFormatHelper.TryToDouble(values[0], out var numerator) ||
+            !NumberFormatHelper.TryToDouble(values[1], out var denominator))
         {
             return DependencyProperty.UnsetValue;
         }

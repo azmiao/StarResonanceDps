@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
+using StarResonanceDpsAnalysis.WPF.Helpers;
 
 namespace StarResonanceDpsAnalysis.WPF.Converters;
 
@@ -18,9 +19,9 @@ public sealed class SwitchTrackWidthConverter : IMultiValueConverter
             return DependencyProperty.UnsetValue;
         }
 
-        if (!ConverterNumberHelper.TryToDouble(values[0], out var onWidth)) onWidth = 0d;
-        if (!ConverterNumberHelper.TryToDouble(values[1], out var offWidth)) offWidth = 0d;
-        if (!ConverterNumberHelper.TryToDouble(values[2], out var height)) height = 0d;
+        if (!NumberFormatHelper.TryToDouble(values[0], out var onWidth)) onWidth = 0d;
+        if (!NumberFormatHelper.TryToDouble(values[1], out var offWidth)) offWidth = 0d;
+        if (!NumberFormatHelper.TryToDouble(values[2], out var height)) height = 0d;
 
         var label = Math.Max(onWidth, offWidth);
         var width = label + (height * 1.5d);

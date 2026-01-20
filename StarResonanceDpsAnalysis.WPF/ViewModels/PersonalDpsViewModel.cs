@@ -12,6 +12,7 @@ using StarResonanceDpsAnalysis.WPF.Config;
 using StarResonanceDpsAnalysis.WPF.Converters;
 using StarResonanceDpsAnalysis.WPF.Extensions;
 using StarResonanceDpsAnalysis.WPF.Services;
+using StarResonanceDpsAnalysis.WPF.Helpers;
 
 namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 
@@ -444,7 +445,7 @@ public partial class PersonalDpsViewModel : BaseViewModel
     {
         var damageDisplayType = _configManager.CurrentConfig.DamageDisplayType;
 
-        return ConverterNumberHelper.FormatHumanReadable(value, damageDisplayType, CultureInfo.CurrentCulture);
+        return NumberFormatHelper.FormatHumanReadable(value, damageDisplayType, CultureInfo.CurrentCulture);
     }
 
     private void RemainingTimerOnTick(object? state)
