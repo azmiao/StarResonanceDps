@@ -45,12 +45,6 @@ public partial class DpsStatisticsViewModel
     }
 
     [RelayCommand]
-    private void MinimizeWindow()
-    {
-        _windowManagement.DpsStatisticsView.WindowState = WindowState.Minimized;
-    }
-
-    [RelayCommand]
     private void NextMetricType()
     {
         StatisticIndex = StatisticIndex.Next();

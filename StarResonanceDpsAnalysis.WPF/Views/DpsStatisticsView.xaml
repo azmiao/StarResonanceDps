@@ -462,7 +462,7 @@
                         <!--  Minimize window button  -->
                         <Button
                             Width="21"
-                            Command="{Binding MinimizeWindowCommand}"
+                            Click="ButtonMinimizeClick"
                             Content="—"
                             FontSize="12" />
 

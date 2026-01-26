@@ -174,4 +174,10 @@ public partial class DpsStatisticsView : Window
             }
         }
     }
+
+    private void ButtonMinimizeClick(object sender, RoutedEventArgs e)
+    {
+        WindowState = WindowState.Minimized;
+        //throw new NotImplementedException();
+    }
 }
