@@ -5,7 +5,6 @@ package zproto;
 import "stru_fashion_advance_info.proto";
 import "stru_fashion_color_info.proto";
 import "stru_unlock_color_info.proto";
-import "stru_dirty_mask.proto";
 
 message FashionMgr {
   map<int32, int32> wear_info = 1;

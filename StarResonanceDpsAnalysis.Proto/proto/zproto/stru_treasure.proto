@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_treasure_item_row.proto";
-import "stru_dirty_mask.proto";
 
 message Treasure {
   map<int32, zproto.TreasureItemRow> rows = 1;

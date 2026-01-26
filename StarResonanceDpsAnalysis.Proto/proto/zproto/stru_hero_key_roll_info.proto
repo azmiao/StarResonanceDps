@@ -4,7 +4,6 @@ package zproto;
 
 import "stru_avatar_info.proto";
 import "enum_e_hero_key_roll_type.proto";
-import "stru_dirty_mask.proto";
 
 message HeroKeyRollInfo {
   zproto.EHeroKeyRollType type = 1;

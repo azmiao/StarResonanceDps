@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package zproto;
 
-import "stru_dirty_mask.proto";
 
 message SeasonRankData {
   map<uint32, uint32> season_ranks = 1;

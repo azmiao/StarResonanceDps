@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package zproto;
 
-import "stru_dirty_mask.proto";
 
 message LuckyValueInfo {
   int32 luck_id = 1;

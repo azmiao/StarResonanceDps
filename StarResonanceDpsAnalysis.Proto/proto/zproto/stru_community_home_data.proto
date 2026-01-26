@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_community_homeland_recipe.proto";
-import "stru_dirty_mask.proto";
 
 message CommunityHomeData {
   int64 community_id = 1;

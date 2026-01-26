@@ -4,7 +4,6 @@ package zproto;
 
 import "stru_last_scene_data.proto";
 import "stru_position.proto";
-import "stru_dirty_mask.proto";
 
 message SceneData {
   uint32 map_id = 1;

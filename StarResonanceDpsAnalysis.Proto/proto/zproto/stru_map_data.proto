@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_mark_data.proto";
-import "stru_dirty_mask.proto";
 
 message MapData {
   map<int32, zproto.MarkData> mark_data_map = 1;

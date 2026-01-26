@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package zproto;
 
-import "stru_dirty_mask.proto";
 
 message UnionHistoryActive {
   int64 union_id = 1;

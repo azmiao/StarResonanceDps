@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_season_achievement.proto";
-import "stru_dirty_mask.proto";
 
 message SeasonAchievementList {
   map<uint32, zproto.SeasonAchievement> season_achievement_list = 1;

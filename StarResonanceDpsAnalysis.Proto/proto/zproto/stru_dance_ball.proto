@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_dancer_info.proto";
-import "stru_dirty_mask.proto";
 
 message DanceBall {
   int32 dance_id = 1;

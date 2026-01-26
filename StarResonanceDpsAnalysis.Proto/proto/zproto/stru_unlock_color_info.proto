@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package zproto;
 
-import "stru_dirty_mask.proto";
 
 message UnlockColorInfo {
   map<int32, bool> color_info_map = 1;

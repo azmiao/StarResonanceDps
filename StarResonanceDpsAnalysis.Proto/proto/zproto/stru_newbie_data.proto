@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_newbie_act_data.proto";
-import "stru_dirty_mask.proto";
 
 message NewbieData {
   int64 total_online_time = 1;

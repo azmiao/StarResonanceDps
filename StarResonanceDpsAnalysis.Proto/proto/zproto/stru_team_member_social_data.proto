@@ -11,7 +11,6 @@ import "stru_personal_zone_show.proto";
 import "stru_profession_data.proto";
 import "stru_user_attr_data.proto";
 import "stru_user_scene_info.proto";
-import "stru_dirty_mask.proto";
 
 message TeamMemberSocialData {
   zproto.BasicData basic_data = 1;

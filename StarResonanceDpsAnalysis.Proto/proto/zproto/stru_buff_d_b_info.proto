@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_buff_d_b_data.proto";
-import "stru_dirty_mask.proto";
 
 message BuffDBInfo {
   uint32 max_id = 1;

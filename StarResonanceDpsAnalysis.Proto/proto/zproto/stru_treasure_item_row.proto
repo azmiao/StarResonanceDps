@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_treasure_item_target.proto";
-import "stru_dirty_mask.proto";
 
 message TreasureItemRow {
   int32 config_id = 1;

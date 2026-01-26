@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package zproto;
 
-import "stru_dirty_mask.proto";
 
 message CultivateMiddleNodeData {
   int32 item_id = 1;

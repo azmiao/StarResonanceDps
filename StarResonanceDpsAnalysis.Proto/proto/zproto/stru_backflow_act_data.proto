@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_newbie_backflow_elective.proto";
-import "stru_dirty_mask.proto";
 
 message BackflowActData {
   int32 login_days = 1;

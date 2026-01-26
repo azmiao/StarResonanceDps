@@ -6,7 +6,6 @@ import "stru_quest_data.proto";
 import "stru_quest_history.proto";
 import "stru_world_quest_info.proto";
 import "stru_world_quest_list.proto";
-import "stru_dirty_mask.proto";
 
 message QuestDataList {
   map<uint32, zproto.QuestData> quest_map = 1;

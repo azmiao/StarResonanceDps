@@ -6,7 +6,6 @@ import "stru_equip_attr.proto";
 import "stru_equip_enchant_info.proto";
 import "stru_equip_info.proto";
 import "stru_equip_suit_info.proto";
-import "stru_dirty_mask.proto";
 
 message EquipList {
   map<int32, zproto.EquipInfo> equip_list = 1;

@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_compensation_record.proto";
-import "stru_dirty_mask.proto";
 
 message CompensationSeasonStatistics {
   map<uint32, zproto.CompensationRecord> week_data = 1;

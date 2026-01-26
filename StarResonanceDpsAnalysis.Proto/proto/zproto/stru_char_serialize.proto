@@ -110,7 +110,6 @@ import "stru_user_recommend_play_data.proto";
 import "stru_user_union_target.proto";
 import "stru_weekly_tower_record.proto";
 import "stru_world_event_map.proto";
-import "stru_dirty_mask.proto";
 
 message CharSerialize {
   int64 char_id = 1;

@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_battle_pass_award_info.proto";
-import "stru_dirty_mask.proto";
 
 message BattlePass {
   int32 id = 1;

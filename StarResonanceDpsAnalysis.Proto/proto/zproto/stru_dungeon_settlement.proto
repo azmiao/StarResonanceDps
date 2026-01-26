@@ -5,7 +5,6 @@ package zproto;
 import "stru_dungeon_award.proto";
 import "stru_dungeon_world_boss_settlement.proto";
 import "stru_settlement_position.proto";
-import "stru_dirty_mask.proto";
 
 message DungeonSettlement {
   int32 pass_time = 1;

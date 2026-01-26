@@ -4,7 +4,6 @@ package zproto;
 
 import "stru_fashion_benefit_collection_history.proto";
 import "stru_fashion_benefit_task_info.proto";
-import "stru_dirty_mask.proto";
 
 message FashionBenefit {
   int32 last_reward_id = 1;

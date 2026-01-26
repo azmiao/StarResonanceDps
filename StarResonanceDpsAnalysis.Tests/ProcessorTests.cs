@@ -79,8 +79,8 @@ public partial class ProcessorTests
     {
         // Arrange
         var mockStorage = new Mock<IDataStorage>();
-        const long playerUuidRaw = 12345L << 16;
         const long playerUuid = 12345L;
+        //const long playerUuidRaw = playerUuid << 16;
         const string playerName = "DirtyPlayer";
 
         mockStorage.Setup(s => s.CurrentPlayerUUID).Returns(playerUuid);
@@ -123,8 +123,8 @@ public partial class ProcessorTests
     {
         // Arrange
         var mockStorage = new Mock<IDataStorage>();
-        const long playerUuidRaw = 12345L << 16;
         const long playerUuid = 12345L;
+        //const long playerUuidRaw = playerUuid << 16;
         const int curHp = 5000;
         // const int maxHp = 8000;
 

@@ -5,7 +5,6 @@ package zproto;
 import "stru_player_buy_record.proto";
 import "stru_shop_compensation_data.proto";
 import "stru_shop_refresh_record.proto";
-import "stru_dirty_mask.proto";
 
 message ShopData {
   map<int32, zproto.ShopRefreshRecord> refresh_list = 1;

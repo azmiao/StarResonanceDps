@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_map_sticker_task_info.proto";
-import "stru_dirty_mask.proto";
 
 message MapStickerInfo {
   map<uint32, zproto.MapStickerTaskInfo> sticker_map = 1;

@@ -9,7 +9,6 @@ import "enum_e_gender.proto";
 import "stru_face_data.proto";
 import "stru_profile_info.proto";
 import "stru_user_union.proto";
-import "stru_dirty_mask.proto";
 
 message CharBaseInfo {
   int64 char_id = 1;

@@ -4,7 +4,6 @@ package zproto;
 
 import "stru_dungeon_award.proto";
 import "stru_dungeon_boss_rank.proto";
-import "stru_dirty_mask.proto";
 
 message DungeonWorldBossSettlement {
   int32 boss_hp_percent = 1;

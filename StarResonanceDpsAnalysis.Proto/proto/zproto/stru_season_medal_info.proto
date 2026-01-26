@@ -4,7 +4,6 @@ package zproto;
 
 import "stru_medal_hole.proto";
 import "stru_medal_node.proto";
-import "stru_dirty_mask.proto";
 
 message SeasonMedalInfo {
   uint32 season_id = 1;

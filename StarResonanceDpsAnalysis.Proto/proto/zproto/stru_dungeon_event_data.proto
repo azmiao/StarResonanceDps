@@ -5,7 +5,6 @@ package zproto;
 import "enum_dungeon_event_result.proto";
 import "enum_dungeon_event_state.proto";
 import "stru_dungeon_target_data.proto";
-import "stru_dirty_mask.proto";
 
 message DungeonEventData {
   int32 event_id = 1;

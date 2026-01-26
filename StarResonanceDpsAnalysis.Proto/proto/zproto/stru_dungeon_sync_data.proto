@@ -26,7 +26,6 @@ import "stru_dungeon_var.proto";
 import "stru_dungeon_var_all.proto";
 import "stru_dungeon_vote.proto";
 import "enum_e_error_code.proto";
-import "stru_dirty_mask.proto";
 
 message DungeonSyncData {
   int64 scene_uuid = 1;

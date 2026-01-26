@@ -6,7 +6,6 @@ import "stru_action_info.proto";
 import "stru_editor_u_i_position.proto";
 import "stru_fashion_quality_collect_info.proto";
 import "stru_ride_quality_collect_info.proto";
-import "stru_dirty_mask.proto";
 
 message PersonalZone {
   repeated int32 online_periods = 2;

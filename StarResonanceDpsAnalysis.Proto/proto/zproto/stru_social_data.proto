@@ -22,7 +22,6 @@ import "stru_setting_data.proto";
 import "stru_union_data.proto";
 import "stru_user_attr_data.proto";
 import "stru_warehouse_data.proto";
-import "stru_dirty_mask.proto";
 
 message SocialData {
   int64 char_id = 1;

@@ -8,7 +8,6 @@ import "stru_equip_attr.proto";
 import "stru_item_extend_data.proto";
 import "stru_mod_attr.proto";
 import "stru_mod_new_attr.proto";
-import "stru_dirty_mask.proto";
 
 message Item {
   int64 uuid = 1;

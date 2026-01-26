@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_action_group_mount_info.proto";
-import "stru_dirty_mask.proto";
 
 message ActionGroupActionClip {
   float begin_time = 1;

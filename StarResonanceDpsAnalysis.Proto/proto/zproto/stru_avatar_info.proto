@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_picture_info.proto";
-import "stru_dirty_mask.proto";
 
 message AvatarInfo {
   int32 avatar_id = 1;

@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_season_bp_quest_data.proto";
-import "stru_dirty_mask.proto";
 
 message SeasonBpQuestList {
   map<uint32, zproto.SeasonBpQuestData> season_map = 1;

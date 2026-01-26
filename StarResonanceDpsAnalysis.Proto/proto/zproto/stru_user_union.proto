@@ -5,7 +5,6 @@ package zproto;
 import "stru_union_dance_history.proto";
 import "stru_union_history_active.proto";
 import "stru_user_union_hunt_info.proto";
-import "stru_dirty_mask.proto";
 
 message UserUnion {
   int64 union_id = 1;

@@ -6,7 +6,6 @@ import "stru_dungeon_enter_limit.proto";
 import "stru_dungeon_info.proto";
 import "stru_dungeon_week_target_list.proto";
 import "stru_raid_record.proto";
-import "stru_dirty_mask.proto";
 
 message DungeonList {
   map<int32, zproto.DungeonInfo> complete_dungeon = 1;

@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_int_vec3.proto";
-import "stru_dirty_mask.proto";
 
 message FaceData {
   map<int32, int32> face_info = 1;

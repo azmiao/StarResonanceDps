@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_skill_c_d_info.proto";
-import "stru_dirty_mask.proto";
 
 message UserFightAttr {
   int64 cur_hp = 1;

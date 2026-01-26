@@ -38,8 +38,6 @@ public class SyncNearEntitiesProcessorTests
         var playerUid = 12345678L;
         var playerName = "TestPlayer";
         var level = 50;
-        var professionId = 3;
-        var combatPower = 75000;
 
         var payload = TestMessageBuilder.BuildSyncNearEntitiesPayload(
             playerUid,

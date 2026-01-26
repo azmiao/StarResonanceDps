@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_equip_attr_set.proto";
-import "stru_dirty_mask.proto";
 
 message EquipAttr {
   map<uint32, uint32> base_attrs = 4;

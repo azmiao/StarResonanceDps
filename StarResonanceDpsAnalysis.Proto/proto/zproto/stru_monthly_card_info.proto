@@ -4,7 +4,6 @@ package zproto;
 
 import "enum_e_receive_reward_status.proto";
 import "stru_month_card_item.proto";
-import "stru_dirty_mask.proto";
 
 message MonthlyCardInfo {
   zproto.EReceiveRewardStatus limit_award_status = 1;

@@ -4,7 +4,6 @@ package zproto;
 
 import "stru_pay_data.proto";
 import "stru_refund_item_info.proto";
-import "stru_dirty_mask.proto";
 
 message PayOrderList {
   repeated string pay_order_list = 1;

@@ -4,7 +4,6 @@ package zproto;
 
 import "stru_hero_key_roll_info.proto";
 import "stru_item.proto";
-import "stru_dirty_mask.proto";
 
 message HeroKeyItemInfo {
   zproto.Item item = 1;

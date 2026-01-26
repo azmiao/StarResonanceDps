@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package zproto;
 
-import "stru_dirty_mask.proto";
 
 message MiscInfo {
   map<int32, int32> expression_ids_learned = 1;

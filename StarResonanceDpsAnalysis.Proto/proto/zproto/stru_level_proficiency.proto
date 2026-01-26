@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_unlock_proficiency.proto";
-import "stru_dirty_mask.proto";
 
 message LevelProficiency {
   map<int32, int32> using_proficiency_map = 1;

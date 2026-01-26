@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_item.proto";
-import "stru_dirty_mask.proto";
 
 message LifeProfessionWorkInfo {
   uint32 life_profession_id = 1;

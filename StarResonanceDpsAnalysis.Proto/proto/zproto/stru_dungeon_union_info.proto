@@ -5,7 +5,6 @@ package zproto;
 import "stru_dance_ball.proto";
 import "stru_union_building.proto";
 import "stru_union_e_screen_info.proto";
-import "stru_dirty_mask.proto";
 
 message DungeonUnionInfo {
   int64 union_id = 1;

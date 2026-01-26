@@ -4,7 +4,6 @@ package zproto;
 
 import "stru_hero_key_item_info.proto";
 import "stru_item.proto";
-import "stru_dirty_mask.proto";
 
 message DungeonHeroKeyInfo {
   int64 char_id = 1;

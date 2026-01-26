@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_user_activity_reward_info.proto";
-import "stru_dirty_mask.proto";
 
 message UserActivityInfo {
   uint64 start_time = 2;

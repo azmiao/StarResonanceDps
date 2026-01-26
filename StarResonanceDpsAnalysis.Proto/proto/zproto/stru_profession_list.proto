@@ -5,7 +5,6 @@ package zproto;
 import "stru_profession_info.proto";
 import "stru_profession_skill_info.proto";
 import "stru_profession_talent_info.proto";
-import "stru_dirty_mask.proto";
 
 message ProfessionList {
   int32 cur_profession_id = 1;

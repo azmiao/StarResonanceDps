@@ -4,7 +4,6 @@ package zproto;
 
 import "stru_image_info.proto";
 import "stru_photo_owner_data.proto";
-import "stru_dirty_mask.proto";
 
 message PhotoGraphShow {
   uint32 photo_id = 1;

@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_mark_position.proto";
-import "stru_dirty_mask.proto";
 
 message MarkInfo {
   int64 tag_id = 1;

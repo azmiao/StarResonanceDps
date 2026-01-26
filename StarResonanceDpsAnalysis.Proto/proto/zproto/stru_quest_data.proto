@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "enum_e_quest_step_status.proto";
-import "stru_dirty_mask.proto";
 
 message QuestData {
   uint32 id = 1;

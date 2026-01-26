@@ -5,7 +5,6 @@ package zproto;
 import "enum_e_ride_property_type.proto";
 import "stru_ride_data.proto";
 import "stru_ride_skin_container.proto";
-import "stru_dirty_mask.proto";
 
 message RideList {
   map<int32, zproto.RideData> rides = 1;

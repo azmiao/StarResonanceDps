@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "stru_mod_info.proto";
-import "stru_dirty_mask.proto";
 
 message Mod {
   map<int32, int64> mod_slots = 1;

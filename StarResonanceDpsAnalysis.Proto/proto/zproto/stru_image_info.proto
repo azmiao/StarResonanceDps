@@ -3,7 +3,6 @@ syntax = "proto3";
 package zproto;
 
 import "enum_e_picture_type.proto";
-import "stru_dirty_mask.proto";
 
 message ImageInfo {
   zproto.EPictureType type = 1;
