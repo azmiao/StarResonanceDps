@@ -61,7 +61,7 @@ public partial class App : Application
         var appStartup = Host.Services.GetRequiredService<IApplicationStartup>();
         appStartup.InitializeAsync().Wait();
 
-        app.MainWindow = Host.Services.GetRequiredService<MainView>();
+        app.MainWindow = Host.Services.GetRequiredService<DpsStatisticsView>();
         app.MainWindow.Visibility = Visibility.Visible;
         app.Run();
 
