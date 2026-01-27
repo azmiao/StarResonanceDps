@@ -24,11 +24,22 @@ jobs:
       run: dotnet restore StarResonanceDpsAnalysis.slnx
 
     - name: Build Artifact
-      run: dotnet publish StarResonanceDpsAnalysis.WPF/StarResonanceDpsAnalysis.WPF.csproj -c ${{ matrix.configuration }} --self-contained -o StarResonanceDps -f net8.0-windows
+      run: dotnet publish StarResonanceDpsAnalysis.WPF/StarResonanceDpsAnalysis.WPF.csproj -c ${{ matrix.configuration }} -o StarResonanceDps -f net8.0-windows
+
+
+    - name: Build Artifact With Runtime
+      run: dotnet publish StarResonanceDpsAnalysis.WPF/StarResonanceDpsAnalysis.WPF.csproj -c ${{ matrix.configuration }} --self-contained -o StarResonanceDps-WithRuntime -f net8.0-windows
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: StarResonanceDps
         path: StarResonanceDps
+        if-no-files-found: error
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: StarResonanceDps-WithRuntime
+        path: StarResonanceDps-WithRuntime
         if-no-files-found: error
