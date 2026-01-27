@@ -39,6 +39,7 @@ public partial class PersonalDpsViewModel : BaseViewModel
     private readonly Dispatcher _dispatcher;
     private readonly ILogger<PersonalDpsViewModel>? _logger;
     private readonly IConfigManager _configManager;
+    private readonly IApplicationControlService _appControlService;
     private readonly object _timerLock = new();
     private Timer? _remainingTimer;
 
@@ -58,12 +59,14 @@ public partial class PersonalDpsViewModel : BaseViewModel
         IDataStorage dataStorage,
         Dispatcher dispatcher,
         IConfigManager configManager,
+        IApplicationControlService appControlService,
         ILogger<PersonalDpsViewModel>? logger = null)
     {
         _windowManagementService = windowManagementService;
         _dataStorage = dataStorage;
         _dispatcher = dispatcher;
         _configManager = configManager;
+        _appControlService = appControlService;
         _logger = logger;
 
         // ⭐ 订阅配置更新事件以响应主题颜色变化
@@ -604,7 +607,7 @@ public partial class PersonalDpsViewModel : BaseViewModel
     [RelayCommand]
     private void CloseWindow()
     {
-        _windowManagementService.PersonalDpsView.Close();
+        _appControlService.Shutdown();
     }
 
     [RelayCommand]
@@ -625,6 +628,7 @@ public partial class PersonalDpsViewModel : BaseViewModel
     private void OpenSkillBreakdownView()
     {
         _windowManagementService.SkillBreakdownView.Show();
+        _windowManagementService.SkillBreakdownView.Activate();
     }
 
     [RelayCommand]
