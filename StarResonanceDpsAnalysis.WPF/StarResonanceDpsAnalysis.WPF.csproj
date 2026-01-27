@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -9,6 +9,7 @@
     <Platforms>x64</Platforms>
     <Version>3.0.0</Version>
     <InterceptorsPreviewNamespaces>$(InterceptorsPreviewNamespaces);Microsoft.Extensions.Configuration.Binder.SourceGeneration</InterceptorsPreviewNamespaces>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup Label="MultilingualAppToolkit">
     <MultilingualAppToolkitVersion>4.0.0</MultilingualAppToolkitVersion>
@@ -124,5 +125,8 @@
     <None Update="Data\Monster\monster.zh-CN.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Utilities\" />
   </ItemGroup>
 </Project>

@@ -1240,4 +1240,24 @@
   <data name="SkillBreakdown_Label_ValuePercentToTotal" xml:space="preserve">
     <value>百分比</value>
   </data>
+  <data name="App_RestartAsAdmin_Message" xml:space="preserve">
+    <value>某些功能可能需要管理员权限。
+
+是否要以管理员身份重新启动应用程序？</value>
+  </data>
+  <data name="App_RestartAsAdmin_Title" xml:space="preserve">
+    <value>管理员权限</value>
+  </data>
+  <data name="App_AlreadyAdmin_Title" xml:space="preserve">
+    <value>已是管理员</value>
+  </data>
+  <data name="App_AlreadyAdmin_Message" xml:space="preserve">
+    <value>此应用程序已以管理员权限运行。</value>
+  </data>
+  <data name="App_PrivilegeLevel_Admin" xml:space="preserve">
+    <value>管理员</value>
+  </data>
+  <data name="App_PrivilegeLevel_Standard" xml:space="preserve">
+    <value>标准用户</value>
+  </data>
 </root>

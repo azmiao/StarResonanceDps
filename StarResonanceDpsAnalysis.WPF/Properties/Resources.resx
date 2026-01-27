@@ -1265,4 +1265,24 @@ How to get: After a fight, your character will automatically appear in the stats
   <data name="SkillBreakdown_Label_ValuePercentToTotal" xml:space="preserve">
     <value>Percent</value>
   </data>
+  <data name="App_RestartAsAdmin_Message" xml:space="preserve">
+    <value>Some features may require administrator privileges.
+
+Would you like to restart the application as administrator?</value>
+  </data>
+  <data name="App_RestartAsAdmin_Title" xml:space="preserve">
+    <value>Administrator Privileges</value>
+  </data>
+  <data name="App_AlreadyAdmin_Title" xml:space="preserve">
+    <value>Already Administrator</value>
+  </data>
+  <data name="App_AlreadyAdmin_Message" xml:space="preserve">
+    <value>This application is already running with administrator privileges.</value>
+  </data>
+  <data name="App_PrivilegeLevel_Admin" xml:space="preserve">
+    <value>Administrator</value>
+  </data>
+  <data name="App_PrivilegeLevel_Standard" xml:space="preserve">
+    <value>Standard User</value>
+  </data>
 </root>
