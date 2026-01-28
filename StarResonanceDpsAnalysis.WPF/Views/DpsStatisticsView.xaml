@@ -11,7 +11,6 @@
     xmlns:loc="clr-namespace:StarResonanceDpsAnalysis.WPF.Properties"
     xmlns:local="clr-namespace:StarResonanceDpsAnalysis.WPF.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="clr-namespace:StarResonanceDpsAnalysis.Core.Models;assembly=StarResonanceDpsAnalysis.Core"
     xmlns:system="clr-namespace:System;assembly=System.Runtime"
     xmlns:viewModels="clr-namespace:StarResonanceDpsAnalysis.WPF.ViewModels"
     Title="{lex:Loc Key={x:Static loc:ResourcesKeys.Window_DpsStatistics_Title}}"
@@ -61,7 +60,6 @@
             TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Foreground" Value="#FFF" />
-            <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#HarmonyOS Sans SC" />
             <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
 
@@ -190,7 +188,6 @@
                             BasedOn="{StaticResource NormalTextBlockBaseStyle}"
                             TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center" />
-                            <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#HarmonyOS Sans SC" />
                             <Setter Property="Foreground" Value="White" />
                         </Style>
                     </StackPanel.Resources>
@@ -247,7 +244,8 @@
                         <Run.Text>
                             <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
                                 <Binding Path="Value" />
-                                <Binding Path="DataContext.AppConfig.DamageDisplayType" RelativeSource="{RelativeSource AncestorType=Window}" />
+                                <Binding Path="DataContext.AppConfig.DamageDisplayType"
+                                         RelativeSource="{RelativeSource AncestorType=Window}" />
                             </MultiBinding>
                         </Run.Text>
                     </Run>
@@ -255,10 +253,13 @@
                         <Run.Text>
                             <MultiBinding Converter="{StaticResource DpsConverter}" StringFormat="{}({0})">
                                 <Binding Path="Value" />
-                                <Binding Path="DataContext.BattleDuration" RelativeSource="{RelativeSource AncestorType=Window}" />
-                                <Binding Path="DataContext.AppConfig.DamageDisplayType" RelativeSource="{RelativeSource AncestorType=Window}" />
+                                <Binding Path="DataContext.BattleDuration"
+                                         RelativeSource="{RelativeSource AncestorType=Window}" />
+                                <Binding Path="DataContext.AppConfig.DamageDisplayType"
+                                         RelativeSource="{RelativeSource AncestorType=Window}" />
                                 <Binding Path="ValuePerSecond" />
-                                <Binding Path="DataContext.AppConfig.UseConverterBasedDps" RelativeSource="{RelativeSource AncestorType=Window}" />
+                                <Binding Path="DataContext.AppConfig.UseConverterBasedDps"
+                                         RelativeSource="{RelativeSource AncestorType=Window}" />
                             </MultiBinding>
                         </Run.Text>
                     </Run>
@@ -284,7 +285,8 @@
                 <ctrl:DpsDetailPopup.SkillList>
                     <MultiBinding Converter="{StaticResource StatisticTypeToSkillListConverter}">
                         <Binding Path="." />
-                        <Binding Path="DataContext.StatisticIndex" RelativeSource="{RelativeSource AncestorType=Window}" />
+                        <Binding Path="DataContext.StatisticIndex"
+                                 RelativeSource="{RelativeSource AncestorType=Window}" />
                         <!--  添加SkillListRefreshTrigger作为第三个绑定源,每次触发器改变时重新执行转换器  -->
                         <Binding Path="SkillListRefreshTrigger" />
                     </MultiBinding>
@@ -350,8 +352,10 @@
                             MouseLeaveCommand="{Binding MouseLeaveItemCommand}">
                             <ctrl:DpsIndicatorControl.TrackOpacity>
                                 <MultiBinding Converter="{StaticResource ConditionalPercentToOpacityConverter}">
-                                    <Binding Path="DataContext.AppConfig.Opacity" RelativeSource="{RelativeSource AncestorType=Window}" />
-                                    <Binding Path="DataContext.AppConfig.MouseThroughEnabled" RelativeSource="{RelativeSource AncestorType=Window}" />
+                                    <Binding Path="DataContext.AppConfig.Opacity"
+                                             RelativeSource="{RelativeSource AncestorType=Window}" />
+                                    <Binding Path="DataContext.AppConfig.MouseThroughEnabled"
+                                             RelativeSource="{RelativeSource AncestorType=Window}" />
                                 </MultiBinding>
                             </ctrl:DpsIndicatorControl.TrackOpacity>
                         </ctrl:DpsIndicatorControl>
@@ -366,10 +370,10 @@
         <Grid CacheMode="BitmapCache">
             <!-- ⭐ 新增：背景图片 -->
             <Grid.Background>
-                <ImageBrush 
-              ImageSource="{Binding AppConfig.BackgroundImagePath, Converter={StaticResource EmptyStringToNullConverter}}"
-              Stretch="Uniform"
-              Opacity="{Binding AppConfig.Opacity, Converter={StaticResource PercentToOpacityConverter}}" />
+                <ImageBrush
+                    ImageSource="{Binding AppConfig.BackgroundImagePath, Converter={StaticResource EmptyStringToNullConverter}}"
+                    Stretch="Uniform"
+                    Opacity="{Binding AppConfig.Opacity, Converter={StaticResource PercentToOpacityConverter}}" />
             </Grid.Background>
             <Grid.RowDefinitions>
                 <RowDefinition Height="25" />
@@ -421,11 +425,10 @@
                         Content="&#xe689;"
                         FontSize="15" />
                     <!--  当前统计状态文字  -->
-                    <TextBlock 
-                        Grid.Column="1" 
-                        Margin="0,0,0,3" 
-                        VerticalAlignment="Bottom" 
-                        HorizontalAlignment="Center"
+                    <TextBlock
+                        Grid.Column="1"
+                        Margin="0,0,0,3"
+                        VerticalAlignment="Bottom"
                         Style="{StaticResource StatisticTypeText}">
 
                         <Run Text="{lex:Loc {Binding StatisticIndex, StringFormat=StatisticType_{0}}}" />
@@ -491,7 +494,9 @@
                                 <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
                                     <Setter Property="Content" Value="&#xe864;" />
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Topmost, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                                        <DataTrigger
+                                            Binding="{Binding Topmost, RelativeSource={RelativeSource AncestorType=Window}}"
+                                            Value="True">
                                             <Setter Property="Content" Value="&#xe863;" />
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -505,16 +510,21 @@
                             Content="&#xE644;" />
 
                         <!--  设置按钮  -->
-                        <Button Width="24" Content="&#xE600;">
+                        <Button Width="24" Content="&#xE600;" x:Name="ButtonSettings">
                             <b:Interaction.Behaviors>
                                 <behaviors:OpenContextMenuBehavior />
                             </b:Interaction.Behaviors>
                             <Button.ContextMenu>
-                                <ContextMenu Style="{StaticResource ModernContextMenu}">
+                                <ContextMenu
+                                    x:Name="DropdownContextMenu"
+                                    Style="{StaticResource ModernContextMenu}"
+                                    PlacementTarget="{x:Reference ButtonSettings}"
+                                    DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}"
+                                             d:DataContext="{d:DesignInstance viewModels:DpsStatisticsViewModel}"
+                                             >
                                     <!--  只给 MenuItem 应用样式，Separator 不受影响  -->
                                     <ContextMenu.Resources>
                                         <Style BasedOn="{StaticResource ModernMenuItem}" TargetType="MenuItem" />
-                                        <Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" BasedOn="{StaticResource ModernMenuSeparator}" TargetType="Separator" />
                                     </ContextMenu.Resources>
 
                                     <MenuItem
@@ -549,7 +559,8 @@
                                         Header="技能日记" />
 
                                     <!--  记录设置  -->
-                                    <MenuItem Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_RecordSettings}}" StaysOpenOnClick="True">
+                                    <MenuItem Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_RecordSettings}}"
+                                              StaysOpenOnClick="True">
                                         <!--  ⭐ 记录所有(默认选中) -->
                                         <MenuItem
                                             Click="RecordSettingsMenuItem_Click"
@@ -561,9 +572,11 @@
                                                 <system:Int32>0</system:Int32>
                                             </MenuItem.CommandParameter>
                                             <MenuItem.IsChecked>
-                                                <MultiBinding Converter="{StaticResource EqualsConverter}" Mode="OneWay">
+                                                <MultiBinding Converter="{StaticResource EqualsConverter}"
+                                                              Mode="OneWay">
                                                     <Binding Path="Options.MinimalDurationInSeconds" />
-                                                    <Binding Path="CommandParameter" RelativeSource="{RelativeSource Self}" />
+                                                    <Binding Path="CommandParameter"
+                                                             RelativeSource="{RelativeSource Self}" />
                                                 </MultiBinding>
                                             </MenuItem.IsChecked>
                                         </MenuItem>
@@ -579,9 +592,11 @@
                                                 <system:Int32>60</system:Int32>
                                             </MenuItem.CommandParameter>
                                             <MenuItem.IsChecked>
-                                                <MultiBinding Converter="{StaticResource EqualsConverter}" Mode="OneWay">
+                                                <MultiBinding Converter="{StaticResource EqualsConverter}"
+                                                              Mode="OneWay">
                                                     <Binding Path="Options.MinimalDurationInSeconds" />
-                                                    <Binding Path="CommandParameter" RelativeSource="{RelativeSource Self}" />
+                                                    <Binding Path="CommandParameter"
+                                                             RelativeSource="{RelativeSource Self}" />
                                                 </MultiBinding>
                                             </MenuItem.IsChecked>
                                         </MenuItem>
@@ -597,72 +612,90 @@
                                                 <system:Int32>120</system:Int32>
                                             </MenuItem.CommandParameter>
                                             <MenuItem.IsChecked>
-                                                <MultiBinding Converter="{StaticResource EqualsConverter}" Mode="OneWay">
+                                                <MultiBinding Converter="{StaticResource EqualsConverter}"
+                                                              Mode="OneWay">
                                                     <Binding Path="Options.MinimalDurationInSeconds" />
-                                                    <Binding Path="CommandParameter" RelativeSource="{RelativeSource Self}" />
+                                                    <Binding Path="CommandParameter"
+                                                             RelativeSource="{RelativeSource Self}" />
                                                 </MultiBinding>
                                             </MenuItem.IsChecked>
                                         </MenuItem>
                                     </MenuItem>
 
                                     <!--  技能显示设置  -->
-                                    <MenuItem Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_SkillDisplay}}" ItemContainerStyle="{StaticResource CheckableMenuItem}">
-                                        <MenuItem Command="{Binding SetSkillDisplayLimitCommand}" Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_SkillDisplay_Top5}}">
+                                    <MenuItem Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_SkillDisplay}}"
+                                              ItemContainerStyle="{StaticResource CheckableMenuItem}">
+                                        <MenuItem Command="{Binding SetSkillDisplayLimitCommand}"
+                                                  Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_SkillDisplay_Top5}}">
                                             <MenuItem.CommandParameter>
                                                 <system:Int32>5</system:Int32>
                                             </MenuItem.CommandParameter>
                                             <MenuItem.IsChecked>
-                                                <MultiBinding Converter="{StaticResource EqualsConverter}" Mode="OneWay">
+                                                <MultiBinding Converter="{StaticResource EqualsConverter}"
+                                                              Mode="OneWay">
                                                     <Binding Path="CurrentStatisticData.SkillDisplayLimit" />
-                                                    <Binding Path="CommandParameter" RelativeSource="{RelativeSource Self}" />
+                                                    <Binding Path="CommandParameter"
+                                                             RelativeSource="{RelativeSource Self}" />
                                                 </MultiBinding>
                                             </MenuItem.IsChecked>
                                         </MenuItem>
 
-                                        <MenuItem Command="{Binding SetSkillDisplayLimitCommand}" Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_SkillDisplay_Top8}}">
+                                        <MenuItem Command="{Binding SetSkillDisplayLimitCommand}"
+                                                  Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_SkillDisplay_Top8}}">
                                             <MenuItem.CommandParameter>
                                                 <system:Int32>8</system:Int32>
                                             </MenuItem.CommandParameter>
                                             <MenuItem.IsChecked>
-                                                <MultiBinding Converter="{StaticResource EqualsConverter}" Mode="OneWay">
+                                                <MultiBinding Converter="{StaticResource EqualsConverter}"
+                                                              Mode="OneWay">
                                                     <Binding Path="CurrentStatisticData.SkillDisplayLimit" />
-                                                    <Binding Path="CommandParameter" RelativeSource="{RelativeSource Self}" />
+                                                    <Binding Path="CommandParameter"
+                                                             RelativeSource="{RelativeSource Self}" />
                                                 </MultiBinding>
                                             </MenuItem.IsChecked>
                                         </MenuItem>
 
-                                        <MenuItem Command="{Binding SetSkillDisplayLimitCommand}" Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_SkillDisplay_Top10}}">
+                                        <MenuItem Command="{Binding SetSkillDisplayLimitCommand}"
+                                                  Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_SkillDisplay_Top10}}">
                                             <MenuItem.CommandParameter>
                                                 <system:Int32>10</system:Int32>
                                             </MenuItem.CommandParameter>
                                             <MenuItem.IsChecked>
-                                                <MultiBinding Converter="{StaticResource EqualsConverter}" Mode="OneWay">
+                                                <MultiBinding Converter="{StaticResource EqualsConverter}"
+                                                              Mode="OneWay">
                                                     <Binding Path="CurrentStatisticData.SkillDisplayLimit" />
-                                                    <Binding Path="CommandParameter" RelativeSource="{RelativeSource Self}" />
+                                                    <Binding Path="CommandParameter"
+                                                             RelativeSource="{RelativeSource Self}" />
                                                 </MultiBinding>
                                             </MenuItem.IsChecked>
                                         </MenuItem>
 
-                                        <MenuItem Command="{Binding SetSkillDisplayLimitCommand}" Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_SkillDisplay_Top15}}">
+                                        <MenuItem Command="{Binding SetSkillDisplayLimitCommand}"
+                                                  Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_SkillDisplay_Top15}}">
                                             <MenuItem.CommandParameter>
                                                 <system:Int32>15</system:Int32>
                                             </MenuItem.CommandParameter>
                                             <MenuItem.IsChecked>
-                                                <MultiBinding Converter="{StaticResource EqualsConverter}" Mode="OneWay">
+                                                <MultiBinding Converter="{StaticResource EqualsConverter}"
+                                                              Mode="OneWay">
                                                     <Binding Path="CurrentStatisticData.SkillDisplayLimit" />
-                                                    <Binding Path="CommandParameter" RelativeSource="{RelativeSource Self}" />
+                                                    <Binding Path="CommandParameter"
+                                                             RelativeSource="{RelativeSource Self}" />
                                                 </MultiBinding>
                                             </MenuItem.IsChecked>
                                         </MenuItem>
 
-                                        <MenuItem Command="{Binding SetSkillDisplayLimitCommand}" Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_SkillDisplay_All}}">
+                                        <MenuItem Command="{Binding SetSkillDisplayLimitCommand}"
+                                                  Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_SkillDisplay_All}}">
                                             <MenuItem.CommandParameter>
                                                 <system:Int32>0</system:Int32>
                                             </MenuItem.CommandParameter>
                                             <MenuItem.IsChecked>
-                                                <MultiBinding Converter="{StaticResource EqualsConverter}" Mode="OneWay">
+                                                <MultiBinding Converter="{StaticResource EqualsConverter}"
+                                                              Mode="OneWay">
                                                     <Binding Path="CurrentStatisticData.SkillDisplayLimit" />
-                                                    <Binding Path="CommandParameter" RelativeSource="{RelativeSource Self}" />
+                                                    <Binding Path="CommandParameter"
+                                                             RelativeSource="{RelativeSource Self}" />
                                                 </MultiBinding>
                                             </MenuItem.IsChecked>
                                         </MenuItem>
@@ -671,22 +704,26 @@
                                     <!--  历史记录  -->
                                     <MenuItem Header="{lex:Loc Menu_History}">
                                         <!-- 当前战斗历史子菜单 -->
-                                        <MenuItem Header="{lex:Loc Menu_History_Current}" ItemsSource="{Binding SnapshotService.CurrentSnapshots}">
+                                        <MenuItem Header="{lex:Loc Menu_History_Current}"
+                                                  ItemsSource="{Binding SnapshotService.CurrentSnapshots}">
                                             <MenuItem.ItemContainerStyle>
                                                 <Style TargetType="MenuItem" BasedOn="{StaticResource ModernMenuItem}">
                                                     <Setter Property="Header" Value="{Binding DisplayLabel}" />
-                                                    <Setter Property="Command" Value="{Binding DataContext.LoadSnapshotCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                    <!-- ContextMenu.DataContext is set to PlacementTarget.DataContext, so bind directly -->
+                                                    <Setter Property="Command" Value="{Binding LoadSnapshotCommand}" />
                                                     <Setter Property="CommandParameter" Value="{Binding}" />
                                                 </Style>
                                             </MenuItem.ItemContainerStyle>
                                         </MenuItem>
 
                                         <!-- 全程历史子菜单 -->
-                                        <MenuItem Header="{lex:Loc Menu_History_Total}" ItemsSource="{Binding SnapshotService.TotalSnapshots}">
+                                        <MenuItem Header="{lex:Loc Menu_History_Total}"
+                                                  ItemsSource="{Binding SnapshotService.TotalSnapshots}">
                                             <MenuItem.ItemContainerStyle>
                                                 <Style TargetType="MenuItem" BasedOn="{StaticResource ModernMenuItem}">
                                                     <Setter Property="Header" Value="{Binding DisplayLabel}" />
-                                                    <Setter Property="Command" Value="{Binding DataContext.LoadSnapshotCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                    <!-- ContextMenu.DataContext is set to PlacementTarget.DataContext, so bind directly -->
+                                                    <Setter Property="Command" Value="{Binding LoadSnapshotCommand}" />
                                                     <Setter Property="CommandParameter" Value="{Binding}" />
                                                 </Style>
                                             </MenuItem.ItemContainerStyle>
@@ -783,7 +820,8 @@
                 <Border.Background>
                     <SolidColorBrush>
                         <SolidColorBrush.Color>
-                            <MultiBinding Converter="{StaticResource ConditionalPercentToColorConverter}" ConverterParameter="#191919">
+                            <MultiBinding Converter="{StaticResource ConditionalPercentToColorConverter}"
+                                          ConverterParameter="#191919">
                                 <Binding Path="AppConfig.Opacity" />
                                 <Binding Path="AppConfig.MouseThroughEnabled" />
                             </MultiBinding>
@@ -903,7 +941,8 @@
                             <TextBlock.Text>
                                 <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
                                     <Binding Path="CurrentStatisticData.CurrentPlayerSlot.Value" />
-                                    <Binding Path="DataContext.AppConfig.DamageDisplayType" RelativeSource="{RelativeSource AncestorType=Window, Mode=FindAncestor}" />
+                                    <Binding Path="DataContext.AppConfig.DamageDisplayType"
+                                             RelativeSource="{RelativeSource AncestorType=Window, Mode=FindAncestor}" />
                                 </MultiBinding>
                             </TextBlock.Text>
                         </TextBlock>
