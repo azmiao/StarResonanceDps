@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Windows.Data;
 using StarResonanceDpsAnalysis.WPF.Models;
 using StarResonanceDpsAnalysis.WPF.Helpers;
+using StarResonanceDpsAnalysis.WPF.Localization;
 
 namespace StarResonanceDpsAnalysis.WPF.Converters;
 
@@ -20,6 +21,7 @@ public sealed class DpsConverter : IMultiValueConverter
     public object Convert(object?[]? values, Type targetType, object? parameter, CultureInfo culture)
     {
         const string notAvailable = "N/A";
+        culture = LocalizationManager.Instance.CurrentCulture;
 
         if (values == null || values.Length < 2)
         {

@@ -1389,7 +1389,8 @@ public abstract class BaseDeltaInfoProcessor(IDataStorage storage, ILogger? logg
                 IsAttackerPlayer = isAttackerPlayer,
                 IsTargetPlayer = isTargetPlayer,
                 IsLucky = d.HasLuckyValue && d.LuckyValue != 0,
-                IsCritical = d.HasIsCrit && d.IsCrit,//(d.TypeFlag & 1) == 1,
+                //IsCritical = d.HasIsCrit && d.IsCrit,//(d.TypeFlag & 1) == 1,
+                IsCritical = (d.TypeFlag & 1) == 1,
                 IsHeal = d.Type == EDamageType.Heal,
                 IsMiss = d.HasIsMiss && d.IsMiss,
                 IsDead = d.HasIsDead && d.IsDead

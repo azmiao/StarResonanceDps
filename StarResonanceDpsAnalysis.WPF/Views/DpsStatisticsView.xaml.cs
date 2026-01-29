@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using StarResonanceDpsAnalysis.WPF.ViewModels;
@@ -23,8 +24,19 @@ public partial class DpsStatisticsView : Window
 
     public DpsStatisticsView(DpsStatisticsViewModel vm)
     {
-        DataContext = vm;
         InitializeComponent();
+        DataContext = vm;
+        DropdownContextMenu.DataContext = vm;
+        if (vm.AppConfig.DebugEnabled)
+        {
+            var menuItem = new MenuItem()
+            {
+                Command = vm.DebugFunctions.CallDebugWindowCommand,
+                Header = "CallDebugPanel",
+            };
+            var items = DropdownContextMenu.Items;
+            items.Insert(items.Count - 2, menuItem);
+        }
 
         // ⭐ 初始化默认值:记录所有(0秒)
         vm.Options.MinimalDurationInSeconds = 0;
@@ -178,6 +190,5 @@ public partial class DpsStatisticsView : Window
     private void ButtonMinimizeClick(object sender, RoutedEventArgs e)
     {
         WindowState = WindowState.Minimized;
-        //throw new NotImplementedException();
     }
 }

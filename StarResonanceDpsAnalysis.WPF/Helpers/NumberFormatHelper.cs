@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Windows;
+using StarResonanceDpsAnalysis.WPF.Localization;
 using StarResonanceDpsAnalysis.WPF.Models;
 using StarResonanceDpsAnalysis.WPF.Properties;
 
@@ -166,8 +167,8 @@ internal static class NumberFormatHelper
 
     private static string GetSuffix(string key, CultureInfo culture)
     {
-        return Resources.ResourceManager.GetString(key, culture)
-               ?? Resources.ResourceManager.GetString(key, CultureInfo.InvariantCulture)
+        return LocalizationManager.Instance.GetString(key, culture)
+               ?? LocalizationManager.Instance.GetString(key, CultureInfo.InvariantCulture)
                ?? string.Empty;
     }
 
@@ -177,14 +178,14 @@ internal static class NumberFormatHelper
             ? ResourcesKeys.NumberDisplay_Wan
             : ResourcesKeys.NumberDisplay_KMB;
 
-        var current = Resources.ResourceManager.GetString(key, CultureInfo.CurrentUICulture);
+        var current = LocalizationManager.Instance.GetString(key, CultureInfo.CurrentUICulture);
         if (!string.IsNullOrWhiteSpace(current) &&
             string.Equals(text, current, StringComparison.OrdinalIgnoreCase))
         {
             return true;
         }
 
-        var invariant = Resources.ResourceManager.GetString(key, CultureInfo.InvariantCulture);
+        var invariant = LocalizationManager.Instance.GetString(key, CultureInfo.InvariantCulture);
         return !string.IsNullOrWhiteSpace(invariant) &&
                string.Equals(text, invariant, StringComparison.OrdinalIgnoreCase);
     }

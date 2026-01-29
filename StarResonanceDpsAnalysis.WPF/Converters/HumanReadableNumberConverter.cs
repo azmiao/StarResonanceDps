@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Windows.Data;
 using StarResonanceDpsAnalysis.WPF.Models;
 using StarResonanceDpsAnalysis.WPF.Helpers;
+using StarResonanceDpsAnalysis.WPF.Localization;
 
 namespace StarResonanceDpsAnalysis.WPF.Converters;
 
@@ -32,7 +33,7 @@ public class HumanReadableNumberConverter : IValueConverter, IMultiValueConverte
             return string.Empty;
         }
 
-        return NumberFormatHelper.FormatHumanReadable(number, mode, culture);
+        return NumberFormatHelper.FormatHumanReadable(number, mode, LocalizationManager.Instance.CurrentCulture);
     }
 
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
@@ -48,7 +49,7 @@ public class HumanReadableNumberConverter : IValueConverter, IMultiValueConverte
             return string.Empty;
         }
 
-        return NumberFormatHelper.FormatHumanReadable(number, mode, culture);
+        return NumberFormatHelper.FormatHumanReadable(number, mode, LocalizationManager.Instance.CurrentCulture);
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
