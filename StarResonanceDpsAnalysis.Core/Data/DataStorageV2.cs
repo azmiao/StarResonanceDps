@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using StarResonanceDpsAnalysis.Core.Analyze;
 using StarResonanceDpsAnalysis.Core.Analyze.Models;
@@ -25,11 +26,6 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
 
     // ===== Statistics Engine =====
     private readonly StatisticsAdapter _statisticsAdapter = new(logger);
-    
-    // ===== Sample Recording Control =====
-    private readonly object _sampleRecordingLock = new();
-    private DateTime _lastSampleRecordTime = DateTime.MinValue;
-    private int _sampleRecordingIntervalMs = 1000; // Default: 1 second
 
     private bool _disposed;
     private bool _hasPendingBattleLogEvents;
@@ -38,34 +34,12 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
     private bool _hasPendingPlayerInfoEvents;
     private bool _isServerConnected;
     private DateTime _lastLogWallClockAtUtc = DateTime.MinValue;
+    private int _sampleRecordingInterval = 1000;
+    private bool _isSampleRecordingStarted;
 
     // ===== Section timeout state =====
     private Timer? _sectionTimeoutTimer;
     private bool _isSectionTimedOut;
-    
-    /// <summary>
-    /// Sample recording interval in milliseconds (controlled by DpsUpdateInterval)
-    /// Default: 1000ms (1 second)
-    /// Range: 100ms - 5000ms
-    /// </summary>
-    public int SampleRecordingInterval
-    {
-        get
-        {
-            lock (_sampleRecordingLock)
-            {
-                return _sampleRecordingIntervalMs;
-            }
-        }
-        set
-        {
-            lock (_sampleRecordingLock)
-            {
-                _sampleRecordingIntervalMs = Math.Clamp(value, 100, 5000);
-                logger.LogDebug("Sample recording interval updated to {Interval}ms", _sampleRecordingIntervalMs);
-            }
-        }
-    }
 
     /// <summary>
     /// 玩家信息字典 (Key: UID)
@@ -83,11 +57,6 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
     private bool ForceNewBattleSection { get; set; }
 
     /// <summary>
-    /// 当前玩家UUID
-    /// </summary>
-    public long CurrentPlayerUUID { get; set; }
-
-    /// <summary>
     /// 当前玩家信息
     /// </summary>
     public PlayerInfo CurrentPlayerInfo { get; private set; } = new();
@@ -101,6 +70,24 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
     /// 战斗日志分段超时时间 (默认: 5000ms)
     /// </summary>
     public TimeSpan SectionTimeout { get; set; } = TimeSpan.FromMilliseconds(10000);
+
+    /// <summary>
+    /// Sample recording interval in milliseconds
+    /// </summary>
+    public int SampleRecordingInterval
+    {
+        get => _sampleRecordingInterval;
+        set
+        {
+            var clamped = Math.Max(1, value);
+            if (_sampleRecordingInterval == clamped) return;
+            _sampleRecordingInterval = clamped;
+            if (_isSampleRecordingStarted)
+            {
+                _statisticsAdapter.StartSampleRecording(_sampleRecordingInterval);
+            }
+        }
+    }
 
     /// <summary>
     /// 是否正在监听服务器
@@ -118,7 +105,6 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
             RaiseServerConnectionStateChanged(value);
         }
     }
-
 
     /// <summary>
     /// 从文件加载缓存玩家信息
@@ -223,6 +209,26 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
     }
 
     /// <summary>
+    /// 设置当前玩家 UID，并同步到 CurrentPlayerInfo
+    /// </summary>
+    /// <param name="uid">当前玩家UID</param>
+    public void SetCurrentPlayerUid(long uid)
+    {
+        if (uid == 0) return;
+
+        var changed = CurrentPlayerInfo.UID != uid;
+        var existed = EnsurePlayer(uid);
+
+        CurrentPlayerInfo.UID = uid;
+
+        if (changed && existed && PlayerInfoData.TryGetValue(uid, out var info))
+        {
+            RaisePlayerInfoUpdated(info);
+            RaiseDataUpdated();
+        }
+    }
+
+    /// <summary>
     /// 添加战斗日志 - fires events immediately
     /// </summary>
     public void AddBattleLog(BattleLog log)
@@ -245,6 +251,7 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
         _disposed = true;
         try
         {
+            _statisticsAdapter.StopSampleRecording();
             _sectionTimeoutTimer?.Dispose();
         }
         catch (Exception ex)
@@ -309,12 +316,19 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
         }
 
         logger.LogDebug("Section timed out at {Time}, stopping delta tracking", now);
-        
+
         // ⭐ Stop delta tracking when section times out
         _statisticsAdapter.StopDeltaTracking();
-        
+
         // ⭐ Raise SectionEnded event to notify UI
         RaiseSectionEnded();
+    }
+
+    private void EnsureSampleRecordingStarted()
+    {
+        if (_isSampleRecordingStarted) return;
+        _statisticsAdapter.StartSampleRecording(_sampleRecordingInterval);
+        _isSampleRecordingStarted = true;
     }
 
     private void TriggerPlayerInfoUpdated(long uid)
@@ -450,6 +464,8 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
 
             UpdateLastLogState(log);
         }
+
+        EnsureSampleRecordingStarted();
     }
 
     private bool CheckAndHandleSectionTimeout(BattleLog log)
@@ -552,9 +568,9 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
         TriggerPlayerInfoUpdatedImmediate(uid);
     }
 
-    public void SetPlayerCombatStateTime(long uid, int readInt32)
+    public void SetPlayerCombatStateTime(long uid, long time)
     {
-        PlayerInfoData[uid].CombatStateTime = readInt32;
+        PlayerInfoData[uid].CombatStateTime = time;
         TriggerPlayerInfoUpdatedImmediate(uid);
     }
 
@@ -586,6 +602,13 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
     {
         PlayerInfoData[uid].RankLevel = rankLevel;
         TriggerPlayerInfoUpdatedImmediate(uid);
+    }
+
+    public void SetPlayerGuild(long playerUid, string guild)
+    {
+        EnsurePlayer(playerUid);
+        PlayerInfoData[playerUid].Guild = guild;
+        TriggerPlayerInfoUpdatedImmediate(playerUid);
     }
 
     public void SetPlayerCritical(long uid, int critical)
@@ -663,7 +686,21 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
             _isSectionTimedOut = false;
         }
 
-        // ✅ 完全使用 StatisticsAdapter
+        // Preserve current section logs before full clear as well.
+        var sectionStats = _statisticsAdapter.GetStatistics(fullSession: false);
+        if (sectionStats.Count > 0)
+        {
+            try
+            {
+                BeforeSectionCleared?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during BeforeSectionCleared event in ClearAllDpsData");
+                ExceptionHelper.ThrowIfDebug(ex);
+            }
+        }
+
         _statisticsAdapter.ClearAll();
         RaiseDpsDataUpdated();
         RaiseDataUpdated();
@@ -680,7 +717,21 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
             _isSectionTimedOut = false;
         }
 
-        // ✅ 完全使用 StatisticsAdapter
+        // Preserve current section logs for lightweight replay before manual clear.
+        var sectionStats = _statisticsAdapter.GetStatistics(fullSession: false);
+        if (sectionStats.Count > 0)
+        {
+            try
+            {
+                BeforeSectionCleared?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during BeforeSectionCleared event in ClearDpsData");
+                ExceptionHelper.ThrowIfDebug(ex);
+            }
+        }
+
         _statisticsAdapter.ResetSection();
 
         RaiseDpsDataUpdated();
@@ -719,7 +770,7 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
     }
 
     /// <summary>
-    /// Get all battle logs (for snapshots, etc.)
+    /// Get all battle logs (for Historys, etc.)
     /// </summary>
     public IReadOnlyList<BattleLog> GetBattleLogs(bool fullSession)
     {
@@ -759,7 +810,7 @@ public partial class DataStorageV2
     public event Action? BeforeSectionCleared;
     public event SectionEndedEventHandler? SectionEnded;
 
-    public void RaiseServerChanged(string currentServer, string prevServer)
+    public void ServerChange(string currentServer, string prevServer)
     {
         try
         {
@@ -791,31 +842,6 @@ public partial class DataStorageV2
     {
         try
         {
-            // ⭐ Record samples with interval control
-            // Only record if enough time has elapsed since last recording
-            bool shouldRecord = false;
-            lock (_sampleRecordingLock)
-            {
-                var now = DateTime.UtcNow;
-                var elapsed = now - _lastSampleRecordTime;
-                
-                // Record if interval has passed or this is the first recording
-                if (_lastSampleRecordTime == DateTime.MinValue || 
-                    elapsed.TotalMilliseconds >= _sampleRecordingIntervalMs)
-                {
-                    shouldRecord = true;
-                    _lastSampleRecordTime = now;
-                }
-            }
-            
-            if (shouldRecord)
-            {
-                // Calculate section duration for sample recording
-                var sectionDuration = CalculateSectionDuration();
-                _statisticsAdapter.RecordSamples(sectionDuration);
-                logger.LogTrace("Samples recorded at interval {Interval}ms", _sampleRecordingIntervalMs);
-            }
-            
             DpsDataUpdated?.Invoke();
         }
         catch (Exception ex)
@@ -911,28 +937,28 @@ public partial class DataStorageV2
     {
         if (LastBattleLog == null)
             return TimeSpan.Zero;
-            
+
         // Get the most recent tick from section statistics
         var sectionStats = _statisticsAdapter.GetStatistics(fullSession: false);
         if (sectionStats.Count == 0)
             return TimeSpan.Zero;
-            
+
         // Find the maximum LastTick across all players to get current battle time
         long maxLastTick = 0;
         long minStartTick = long.MaxValue;
-        
+
         foreach (var playerStats in sectionStats.Values)
         {
             if (playerStats.LastTick > maxLastTick)
                 maxLastTick = playerStats.LastTick;
-                
+
             if (playerStats.StartTick.HasValue && playerStats.StartTick.Value < minStartTick)
                 minStartTick = playerStats.StartTick.Value;
         }
-        
+
         if (minStartTick == long.MaxValue || maxLastTick == 0)
             return TimeSpan.Zero;
-            
+
         var durationTicks = maxLastTick - minStartTick;
         return TimeSpan.FromTicks(Math.Max(0, durationTicks));
     }

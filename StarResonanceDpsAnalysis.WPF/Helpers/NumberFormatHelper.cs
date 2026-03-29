@@ -8,6 +8,16 @@ namespace StarResonanceDpsAnalysis.WPF.Helpers;
 
 internal static class NumberFormatHelper
 {
+    /// <summary>
+    /// 在三位计数法下, 数值最大剪裁次数 (3 => 最大达到B)
+    /// </summary>
+    private const int MAX_KMB_CLIP_TIMES = 3;
+
+    /// <summary>
+    /// 在四位计数法下, 数值最大剪裁次数 (3 => 最大达到兆)
+    /// </summary>
+    private const int MAX_WAN_CLIP_TIMES = 3;
+
     public static bool TryToDouble(object? input, out double value)
     {
         value = double.NaN;
@@ -68,6 +78,60 @@ internal static class NumberFormatHelper
         }
     }
 
+
+    public static string FormatHumanReadable<T>(T value, NumberDisplayMode mode, CultureInfo culture)
+    {
+        if (!TryToDouble(value, out var doubleValue))
+        {
+            return value?.ToString() ?? string.Empty;
+        }
+
+        return FormatHumanReadable(doubleValue, mode, culture);
+    }
+
+    public static string FormatHumanReadable(double value, NumberDisplayMode mode, CultureInfo culture)
+    {
+        var sign = value < 0 ? "-" : string.Empty;
+        value = Math.Abs(value);
+
+        if (mode == NumberDisplayMode.Wan)
+        {
+            if (value >= 1_000_000_000_000d)
+            {
+                return $"{sign}{(value / 1_000_000_000_000d).ToString("0.##", culture)}{GetSuffix("NumberSuffix_Zhao", culture)}";
+            }
+
+            if (value >= 100_000_000)
+            {
+                return $"{sign}{(value / 100_000_000d).ToString("0.##", culture)}{GetSuffix("NumberSuffix_Yi", culture)}";
+            }
+
+            if (value >= 10_000)
+            {
+                return $"{sign}{(value / 10_000d).ToString("0.##", culture)}{GetSuffix("NumberSuffix_Wan", culture)}";
+            }
+
+            return sign + value.ToString("0.##", culture);
+        }
+
+        if (value >= 1_000_000_000)
+        {
+            return $"{sign}{(value / 1_000_000_000d).ToString("0.##", culture)}{GetSuffix("NumberSuffix_B", culture)}";
+        }
+
+        if (value >= 1_000_000)
+        {
+            return $"{sign}{(value / 1_000_000d).ToString("0.##", culture)}{GetSuffix("NumberSuffix_M", culture)}";
+        }
+
+        if (value >= 1_000)
+        {
+            return $"{sign}{(value / 1_000d).ToString("0.##", culture)}{GetSuffix("NumberSuffix_K", culture)}";
+        }
+
+        return sign + value.ToString("0.##", culture);
+    }
+
     public static NumberDisplayMode ParseDisplayMode(object? source, NumberDisplayMode fallback = NumberDisplayMode.KMB)
     {
         if (source is null)
@@ -104,65 +168,44 @@ internal static class NumberFormatHelper
         return fallback;
     }
 
-    public static string FormatHumanReadable<T>(T value, NumberDisplayMode mode, CultureInfo culture)
+    public static double GetClippedValue(double value, NumberDisplayMode mode)
     {
-        if (!TryToDouble(value, out var doubleValue))
+        var clipTimes = GetClipTimes(value, mode);
+        var divisor = Math.Pow(mode == NumberDisplayMode.Wan ? 10_000d : 1_000d, clipTimes);
+        if (divisor <= 0)
         {
-            return value?.ToString() ?? string.Empty;
+            return value;
         }
 
-        return FormatHumanReadable(doubleValue, mode, culture);
+        return value / divisor;
     }
 
-    public static string FormatHumanReadable(double value, NumberDisplayMode mode, CultureInfo culture)
+    public static string GetClippedUnit(double value, NumberDisplayMode mode, CultureInfo culture)
     {
-        var sign = value < 0 ? "-" : string.Empty;
-        value = Math.Abs(value);
+        var clipTimes = GetClipTimes(value, mode);
+        if (clipTimes <= 0)
+        {
+            return string.Empty;
+        }
 
         if (mode == NumberDisplayMode.Wan)
         {
-            var suffixWan = GetSuffix("NumberSuffix_Wan", culture);
-            var suffixYi = GetSuffix("NumberSuffix_Yi", culture);
-            var suffixZhao = GetSuffix("NumberSuffix_Zhao", culture);
-
-            if (value >= 1_000_000_000_000d)
+            return clipTimes switch
             {
-                return sign + (value / 1_000_000_000_000d).ToString("0.##", culture) + suffixZhao;
-            }
-
-            if (value >= 100_000_000)
-            {
-                return sign + (value / 100_000_000d).ToString("0.##", culture) + suffixYi;
-            }
-
-            if (value >= 10_000)
-            {
-                return sign + (value / 10_000d).ToString("0.##", culture) + suffixWan;
-            }
-
-            return sign + value.ToString("0.##", culture);
+                1 => GetSuffix("NumberSuffix_Wan", culture),
+                2 => GetSuffix("NumberSuffix_Yi", culture),
+                3 => GetSuffix("NumberSuffix_Zhao", culture),
+                _ => string.Empty
+            };
         }
 
-        var suffixB = GetSuffix("NumberSuffix_B", culture);
-        var suffixM = GetSuffix("NumberSuffix_M", culture);
-        var suffixK = GetSuffix("NumberSuffix_K", culture);
-
-        if (value >= 1_000_000_000)
+        return clipTimes switch
         {
-            return sign + (value / 1_000_000_000d).ToString("0.##", culture) + suffixB;
-        }
-
-        if (value >= 1_000_000)
-        {
-            return sign + (value / 1_000_000d).ToString("0.##", culture) + suffixM;
-        }
-
-        if (value >= 1_000)
-        {
-            return sign + (value / 1_000d).ToString("0.##", culture) + suffixK;
-        }
-
-        return sign + value.ToString("0.##", culture);
+            1 => GetSuffix("NumberSuffix_K", culture),
+            2 => GetSuffix("NumberSuffix_M", culture),
+            3 => GetSuffix("NumberSuffix_B", culture),
+            _ => string.Empty
+        };
     }
 
     private static string GetSuffix(string key, CultureInfo culture)
@@ -170,6 +213,22 @@ internal static class NumberFormatHelper
         return LocalizationManager.Instance.GetString(key, culture)
                ?? LocalizationManager.Instance.GetString(key, CultureInfo.InvariantCulture)
                ?? string.Empty;
+    }
+
+    private static int GetClipTimes(double value, NumberDisplayMode mode)
+    {
+        var absValue = Math.Abs(value);
+        var maxClipTimes = mode == NumberDisplayMode.Wan ? MAX_WAN_CLIP_TIMES : MAX_KMB_CLIP_TIMES;
+        var step = mode == NumberDisplayMode.Wan ? 10_000d : 1_000d;
+
+        var clipTimes = 0;
+        while (clipTimes < maxClipTimes && absValue >= step)
+        {
+            absValue /= step;
+            clipTimes++;
+        }
+
+        return clipTimes;
     }
 
     private static bool IsLocalizedModeName(string text, NumberDisplayMode mode)

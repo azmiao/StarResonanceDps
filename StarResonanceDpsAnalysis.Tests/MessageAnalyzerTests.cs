@@ -1,4 +1,5 @@
 using StarResonanceDpsAnalysis.Core.Analyze;
+using StarResonanceDpsAnalysis.Core.Analyze.V1;
 using StarResonanceDpsAnalysis.Core.Analyze.V2.Processors.WorldNtf;
 using StarResonanceDpsAnalysis.Core.Data;
 
@@ -6,11 +7,13 @@ namespace StarResonanceDpsAnalysis.Tests;
 
 public class MessageAnalyzerTests : IDisposable
 {
+    private static DataStorage _dataStorage = DataStorage.Instance;
+    private readonly MessageAnalyzer _messageAnalyzer = new MessageAnalyzer(_dataStorage);
     public MessageAnalyzerTests()
     {
-        DataStorage.ClearAllDpsData();
-        DataStorage.ClearAllPlayerInfos();
-        DataStorage.ClearCurrentPlayerInfo();
+        _dataStorage.ClearAllDpsData();
+        _dataStorage.ClearAllPlayerInfos();
+        _dataStorage.ClearCurrentPlayerInfo();
     }
 
     [Fact]
@@ -20,9 +23,9 @@ public class MessageAnalyzerTests : IDisposable
         var payload = TestMessageBuilder.BuildSyncNearEntitiesPayload(playerUid, "Static Hero", 66);
         var envelope = TestMessageBuilder.BuildNotifyEnvelope(WorldNtfMessageId.SyncNearEntities, payload);
 
-        MessageAnalyzer.Process(envelope);
+        _messageAnalyzer.Process(envelope);
 
-        Assert.True(DataStorage.ReadOnlyPlayerInfoDatas.TryGetValue(playerUid, out var info));
+        Assert.True(_dataStorage.ReadOnlyPlayerInfoDatas.TryGetValue(playerUid, out var info));
         Assert.Equal("Static Hero", info!.Name);
         Assert.Equal(66, info.Level);
     }
@@ -31,14 +34,14 @@ public class MessageAnalyzerTests : IDisposable
     public void Process_MalformedPacket_DoesNotThrow()
     {
         var malformed = new byte[] { 0x00, 0x00, 0x00, 0x01 };
-        var exception = Record.Exception(() => MessageAnalyzer.Process(malformed));
+        var exception = Record.Exception(() => _messageAnalyzer.Process(malformed));
         Assert.Null(exception);
     }
 
     public void Dispose()
     {
-        DataStorage.ClearAllDpsData();
-        DataStorage.ClearAllPlayerInfos();
-        DataStorage.ClearCurrentPlayerInfo();
+        _dataStorage.ClearAllDpsData();
+        _dataStorage.ClearAllPlayerInfos();
+        _dataStorage.ClearCurrentPlayerInfo();
     }
 }

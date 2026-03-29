@@ -13,29 +13,29 @@ public sealed class TakenDamageCalculator : IStatisticsCalculator
     public void Calculate(BattleLog log, StatisticsContext context)
     {
         // Process damage taken by players
-        if (!log.IsTargetPlayer || log.IsHeal)
+        if (log.IsHeal)
             return;
 
-        var fullStats = context.GetOrCreateFullStats(log.TargetUuid);
-        var sectionStats = context.GetOrCreateSectionStats(log.TargetUuid);
+        context.CombatStarted = true;
 
-        UpdateStatistics(log, fullStats);
-        UpdateStatistics(log, sectionStats);
+        if (log.IsTargetPlayer)
+        {
+            var fullStats = context.GetOrCreateFullStats(log.TargetUuid);
+            var sectionStats = context.GetOrCreateSectionStats(log.TargetUuid);
 
-        // Also track NPC damage if attacker is not a player
-        if (log.IsAttackerPlayer) return;
-        var npcFull = context.GetOrCreateFullStats(log.AttackerUuid);
-        var npcSection = context.GetOrCreateSectionStats(log.AttackerUuid);
-        npcFull.IsNpc = true;
-        npcSection.IsNpc = true;
+            UpdateStatistics(log, fullStats);
+            UpdateStatistics(log, sectionStats);
+        }
+        else
+        {
+            var npcFull = context.GetOrCreateFullStats(log.TargetUuid);
+            var npcSection = context.GetOrCreateSectionStats(log.TargetUuid);
+            npcFull.IsNpc = true;
+            npcSection.IsNpc = true;
 
-        UpdateNpcAttackStats(log, npcFull);
-        UpdateNpcAttackStats(log, npcSection);
-    }
-
-    public void ResetSection(StatisticsContext context)
-    {
-        // Section reset is handled by context
+            UpdateNpcTakenDamageStats(log, npcFull);
+            UpdateNpcTakenDamageStats(log, npcSection);
+        }
     }
 
     private void UpdateStatistics(BattleLog log, PlayerStatistics stats)
@@ -46,7 +46,7 @@ public sealed class TakenDamageCalculator : IStatisticsCalculator
 
         var values = stats.TakenDamage;
         values.Total += log.Value;
-        values.ValuePerSecond = ticks > 0 ? (double)values.Total * TimeSpan.TicksPerSecond / ticks : double.NaN;
+        values.ValuePerSecond = ticks > 0 ? (double)values.Total * TimeSpan.TicksPerSecond / ticks : 0;
 
         // Update skill breakdown
         var skill = stats.GetOrCreateTakenSkill(log.SkillID);
@@ -90,13 +90,13 @@ public sealed class TakenDamageCalculator : IStatisticsCalculator
         }
     }
 
-    private void UpdateNpcAttackStats(BattleLog log, PlayerStatistics stats)
+    private void UpdateNpcTakenDamageStats(BattleLog log, PlayerStatistics stats)
     {
         // Update NPC's attack damage output
         stats.StartTick ??= log.TimeTicks;
         stats.LastTick = log.TimeTicks;
 
-        var values = stats.AttackDamage;
+        var values = stats.TakenDamage;
         values.Total += log.Value;
 
         // Update skill breakdown

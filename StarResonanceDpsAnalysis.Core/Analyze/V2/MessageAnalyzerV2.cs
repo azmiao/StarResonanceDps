@@ -14,7 +14,7 @@ namespace StarResonanceDpsAnalysis.Core.Analyze;
 /// <summary>
 /// Orchestrates message analysis by dispatching packets to registered processors.
 /// </summary>
-public sealed class MessageAnalyzerV2
+public sealed class MessageAnalyzerV2 : IMessageAnalyzer
 {
     private readonly ILogger<MessageAnalyzerV2>? _logger;
     private readonly Dictionary<MessageType, Action<ByteReader, bool>> _messageHandlerMap;
@@ -157,7 +157,7 @@ public sealed class MessageAnalyzerV2
             msgPayload = DecompressZstdIfNeeded(msgPayload);
         }
 
-        _logger?.LogTrace("MessageTypeId:{id}", methodId);
+        // _logger?.LogTrace("MessageTypeId:{id}", methodId);
         
         if (serviceUuid == WORLD_NTF_SERVICE_ID)
         {

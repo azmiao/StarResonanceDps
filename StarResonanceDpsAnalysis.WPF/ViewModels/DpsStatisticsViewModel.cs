@@ -1,13 +1,18 @@
-using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using StarResonanceDpsAnalysis.Core.Data;
+using StarResonanceDpsAnalysis.Core.Data.Models;
+using StarResonanceDpsAnalysis.Core.Statistics;
 using StarResonanceDpsAnalysis.WPF.Config;
 using StarResonanceDpsAnalysis.WPF.Localization;
 using StarResonanceDpsAnalysis.WPF.Models;
 using StarResonanceDpsAnalysis.WPF.Properties;
 using StarResonanceDpsAnalysis.WPF.Services;
+using StarResonanceDpsAnalysis.WPF.ViewModels.DpsStatisticDataEngine;
+using System.Globalization;
+using System.IO;
+using System.Windows.Threading;
 
 namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 
@@ -16,17 +21,16 @@ namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 /// This is the core file containing field definitions, constructor, and essential methods
 /// Business logic is distributed across partial class files:
 /// - DpsStatisticsViewModel.Commands.cs: UI command methods
-/// - DpsStatisticsViewModel.Snapshot.cs: Snapshot viewing functionality
+/// - DpsStatisticsViewModel.History.cs: History viewing functionality
 /// - DpsStatisticsViewModel.StorageHandlers.cs: Data storage event handlers
 /// - DpsStatisticsViewModel.DataProcessing.cs: Data update and processing
 /// - DpsStatisticsViewModel.Configuration.cs: Configuration and settings
 /// - DpsStatisticsViewModel.Definitions.cs: Type definitions and records
 /// </summary>
-public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
+public partial class DpsStatisticsViewModel : BaseDispatcherSupportViewModel, IDisposable
 {
     // ===== Services =====
     private readonly IApplicationControlService _appControlService;
-    private readonly ICombatSectionStateManager _combatState;
     private readonly IConfigManager _configManager;
     private readonly IDpsDataProcessor _dataProcessor;
     private readonly Dispatcher _dispatcher;
@@ -37,62 +41,61 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
     private readonly IDataStorage _storage;
     private readonly ITeamStatsUIManager _teamStatsManager;
     private readonly IDpsTimerService _timerService;
-    private readonly IDpsUpdateCoordinator _updateCoordinator;
     private readonly IWindowManagementService _windowManagement;
+    private readonly JsonLocalizationProvider _jsonLocalizationProvider;
 
     // ===== Observable Properties =====
     [ObservableProperty] private AppConfig _appConfig = new();
     [ObservableProperty] private TimeSpan _battleDuration;
-    [ObservableProperty] private BattleSnapshotData? _currentSnapshot;
     [ObservableProperty] private int _debugUpdateCount;
     [ObservableProperty] private bool _isIncludeNpcData;
     [ObservableProperty] private bool _isServerConnected;
-    [ObservableProperty] private bool _isViewingSnapshot;
+    [ObservableProperty] private bool _isViewingHistory;
     [ObservableProperty] private ScopeTime _scopeTime = ScopeTime.Current;
     [ObservableProperty] private bool _showContextMenu;
     [ObservableProperty] private bool _showTeamTotalDamage;
     [ObservableProperty] private SortDirectionEnum _sortDirection = SortDirectionEnum.Descending;
     [ObservableProperty] private string _sortMemberPath = "Value";
-    [ObservableProperty] private StatisticType _statisticIndex;
+    [ObservableProperty] private StatisticType _statisticIndex = StatisticType.Damage;
     [ObservableProperty] private ulong _teamTotalDamage;
     [ObservableProperty] private double _teamTotalDps;
+    [ObservableProperty] private string _teamLabel = string.Empty;
+    [ObservableProperty] private string _currentPlayerLabel = string.Empty;
     [ObservableProperty] private string _teamTotalLabel = string.Empty;
-    [ObservableProperty] private bool _temporaryMaskPlayerName;
 
     // ===== Private State Fields =====
-    private DispatcherTimer? _dpsUpdateTimer;
-    private DispatcherTimer? _durationTimer;
     private int _indicatorHoverCount;
     private bool _isInitialized;
-    private DpsDataUpdatedEventHandler? _resumeActiveTimerHandler;
-    private bool _wasPassiveMode;
-    private bool _wasTimerRunning;
+    private readonly DispatcherTimer _battleDurationUpdateTimer;
+
+    private bool _maskWarningReentry;
 
     // ===== Public Properties =====
     public DpsStatisticsSubViewModel CurrentStatisticData => StatisticData[StatisticIndex];
     public DebugFunctions DebugFunctions { get; }
     public DpsStatisticsOptions Options { get; } = new();
-    public BattleSnapshotService SnapshotService { get; }
+    public BattleHistoryService HistoryService { get; }
     public Dictionary<StatisticType, DpsStatisticsSubViewModel> StatisticData { get; }
 
+    // Engine instance (initialized in constructor)
+    private readonly DataSourceEngine _dataSourceEngine;
+
     // ===== Constructor =====
-    public DpsStatisticsViewModel(
-        ILogger<DpsStatisticsViewModel> logger,
+    public DpsStatisticsViewModel(ILogger<DpsStatisticsViewModel> logger,
         IDataStorage storage,
         IConfigManager configManager,
         IWindowManagementService windowManagement,
         IApplicationControlService appControlService,
         Dispatcher dispatcher,
         DebugFunctions debugFunctions,
-        BattleSnapshotService snapshotService,
+        BattleHistoryService historyService,
         LocalizationManager localizationManager,
         IMessageDialogService messageDialogService,
         IDpsTimerService timerService,
         IDpsDataProcessor dataProcessor,
-        IDpsUpdateCoordinator updateCoordinator,
-        ICombatSectionStateManager combatSectionState,
         ITeamStatsUIManager teamStatsManager,
-        IResetCoordinator resetCoordinator)
+        DataSourceEngine dataSourceEngine,
+        IResetCoordinator resetCoordinator) : base(dispatcher)
     {
         _logger = logger;
         _storage = storage;
@@ -103,41 +106,58 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
         _localizationManager = localizationManager;
         _messageDialogService = messageDialogService;
         DebugFunctions = debugFunctions;
-        SnapshotService = snapshotService;
+        HistoryService = historyService;
         _timerService = timerService;
         _dataProcessor = dataProcessor;
-        _updateCoordinator = updateCoordinator;
-        _combatState = combatSectionState;
         _teamStatsManager = teamStatsManager;
         _resetCoordinator = resetCoordinator;
 
+        _jsonLocalizationProvider = new JsonLocalizationProvider(
+            Path.Combine(AppContext.BaseDirectory, "Localization"));
+
+        _battleDurationUpdateTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromMilliseconds(500)
+        };
+        _battleDurationUpdateTimer.Tick += (_, _) => { UpdateBattleDuration(); };
+
         StatisticData = new Dictionary<StatisticType, DpsStatisticsSubViewModel>
         {
-            [StatisticType.Damage] = new(logger, dispatcher, StatisticType.Damage, storage, debugFunctions, this, localizationManager),
-            [StatisticType.Healing] = new(logger, dispatcher, StatisticType.Healing, storage, debugFunctions, this, localizationManager),
-            [StatisticType.TakenDamage] = new(logger, dispatcher, StatisticType.TakenDamage, storage, debugFunctions, this, localizationManager),
-            [StatisticType.NpcTakenDamage] = new(logger, dispatcher, StatisticType.NpcTakenDamage, storage, debugFunctions, this, localizationManager)
+            [StatisticType.Damage] = new(logger, dispatcher, StatisticType.Damage, debugFunctions, this, localizationManager, dataSourceEngine),
+            [StatisticType.Healing] = new(logger, dispatcher, StatisticType.Healing, debugFunctions, this, localizationManager, dataSourceEngine),
+            [StatisticType.TakenDamage] = new(logger, dispatcher, StatisticType.TakenDamage, debugFunctions, this, localizationManager, dataSourceEngine),
+            [StatisticType.NpcTakenDamage] = new(logger, dispatcher, StatisticType.NpcTakenDamage, debugFunctions, this, localizationManager, dataSourceEngine)
         };
 
+        // Subscribe to engine processed data ready event
+        _dataSourceEngine = dataSourceEngine;
+        _dataSourceEngine.ProcessedDataReady += ApplyProcessedData;
+
+        // Configure engine mode according to config
+        _dataSourceEngine.ChangeMode(_configManager.CurrentConfig.DpsUpdateMode.ToDataSourceMode());
+
         _configManager.ConfigurationUpdated += ConfigManagerOnConfigurationUpdated;
+
         _storage.BeforeSectionCleared += StorageOnBeforeSectionCleared;
-        _storage.DpsDataUpdated += UpdateData;
-        _storage.NewSectionCreated += StorageOnNewSectionCreated;
         _storage.ServerConnectionStateChanged += StorageOnServerConnectionStateChanged;
-        _storage.PlayerInfoUpdated += StorageOnPlayerInfoUpdated;
+        _storage.PlayerInfoUpdated += StorageOnPlayerInfoUpdatedWithNpcLocalization;
         _storage.ServerChanged += StorageOnServerChanged;
         _storage.SectionEnded += SectionEnded;
+        _storage.NewSectionCreated += StorageOnNewSectionCreated;
         DebugFunctions.SampleDataRequested += OnSampleDataRequested;
 
         AppConfig = _configManager.CurrentConfig;
         LoadDpsStatisticsSettings();
 
-        _updateCoordinator.UpdateRequested += OnUpdateRequested;
-        
         // Bind team stats manager to show team total setting
         _teamStatsManager.ShowTeamTotal = ShowTeamTotalDamage;
         _teamStatsManager.TeamStatsUpdated += OnTeamStatsUpdated;
-        TeamTotalLabel = GetTeamTotalLabel(StatisticType.Damage);
+
+        _localizationManager.CultureChanged += OnLocalizationCultureChanged;
+
+        TeamLabel = GetTeamLabel(StatisticIndex);
+        CurrentPlayerLabel = GetCurrentPlayerLabel(StatisticIndex);
+        TeamTotalLabel = GetTeamTotalLabel(StatisticIndex);
 
         _logger.LogDebug("DpsStatisticsViewModel constructor completed");
     }
@@ -147,28 +167,13 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
     {
         DebugFunctions.SampleDataRequested -= OnSampleDataRequested;
         _configManager.ConfigurationUpdated -= ConfigManagerOnConfigurationUpdated;
-        _updateCoordinator.UpdateRequested -= OnUpdateRequested;
         _timerService.Stop();
-        _updateCoordinator.Stop();
 
-        if (_durationTimer != null)
-        {
-            _durationTimer.Stop();
-            _durationTimer.Tick -= DurationTimerOnTick;
-        }
-
-        if (_dpsUpdateTimer != null)
-        {
-            _dpsUpdateTimer.Stop();
-            _dpsUpdateTimer.Tick -= DpsUpdateTimerOnTick;
-            _dpsUpdateTimer = null;
-        }
-
-        _storage.DpsDataUpdated -= UpdateData;
-        _storage.NewSectionCreated -= StorageOnNewSectionCreated;
         _storage.ServerConnectionStateChanged -= StorageOnServerConnectionStateChanged;
-        _storage.PlayerInfoUpdated -= StorageOnPlayerInfoUpdated;
-        _storage.Dispose();
+        _storage.PlayerInfoUpdated -= StorageOnPlayerInfoUpdatedWithNpcLocalization;
+        _storage.BeforeSectionCleared -= StorageOnBeforeSectionCleared;
+
+        _localizationManager.CultureChanged -= OnLocalizationCultureChanged;
 
         foreach (var dpsStatisticsSubViewModel in StatisticData.Values)
         {
@@ -176,14 +181,7 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
         }
 
         _isInitialized = false;
-
-        if (_resumeActiveTimerHandler != null)
-        {
-            _storage.DpsDataUpdated -= _resumeActiveTimerHandler;
-            _resumeActiveTimerHandler = null;
-        }
-
-        _storage.BeforeSectionCleared -= StorageOnBeforeSectionCleared;
+        GC.SuppressFinalize(this);
     }
 
     // ===== Core Public Methods =====
@@ -195,25 +193,22 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
         if (_timerService.IsRunning)
         {
             _timerService.Stop();
-            _logger.LogInformation("已停止战斗计时器 (using DpsTimerService)");
         }
 
-        // Use ResetCoordinator to handle snapshot save + reset
-        _resetCoordinator.ResetWithSnapshot(
+        _resetCoordinator.ResetWithHistory(
             ScopeTime,
-            saveSnapshot: true,
+            saveHistory: true,
             BattleDuration,
             Options.MinimalDurationInSeconds);
 
-        // Clear UI data
-        foreach (var subVm in StatisticData.Values)
-        {
-            subVm.Reset();
-        }
+        ResetSubViewModelsIfInCurrentScope();
 
         TeamTotalDamage = 0;
         TeamTotalDps = 0;
         BattleDuration = TimeSpan.Zero;
+
+        var skillBreakdownVm = _windowManagement.SkillBreakdownView.DataContext as SkillBreakdownViewModel;
+        skillBreakdownVm?.ClearFromMainRefresh();
 
         if (!_isInitialized)
         {
@@ -226,38 +221,17 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
             _logger.LogInformation("ResetAll: Mode={Mode}, Interval={Interval}ms",
                 AppConfig.DpsUpdateMode, AppConfig.DpsUpdateInterval);
 
-            if (_resumeActiveTimerHandler != null)
-            {
-                _storage.DpsDataUpdated -= _resumeActiveTimerHandler;
-                _resumeActiveTimerHandler = null;
-            }
-
-            _updateCoordinator.Stop();
-            _storage.DpsDataUpdated -= UpdateData;
-            _storage.NewSectionCreated -= StorageOnNewSectionCreated;
-
             _logger.LogInformation("ResetAll: Stopped all existing update mechanisms (using DpsUpdateCoordinator)");
 
-            if (AppConfig.DpsUpdateMode == DpsUpdateMode.Active)
-            {
-                _updateCoordinator.Configure(AppConfig.DpsUpdateMode, AppConfig.DpsUpdateInterval);
-                _updateCoordinator.Start();
-                _logger.LogInformation("ResetAll: Started DpsUpdateCoordinator. Interval={Interval}ms", AppConfig.DpsUpdateInterval);
-            }
-            else
-            {
-                _storage.DpsDataUpdated += UpdateData;
-                _logger.LogInformation("ResetAll: Subscribed to DpsDataUpdated event");
-            }
-
-            _storage.NewSectionCreated += StorageOnNewSectionCreated;
-
-            RefreshData();
             UpdateBattleDuration();
+            if (IsViewingHistory)
+            {
+                ExitHistoryViewMode();
+            }
 
             _logger.LogInformation(
-                "=== ResetAll COMPLETE === ScopeTime={ScopeTime}, Mode={Mode}, Coordinator enabled={Enabled}, Event subscribed={Event}",
-                ScopeTime, AppConfig.DpsUpdateMode, _updateCoordinator.IsUpdateEnabled, AppConfig.DpsUpdateMode == DpsUpdateMode.Passive);
+                "=== ResetAll COMPLETE === ScopeTime={ScopeTime}, Mode={Mode}, Event subscribed={Event}",
+                ScopeTime, AppConfig.DpsUpdateMode, AppConfig.DpsUpdateMode == DpsUpdateMode.Passive);
         }
         catch (Exception ex)
         {
@@ -268,12 +242,17 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
     [RelayCommand]
     public void ResetSection()
     {
-        _logger.LogInformation("=== ResetSection START ===");
-        
-        // Delegate to ResetCoordinator
+        _logger.LogInformation("ResetSection START");
+
         _resetCoordinator.ResetCurrentSection();
-        
-        _logger.LogInformation("=== ResetSection COMPLETE ===");
+        if (IsViewingHistory)
+        {
+            ExitHistoryViewMode();
+        }
+        ResetSubViewModelsIfInCurrentScope();
+        ResetBattleDurationIfInCurrentScope();
+
+        _logger.LogInformation("ResetSection COMPLETE");
     }
 
     public void SetIndicatorHover(bool isHovering)
@@ -296,98 +275,151 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
     }
 
     // ===== Private Helper Methods =====
-
-    private void OnUpdateRequested(object? sender, EventArgs e)
-    {
-        if (!_dispatcher.CheckAccess())
-        {
-            _dispatcher.BeginInvoke(OnUpdateRequested, sender, e);
-            return;
-        }
-
-        UpdateData();
-    }
-
     private void OnSampleDataRequested(object? sender, EventArgs e)
     {
         AddRandomData();
     }
-    
+
     private void OnTeamStatsUpdated(object? sender, TeamStatsUpdatedEventArgs e)
     {
-        // Update observable properties when team stats change
-        _dispatcher.Invoke(() =>
+        InvokeOnDispatcher(() =>
         {
             TeamTotalDamage = e.TotalDamage;
             TeamTotalDps = e.TotalDps;
-            TeamTotalLabel = GetTeamTotalLabel(e.StatisticType);
+            CurrentPlayerLabel = GetCurrentPlayerLabel(StatisticIndex);
+            TeamTotalLabel = GetTeamTotalLabel(StatisticIndex);
         });
     }
-    
+
+    private string GetTeamLabel(StatisticType statisticType)
+    {
+        return statisticType switch
+        {
+            StatisticType.Damage => _localizationManager.GetString(
+                ResourcesKeys.DpsStatistics_Team_Label,
+                defaultValue: "Team"),
+            StatisticType.Healing => _localizationManager.GetString(
+                ResourcesKeys.DpsStatistics_Team_Label,
+                defaultValue: "Team"),
+            StatisticType.TakenDamage => _localizationManager.GetString(
+                ResourcesKeys.DpsStatistics_Team_Label,
+                defaultValue: "Team"),
+            StatisticType.NpcTakenDamage => _localizationManager.GetString(
+                ResourcesKeys.DpsStatistics_NPC_Label,
+                defaultValue: "All NPC"),
+            _ => _localizationManager.GetString(
+                ResourcesKeys.SkillBreakdown_Label_TotalDamage,
+                defaultValue: "Team")
+        };
+    }
+
+    private string GetCurrentPlayerLabel(StatisticType statisticType)
+    {
+        return statisticType switch
+        {
+            StatisticType.Damage => "DPS",
+            StatisticType.Healing => "HPS",
+            StatisticType.TakenDamage =>"DTPS",
+            _ => "DPS"
+        };
+    }
+
     private string GetTeamTotalLabel(StatisticType statisticType)
     {
         return statisticType switch
         {
             StatisticType.Damage => _localizationManager.GetString(
-                ResourcesKeys.DpsStatistics_TeamTotal_Damage,
+                ResourcesKeys.DpsStatistics_TeamLabel_Damage,
                 defaultValue: "Team DPS"),
             StatisticType.Healing => _localizationManager.GetString(
-                ResourcesKeys.DpsStatistics_TeamTotal_Healing,
-                defaultValue: "Team Healing"),
+                ResourcesKeys.DpsStatistics_TeamLabel_Healing,
+                defaultValue: "Team HPS"),
             StatisticType.TakenDamage => _localizationManager.GetString(
-                ResourcesKeys.DpsStatistics_TeamTotal_TakenDamage,
-                defaultValue: "Team Damage Taken"),
+                ResourcesKeys.DpsStatistics_TeamLabel_TakenDamage,
+                defaultValue: "Team DTPS"),
             StatisticType.NpcTakenDamage => _localizationManager.GetString(
-                ResourcesKeys.DpsStatistics_TeamTotal_NpcTakenDamage,
-                defaultValue: "NPC Damage Taken"),
+                ResourcesKeys.DpsStatistics_TeamLabel_NpcTakenDamage,
+                defaultValue: "NPC DTPS"),
             _ => _localizationManager.GetString(
-                ResourcesKeys.DpsStatistics_TeamTotal_Damage,
+                ResourcesKeys.DpsStatistics_TeamLabel_Damage,
                 defaultValue: "Team DPS")
         };
     }
 
-    private void DpsUpdateTimerOnTick(object? sender, EventArgs e)
+    private void OnLocalizationCultureChanged(object? sender, CultureInfo culture)
     {
-        // 每10次tick输出一次日志,避免日志爆炸
-        if (_dpsUpdateTimer != null && _dpsUpdateTimer.IsEnabled)
+        InvokeOnDispatcher(() =>
         {
-            var currentSecond = DateTime.Now.Second;
-            if (currentSecond % 10 == 0) // 每10秒输出一次
+            foreach (var info in _storage.ReadOnlyPlayerInfoDatas.Values)
             {
-                _logger.LogDebug("Timer tick triggered - calling DataStorage_DpsDataUpdated");
+                ApplyNpcLocalizedName(info, culture);
             }
+
+            TeamLabel = GetTeamLabel(StatisticIndex);
+            CurrentPlayerLabel = GetCurrentPlayerLabel(StatisticIndex);
+            TeamTotalLabel = GetTeamTotalLabel(StatisticIndex);
+        });
+    }
+
+    [RelayCommand]
+    private void RecordWindowPosition(System.Drawing.Rectangle rect)
+    {
+        AppConfig.StartUpState = rect;
+    }
+
+    private void ResetSubViewModelsIf(Func<bool> condition)
+    {
+        if (!condition()) return;
+        ResetSubViewModels();
+    }
+
+    private void ResetSubViewModelsIfInCurrentScope()
+    {
+        ResetSubViewModelsIf(() => ScopeTime == ScopeTime.Current);
+    }
+
+    private void ResetSubViewModels()
+    {
+        _logger.LogInformation("Reset sub view models");
+        foreach (var itm in StatisticData.Values)
+        {
+            itm.Reset();
         }
-
-        // Call the same update logic as event-based mode
-        UpdateData();
     }
 
-    private void DurationTimerOnTick(object? sender, EventArgs e)
+    private void StartBattleDurationUpdate()
     {
-        UpdateBattleDuration();
+        _battleDurationUpdateTimer.Start();
     }
 
-    private void EnsureDurationTimerStarted()
+    private void StopBattleDurationUpdate()
     {
-        if (_durationTimer != null) return;
-
-        _durationTimer = new DispatcherTimer
-        {
-            Interval = TimeSpan.FromSeconds(1)
-        };
-        _durationTimer.Tick += DurationTimerOnTick;
-        _durationTimer.Start();
+        _battleDurationUpdateTimer.Stop();
     }
 
-    private void InvokeOnDispatcher(Action action)
+    private void StorageOnPlayerInfoUpdatedWithNpcLocalization(PlayerInfo info)
     {
-        if (_dispatcher.CheckAccess())
+        ApplyNpcLocalizedName(info);
+        StorageOnPlayerInfoUpdated(info);
+    }
+
+    private void ApplyNpcLocalizedName(PlayerInfo info, CultureInfo? culture = null)
+    {
+        var templateId = info.NpcTemplateId;
+        if (templateId == 0)
+            return;
+
+        var resolved = _jsonLocalizationProvider.GetLocalizedObject(
+            $"Monster:{templateId}",
+            target: null,
+            culture: culture ?? CultureInfo.CurrentUICulture) as string;
+
+        if (string.IsNullOrWhiteSpace(resolved))
+            return;
+
+        if (!string.Equals(info.Name, resolved, StringComparison.Ordinal))
         {
-            action();
-        }
-        else
-        {
-            _dispatcher.Invoke(action);
+            info.Name = resolved;
         }
     }
 }

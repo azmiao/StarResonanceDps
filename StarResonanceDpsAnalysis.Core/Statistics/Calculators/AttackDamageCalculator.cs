@@ -17,16 +17,13 @@ public sealed class AttackDamageCalculator : IStatisticsCalculator
         if (!log.IsAttackerPlayer || log.IsTargetPlayer || log.IsHeal)
             return;
 
+        context.CombatStarted = true;
+
         var fullStats = context.GetOrCreateFullStats(log.AttackerUuid);
         var sectionStats = context.GetOrCreateSectionStats(log.AttackerUuid);
 
         UpdateStatistics(log, fullStats);
         UpdateStatistics(log, sectionStats);
-    }
-
-    public void ResetSection(StatisticsContext context)
-    {
-        // Section reset is handled by context
     }
 
     private void UpdateStatistics(BattleLog log, PlayerStatistics stats)
@@ -39,7 +36,7 @@ public sealed class AttackDamageCalculator : IStatisticsCalculator
         // Update totals
         var values = stats.AttackDamage;
         values.Total += log.Value;
-        values.ValuePerSecond = ticks > 0 ? (double)values.Total * TimeSpan.TicksPerSecond / ticks : double.NaN;
+        values.ValuePerSecond = ticks > 0 ? (double)values.Total * TimeSpan.TicksPerSecond / ticks : 0;
 
         // Update skill breakdown
         var skill = stats.GetOrCreateSkill(log.SkillID);

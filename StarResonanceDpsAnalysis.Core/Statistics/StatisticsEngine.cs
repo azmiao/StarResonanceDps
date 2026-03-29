@@ -41,17 +41,18 @@ public sealed class StatisticsEngine
             calculator.Calculate(log, _context);
         }
     }
-    
+
+    public void SetCombatState(bool state)
+    {
+        _context.CombatStarted = state;
+    }
+
     /// <summary>
     /// Reset section statistics for all calculators
     /// </summary>
     public void ResetSection()
     {
         _context.ClearSection();
-        foreach (var calculator in _calculators)
-        {
-            calculator.ResetSection(_context);
-        }
     }
     
     /// <summary>

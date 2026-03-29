@@ -10,17 +10,20 @@
             <!-- <lex:ResxLocalizationProvider.DefaultDictionary Value="Properties.Resources" /> -->
             <ResourceDictionary.MergedDictionaries>
                 <themes:ThemesDictionary Theme="Light" />
+                <themes:ClassColorsDictionary Template="Light" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/BaseStyle.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/ButtonStyle.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/MenuStyles.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/FooterStyles.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/TestThemeStyle.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/Classes/Classes.Images.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/StatisticTypeIcons.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/SeparatorStyle.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/CardControlStyle.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Converters/ConveterDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/AntControls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/SwitchControl.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/CustomProgressBarStyle.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/SummaryStatDisplayStyle.xaml" />
 
                 <!--  Load SortedDpsControl default style  -->
@@ -34,6 +37,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Styles/ChartPanelStyle.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/SkillListPanelStyle.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/TabContentPanelStyle.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/CenterToolbarButtonStyle.xaml" />
 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

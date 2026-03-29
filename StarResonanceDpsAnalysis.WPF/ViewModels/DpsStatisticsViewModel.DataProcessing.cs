@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
+using StarResonanceDpsAnalysis.Core.Data.Models;
 using StarResonanceDpsAnalysis.Core.Statistics;
-using StarResonanceDpsAnalysis.WPF.Logging;
 using StarResonanceDpsAnalysis.WPF.Models;
 
 namespace StarResonanceDpsAnalysis.WPF.ViewModels;
@@ -12,70 +12,109 @@ namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 /// </summary>
 public partial class DpsStatisticsViewModel
 {
+    // ★ここに1箇所だけ：最新 processed をタブ切替でも使えるようにキャッシュ
+    private readonly Dictionary<StatisticType, IReadOnlyDictionary<long, DpsDataProcessed>> _latestProcessedByType = new();
+    private static readonly IReadOnlyDictionary<long, DpsDataProcessed> EmptyProcessed = new Dictionary<long, DpsDataProcessed>();
+
+    // Configuration.cs から呼べるように（partial 同一クラス内なので private でOK）
+    private void ClearProcessedCache() => _latestProcessedByType.Clear();
+
     protected void UpdateData()
     {
-        InvokeOnDispatcher(Do);
-        return;
+        _logger.LogTrace("Update data");
+        _dataSourceEngine.CurrentSource.Refresh();
+    }
 
-        void Do()
+    // 互換用（もし他で呼んでたら壊さない）
+    private void UpdateTeamTotalStats(IReadOnlyDictionary<long, DpsDataProcessed> data)
+    {
+        var playerInfoDict = _dataSourceEngine.GetPlayerInfoDictionary();
+        UpdateTeamTotalStats(StatisticIndex, data, playerInfoDict);
+    }
+
+    private void PublishEmptyTeamTotal(StatisticType type)
+    {
+        var emptyStats = _dataProcessor.CalculateTeamTotal(EmptyProcessed);
+        _teamStatsManager.UpdateTeamStats(emptyStats, type, false);
+
+        TeamTotalDamage = 0;
+        TeamTotalDps = 0;
+    }
+
+    private IReadOnlyDictionary<long, DpsDataProcessed>? GetCurrentTypeProcessedDict(StatisticType type)
+    {
+        return _latestProcessedByType.TryGetValue(type, out var dict) ? dict : null;
+    }
+
+    private void UpdateTeamTotalStats(
+        StatisticType type,
+        IReadOnlyDictionary<long, DpsDataProcessed> data,
+        IReadOnlyDictionary<long, PlayerInfo> playerInfoDict)
+    {
+        // “計測から除外” を反映（元コードの挙動を維持）
+        var excludeSpecial = !IsIncludeNpcData;
+
+        IReadOnlyDictionary<long, DpsDataProcessed> totalDict = data;
+
+        if (excludeSpecial && data.Count > 0)
         {
-            _logger.LogTrace("Enter UpdateData");
-
-            var stat = _storage.GetStatistics(ScopeTime == ScopeTime.Total);
-
-            if (!_timerService.IsRunning && HasData(stat))
+            // 除外対象が存在するか確認 → ある時だけ新Dictionaryを作る（普段は割当ゼロ）
+            var anyExcluded = false;
+            foreach (var uid in data.Keys)
             {
-                _logger.LogInformation("检测到战斗数据,启动计时器 (using DpsTimerService)");
-                _timerService.Start();
-                _combatState.SectionTimedOut = false;
-            }
-
-            if (_combatState.AwaitingSectionStart)
-            {
-                var hasSectionDamage = HasData(_storage.GetStatistics(false));
-                _logger.LogDebug("Awaiting section start - has section damage: {HasSectionDamage}", hasSectionDamage);
-
-                if (hasSectionDamage)
+                if (playerInfoDict.TryGetValue(uid, out var info) &&
+                    PlayerInfoViewModel.IsSpecialNpcChineseName(info?.Name))
                 {
-                    foreach (var subVm in StatisticData.Values)
-                    {
-                        subVm.Reset();
-                    }
-
-                    _timerService.StartNewSection();
-                    _combatState.MarkSectionStarted();
-                    _logger.LogDebug("Section start processed, new section begins");
+                    anyExcluded = true;
+                    break;
                 }
             }
 
-            UpdateData(stat);
-            UpdateBattleDuration();
+            if (anyExcluded)
+            {
+                var filtered = new Dictionary<long, DpsDataProcessed>(data.Count);
+                foreach (var kv in data)
+                {
+                    if (playerInfoDict.TryGetValue(kv.Key, out var info) &&
+                        PlayerInfoViewModel.IsSpecialNpcChineseName(info?.Name))
+                        continue;
+
+                    filtered[kv.Key] = kv.Value;
+                }
+
+                totalDict = filtered;
+            }
         }
+
+        var teamStats = _dataProcessor.CalculateTeamTotal(totalDict);
+        _teamStatsManager.UpdateTeamStats(teamStats, type, totalDict.Count > 0);
+
+        // 念のため同期（TeamStatsUpdatedイベントでも更新されるが、即反映もできる）
+        TeamTotalDamage = teamStats.TotalValue;
+        TeamTotalDps = teamStats.TotalDps;
     }
 
-    private void UpdateData(IReadOnlyDictionary<long, PlayerStatistics> data)
+    // ★タブ切替で呼ぶ：キャッシュから再計算してTeamTotalを切り替える
+    private void RecalculateAndPublishTeamTotalFor(StatisticType type)
     {
-        _logger.LogTrace(WpfLogEvents.VmUpdateData, "Update data requested: {Count} entries", data.Count);
-
-        var currentPlayerUid = _storage.CurrentPlayerUUID > 0 ? _storage.CurrentPlayerUUID : _configManager.CurrentConfig.Uid;
-
-        var processedDataByType = _dataProcessor.PreProcessData(data, IsIncludeNpcData);
-
-        foreach (var (statisticType, processedData) in processedDataByType)
+        if (!ShowTeamTotalDamage)
         {
-            if (!StatisticData.TryGetValue(statisticType, out var subViewModel)) continue;
-            subViewModel.ScopeTime = ScopeTime;
-            subViewModel.UpdateDataOptimized(processedData, currentPlayerUid);
+            _teamStatsManager.ResetTeamStats();
+            TeamTotalDamage = 0;
+            TeamTotalDps = 0;
+            return;
         }
 
-        UpdateTeamTotalStats(data);
-    }
+        var playerInfoDict = _dataSourceEngine.GetPlayerInfoDictionary();
+        var dict = GetCurrentTypeProcessedDict(type);
 
-    private void UpdateTeamTotalStats(IReadOnlyDictionary<long, PlayerStatistics> data)
-    {
-        // Delegate to TeamStatsUIManager following Single Responsibility Principle
-        var teamStats = _dataProcessor.CalculateTeamTotal(data, StatisticIndex);
-        _teamStatsManager.UpdateTeamStats(teamStats, StatisticIndex, data.Count > 0);
+        if (dict is null)
+        {
+            PublishEmptyTeamTotal(type);
+            return;
+        }
+
+        UpdateTeamTotalStats(type, dict, playerInfoDict);
     }
 
     private void UpdateBattleDuration()
@@ -85,48 +124,51 @@ public partial class DpsStatisticsViewModel
 
         void Do()
         {
-            if (!_timerService.IsRunning) return;
-
-            if (ScopeTime == ScopeTime.Current)
-            {
-                if (_combatState.AwaitingSectionStart)
-                {
-                    BattleDuration = _combatState.LastSectionElapsed;
-                    return;
-                }
-
-                if (_combatState.SectionTimedOut && _combatState.LastSectionElapsed > TimeSpan.Zero)
-                {
-                    BattleDuration = _combatState.LastSectionElapsed;
-                    return;
-                }
-
-                // Use timer service for section elapsed
-                BattleDuration = _timerService.GetSectionElapsed();
-            }
-            else // ScopeTime.Total
-            {
-                if (_combatState.AwaitingSectionStart)
-                {
-                    BattleDuration = _combatState.TotalCombatDuration;
-                }
-                else
-                {
-                    var currentSectionDuration = _timerService.GetSectionElapsed();
-                    BattleDuration = _combatState.TotalCombatDuration + currentSectionDuration;
-                }
-            }
+            BattleDuration = _dataSourceEngine.CurrentSource.BattleDuration;
+            _logger.LogTrace("Update battle duration: {duration}", BattleDuration);
         }
     }
 
-    private void RefreshData()
+    private void ResetBattleDurationIfInCurrentScope()
     {
-        var stat = _storage.GetStatistics(ScopeTime == ScopeTime.Total);
-        UpdateData(stat);
+        if (ScopeTime != ScopeTime.Current) return;
+        InvokeOnDispatcher(() => BattleDuration = TimeSpan.Zero);
     }
 
-    private bool HasData(IReadOnlyDictionary<long, PlayerStatistics> stats)
+    /// <summary>
+    /// Apply processed data prepared by providers/engine to sub-viewmodels and team totals.
+    /// This centralizes UI update logic when providers pre-process data.
+    /// </summary>
+    private void ApplyProcessedData(object? sender, Dictionary<StatisticType, Dictionary<long, DpsDataProcessed>> processedByType)
     {
-        return stats.Count > 0;
+        InvokeOnDispatcher(Action);
+        return;
+
+        void Action()
+        {
+            var currentPlayerUid = _storage.CurrentPlayerInfo.UID > 0
+                ? _storage.CurrentPlayerInfo.UID
+                : _configManager.CurrentConfig.Uid;
+
+            // 先に一回だけ取得
+            var playerInfoDict = _dataSourceEngine.GetPlayerInfoDictionary();
+
+            // SubViewModel 更新
+            foreach (var (statisticType, processed) in processedByType)
+            {
+                if (!StatisticData.TryGetValue(statisticType, out var subViewModel)) continue;
+                subViewModel.ScopeTime = ScopeTime;
+
+                subViewModel.UpdateDataOptimized(processed, currentPlayerUid);
+            }
+
+            // ★重要：最新 processed をキャッシュ（タブ切替でも使う）
+            _latestProcessedByType.Clear();
+            foreach (var (type, dict) in processedByType)
+                _latestProcessedByType[type] = dict;
+
+            // ★現在タブの TeamTotal を更新（Damage固定をやめる）
+            RecalculateAndPublishTeamTotalFor(StatisticIndex);
+        }
     }
 }

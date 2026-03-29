@@ -13,7 +13,7 @@ public sealed class HealingCalculator : IStatisticsCalculator
     public void Calculate(BattleLog log, StatisticsContext context)
     {
         // Only process healing to players
-        if (!log.IsTargetPlayer || !log.IsHeal)
+        if (!log.IsTargetPlayer || !log.IsHeal || !context.CombatStarted)
             return;
 
         var fullStats = context.GetOrCreateFullStats(log.AttackerUuid);
@@ -21,11 +21,6 @@ public sealed class HealingCalculator : IStatisticsCalculator
 
         UpdateStatistics(log, fullStats);
         UpdateStatistics(log, sectionStats);
-    }
-
-    public void ResetSection(StatisticsContext context)
-    {
-        // Section reset is handled by context
     }
 
     private void UpdateStatistics(BattleLog log, PlayerStatistics stats)
@@ -36,7 +31,7 @@ public sealed class HealingCalculator : IStatisticsCalculator
 
         var values = stats.Healing;
         values.Total += log.Value;
-        values.ValuePerSecond = ticks > 0 ? (double)values.Total * TimeSpan.TicksPerSecond / ticks : double.NaN;
+        values.ValuePerSecond = ticks > 0 ? (double)values.Total * TimeSpan.TicksPerSecond / ticks : 0;
 
         // Update skill breakdown
         var skill = stats.GetOrCreateHealingSkill(log.SkillID);

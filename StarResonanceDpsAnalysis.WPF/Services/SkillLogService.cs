@@ -1,10 +1,11 @@
-using System.Collections.ObjectModel;
-using System.Windows;
 using StarResonanceDpsAnalysis.Core;
 using StarResonanceDpsAnalysis.Core.Data;
 using StarResonanceDpsAnalysis.Core.Data.Models;
 using StarResonanceDpsAnalysis.WPF.Config;
+using StarResonanceDpsAnalysis.WPF.Localization;
 using StarResonanceDpsAnalysis.WPF.Models;
+using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace StarResonanceDpsAnalysis.WPF.Services;
 
@@ -26,28 +27,28 @@ public class SkillLogService : ISkillLogService, IDisposable
 
     private void OnBattleLogCreated(BattleLog battleLog)
     {
-        // ? ÐÞ¸Ä£ºÊ¹ÓÃÅäÖÃµÄ UID À´ÅÐ¶ÏÊÇ·ñÊÇµ±Ç°Íæ¼ÒµÄ¼¼ÄÜ
+        // ? ä¿®æ”¹ï¼šä½¿ç”¨é…ç½®çš„ UID æ¥åˆ¤æ–­æ˜¯å¦æ˜¯å½“å‰çŽ©å®¶çš„æŠ€èƒ½
         var currentPlayerUid = _configManager.CurrentConfig.Uid;
         
-        // Èç¹û UID Î´ÉèÖÃ£¨Îª 0£©£¬Ôò²»¼ÇÂ¼ÈÎºÎ¼¼ÄÜ
+        // å¦‚æžœ UID æœªè®¾ç½®ï¼ˆä¸º 0ï¼‰ï¼Œåˆ™ä¸è®°å½•ä»»ä½•æŠ€èƒ½
         if (currentPlayerUid == 0)
             return;
         
-        // Ö»¼ÇÂ¼µ±Ç°Íæ¼ÒµÄ¼¼ÄÜ£¨Í¨¹ý UID Æ¥Åä£©
+        // åªè®°å½•å½“å‰çŽ©å®¶çš„æŠ€èƒ½ï¼ˆé€šè¿‡ UID åŒ¹é…ï¼‰
         if (battleLog.AttackerUuid != currentPlayerUid)
             return;
 
-        // »ñÈ¡¼¼ÄÜÃû³Æ
-        var skillName = EmbeddedSkillConfig.GetName((int)battleLog.SkillID);
+        // èŽ·å–æŠ€èƒ½åç§°
+        var skillName = LocalizationManager.Instance.GetString($"JsonDictionary:Skills:{(int)battleLog.SkillID}");
         if (string.IsNullOrEmpty(skillName) || skillName == battleLog.SkillID.ToString())
             skillName = $"Unknown ({battleLog.SkillID})";
 
-        // ½« Ticks ×ª»»Îª DateTime
+        // å°† Ticks è½¬æ¢ä¸º DateTime
         var timestamp = new DateTime(battleLog.TimeTicks, DateTimeKind.Utc).ToLocalTime();
 
         Application.Current?.Dispatcher.Invoke(() =>
         {
-            // ? ÐÞ¸Ä£ºÔÚ 800 ºÁÃëÄÚ²éÕÒÏàÍ¬µÄ¼¼ÄÜ²¢ºÏ²¢
+            // ? ä¿®æ”¹ï¼šåœ¨ 800 æ¯«ç§’å†…æŸ¥æ‰¾ç›¸åŒçš„æŠ€èƒ½å¹¶åˆå¹¶
             SkillLogItem? existingItem = null;
             var recentCount = Math.Min(10, Logs.Count);
             for (int i = Logs.Count - 1; i >= Math.Max(0, Logs.Count - recentCount); i--)
@@ -61,13 +62,13 @@ public class SkillLogService : ISkillLogService, IDisposable
                 }
             }
 
-            if (existingItem != null)
+            if (existingItem != null && existingItem.IsHeal == battleLog.IsHeal)
             {
-                // ºÏ²¢µ½ÏÖÓÐ¼ÇÂ¼
+                // åˆå¹¶åˆ°çŽ°æœ‰è®°å½•
                 existingItem.TotalValue += battleLog.Value;
                 existingItem.Count++;
                 
-                // ? ÐÂÔö£ºÍ³¼Æ²»Í¬ÀàÐÍµÄÉËº¦
+                // ? æ–°å¢žï¼šç»Ÿè®¡ä¸åŒç±»åž‹çš„ä¼¤å®³
                 if (battleLog.IsCritical)
                 {
                     existingItem.CritCount++;
@@ -83,7 +84,7 @@ public class SkillLogService : ISkillLogService, IDisposable
                     existingItem.NormalDamage += battleLog.Value;
                 }
                 
-                // ´¥·¢ UI ¸üÐÂ
+                // è§¦å‘ UI æ›´æ–°
                 var index = Logs.IndexOf(existingItem);
                 if (index >= 0)
                 {
@@ -104,7 +105,7 @@ public class SkillLogService : ISkillLogService, IDisposable
             }
             else
             {
-                // ´´½¨ÐÂ¼ÇÂ¼
+                // åˆ›å»ºæ–°è®°å½•
                 var logItem = new SkillLogItem
                 {
                     Timestamp = timestamp,
@@ -114,7 +115,7 @@ public class SkillLogService : ISkillLogService, IDisposable
                     CritCount = battleLog.IsCritical ? 1 : 0,
                     LuckyCount = battleLog.IsLucky ? 1 : 0,
                     IsHeal = battleLog.IsHeal,
-                    // ? ÐÂÔö£º³õÊ¼»¯ÉËº¦Í³¼Æ
+                    // ? æ–°å¢žï¼šåˆå§‹åŒ–ä¼¤å®³ç»Ÿè®¡
                     CritDamage = battleLog.IsCritical ? battleLog.Value : 0,
                     LuckyDamage = battleLog.IsLucky ? battleLog.Value : 0,
                     NormalDamage = (!battleLog.IsCritical && !battleLog.IsLucky) ? battleLog.Value : 0
@@ -122,7 +123,7 @@ public class SkillLogService : ISkillLogService, IDisposable
 
                 Logs.Add(logItem);
 
-                // ÏÞÖÆ¼ÇÂ¼ÊýÁ¿£¬±ÜÃâÄÚ´æÕ¼ÓÃ¹ý´ó
+                // é™åˆ¶è®°å½•æ•°é‡ï¼Œé¿å…å†…å­˜å ç”¨è¿‡å¤§
                 if (Logs.Count > 500)
                 {
                     Logs.RemoveAt(0);

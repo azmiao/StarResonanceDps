@@ -1,0 +1,75 @@
+﻿<Window x:Class="StarResonanceDpsAnalysis.WPF.Views.PlayerInfoDebugView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:StarResonanceDpsAnalysis.WPF.Views"
+        xmlns:viewModels="clr-namespace:StarResonanceDpsAnalysis.WPF.ViewModels"
+        mc:Ignorable="d"
+        WindowStyle="ToolWindow"
+        d:DataContext="{d:DesignInstance Type=viewModels:PlayerInfoDebugViewModel, IsDesignTimeCreatable=True}"
+        Title="PlayerInfoDebugView" Height="450" Width="300">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal">
+                <Button Command="{Binding RefreshCommand}" Content="Refresh" Margin="2"/>
+            </StackPanel>
+            
+            <TextBox Grid.Row="1" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" Margin="2" 
+                     ToolTip="Filter by Name or UID"/>
+
+            <ListView Grid.Row="2" ItemsSource="{Binding FilteredPlayerInfos}" SelectedItem="{Binding SelectedPlayerInfo}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Name, TargetNullValue='Unknown'}"/>
+                            <TextBlock Text="{Binding UID}" FontSize="10" Foreground="Gray"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="LightGray"/>
+        <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="5" DataContext="{Binding SelectedPlayerInfo}">
+                <TextBlock Text="{Binding Name, StringFormat='Name: {0}'}" FontWeight="Bold"/>
+                <TextBlock Text="{Binding UID, StringFormat='UID: {0}'}"/>
+                <Separator Margin="0,5"/>
+                <TextBlock Text="{Binding ProfessionID, StringFormat='ProfessionID: {0}'}"/>
+                <TextBlock Text="{Binding SubProfessionName, StringFormat='SubProfessionName: {0}'}"/>
+                <TextBlock Text="{Binding Spec, StringFormat='Spec: {0}'}"/>
+                <TextBlock Text="{Binding Class, StringFormat='Class: {0}'}"/>
+                <Separator Margin="0,5"/>
+                <TextBlock Text="{Binding Level, StringFormat='Level: {0}'}"/>
+                <TextBlock Text="{Binding SeasonLevel, StringFormat='SeasonLevel: {0}'}"/>
+                <TextBlock Text="{Binding RankLevel, StringFormat='RankLevel: {0}'}"/>
+                <Separator Margin="0,5"/>
+                <TextBlock Text="{Binding CombatPower, StringFormat='CombatPower: {0}'}"/>
+                <TextBlock Text="{Binding HP, StringFormat='HP: {0}'}"/>
+                <TextBlock Text="{Binding MaxHP, StringFormat='MaxHP: {0}'}"/>
+                <TextBlock Text="{Binding Critical, StringFormat='Critical: {0}'}"/>
+                <TextBlock Text="{Binding Lucky, StringFormat='Lucky: {0}'}"/>
+                <TextBlock Text="{Binding SeasonStrength, StringFormat='SeasonStrength: {0}'}"/>
+                <TextBlock Text="{Binding ReductionLevel, StringFormat='ReductionLevel: {0}'}"/>
+                <Separator Margin="0,5"/>
+                <TextBlock Text="{Binding ElementFlag, StringFormat='ElementFlag: {0}'}"/>
+                <TextBlock Text="{Binding EnergyFlag, StringFormat='EnergyFlag: {0}'}"/>
+                <Separator Margin="0,5"/>
+                <TextBlock Text="{Binding CombatState, StringFormat='CombatState: {0}'}"/>
+                <TextBlock Text="{Binding CombatStateTime, StringFormat='CombatStateTime: {0}'}"/>
+                <TextBlock Text="{Binding NpcTemplateId, StringFormat='NpcTemplateId: {0}'}"/>
+            </StackPanel>
+        </ScrollViewer>
+        
+    </Grid>
+</Window>

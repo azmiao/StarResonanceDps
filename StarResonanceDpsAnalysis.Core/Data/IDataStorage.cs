@@ -14,7 +14,11 @@ public interface IDataStorage : IDisposable
     TimeSpan SectionTimeout { get; set; }
 
     bool IsServerConnected { get; set; }
-    long CurrentPlayerUUID { get; set; }
+
+    /// <summary>
+    /// Sample recording interval in milliseconds
+    /// </summary>
+    int SampleRecordingInterval { get; set; }
 
     event ServerConnectionStateChangedEventHandler? ServerConnectionStateChanged;
     event PlayerInfoUpdatedEventHandler? PlayerInfoUpdated;
@@ -33,15 +37,23 @@ public interface IDataStorage : IDisposable
     void ClearCurrentPlayerInfo();
     void ClearPlayerInfos();
     void ClearAllPlayerInfos();
-    void RaiseServerChanged(string currentServerStr, string prevServer);
+    void ServerChange(string currentServerStr, string prevServer);
     void SetPlayerLevel(long playerUid, int tmpLevel);
     bool EnsurePlayer(long playerUid);
+
+    /// <summary>
+    /// 设置当前玩家 UID，并同步到 CurrentPlayerInfo
+    /// </summary>
+    /// <param name="uid">当前玩家UID</param>
+    void SetCurrentPlayerUid(long uid);
+
     void SetPlayerHP(long playerUid, long hp);
     void SetPlayerMaxHP(long playerUid, long maxHp);
     void SetPlayerCombatState(long uid, bool combatState);
     void SetPlayerName(long playerUid, string playerName);
     void SetPlayerCombatPower(long playerUid, int combatPower);
     void SetPlayerProfessionID(long playerUid, int professionId);
+    void SetPlayerGuild(long playerUid, string guild);
 
     /// <summary>
     /// 添加战斗日志 (会自动创建日志分段)
@@ -89,7 +101,7 @@ public interface IDataStorage : IDisposable
     int GetStatisticsCount(bool fullSession);
 
     event Action? BeforeSectionCleared;
-    void SetPlayerCombatStateTime(long uid, int readInt32);
+    void SetPlayerCombatStateTime(long uid, long time);
 }
 
 public delegate void ServerConnectionStateChangedEventHandler(bool serverConnectionState);
@@ -118,5 +130,4 @@ public static class DataStorageHelper
 
         return storage.GetStatisticsCount((bool)full) > 0;
     }
-
 }

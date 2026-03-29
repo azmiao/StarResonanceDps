@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="App_Name" xml:space="preserve">
-    <value>StarResonance ToolBox</value>
-  </data>
   <data name="Menu_Settings" xml:space="preserve">
     <value>Configurações</value>
   </data>
@@ -131,6 +128,9 @@
   </data>
   <data name="Menu_Personal_Training_Mode" xml:space="preserve">
     <value>Modo Solo/Treino</value>
+  </data>
+  <data name="Menu_SkillDiary" xml:space="preserve">
+    <value>Diário de Habilidades</value>
   </data>
   <data name="Menu_RecordSettings" xml:space="preserve">
     <value>Opções de Gravação</value>
@@ -171,23 +171,57 @@
   <data name="Menu_History_Total" xml:space="preserve">
     <value>Batalha completa</value>
   </data>
-  <data name="Menu_ExitSnapshotMode" xml:space="preserve">
+  <data name="Menu_ExitHistoryMode" xml:space="preserve">
     <value>Sair do modo de instantâneo</value>
   </data>
-  <data name="DpsStatistics_Snapshot_Label" xml:space="preserve">
-    <value>[Instantâneo]</value>
-  </data>
-  <data name="DpsStatistics_Snapshot_ViewFull_Title" xml:space="preserve">
+  <data name="DpsStatistics_History_ViewFull_Title" xml:space="preserve">
     <value>Ver instantâneo completo</value>
   </data>
-  <data name="DpsStatistics_Snapshot_ViewFull_EmptyMessage" xml:space="preserve">
+  <data name="DpsStatistics_History_ViewFull_EmptyMessage" xml:space="preserve">
     <value>Não há dados de instantâneo completo disponíveis.</value>
   </data>
-  <data name="DpsStatistics_Snapshot_ViewCurrent_Title" xml:space="preserve">
+  <data name="DpsStatistics_History_ViewCurrent_Title" xml:space="preserve">
     <value>Ver instantâneo de batalha</value>
   </data>
-  <data name="DpsStatistics_Snapshot_ViewCurrent_EmptyMessage" xml:space="preserve">
+  <data name="DpsStatistics_History_ViewCurrent_EmptyMessage" xml:space="preserve">
     <value>Não há dados de instantâneo de batalha disponíveis.</value>
+  </data>
+  <data name="DpsStatistics_History_Label" xml:space="preserve">
+    <value>Instantâneo</value>
+  </data>
+  <data name="DpsStatistics_Team_Label" xml:space="preserve">
+    <value>Equipe</value>
+  </data>
+  <data name="DpsStatistics_TeamLabel_Damage" xml:space="preserve">
+    <value>DPS da Equipe</value>
+  </data>
+  <data name="DpsStatistics_TeamLabel_Healing" xml:space="preserve">
+    <value>Cura da Equipe</value>
+  </data>
+  <data name="DpsStatistics_TeamLabel_TakenDamage" xml:space="preserve">
+    <value>Dano Sofrido da Equipe</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="DpsStatistics_TeamLabel_NpcTakenDamage" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="PlayerInfo_Guild_Unknown" xml:space="preserve">
+    <value>Desconhecido</value>
+  </data>
+  <data name="DpsStatistics_Test_Guild" xml:space="preserve">
+    <value>Guilda de Teste</value>
+  </data>
+  <data name="DpsStatistics_Test_Player_Format" xml:space="preserve">
+    <value>Jogador de Teste {0}</value>
+  </data>
+  <data name="DpsStatistics_Test_Skill_Format" xml:space="preserve">
+    <value>Habilidade de Teste {0}</value>
+  </data>
+  <data name="DpsStatistics_Test_Heal_Skill_Format" xml:space="preserve">
+    <value>Cura de Teste {0}</value>
+  </data>
+  <data name="DpsStatistics_Test_Taken_Skill_Format" xml:space="preserve">
+    <value>Dano Sofrido de Teste {0}</value>
   </data>
   <data name="Menu_Exit" xml:space="preserve">
     <value>Sair</value>
@@ -203,6 +237,9 @@
   </data>
   <data name="Window_DpsStatistics_Title" xml:space="preserve">
     <value>Estatísticas de DPS</value>
+  </data>
+  <data name="Window_PersonalDps_Title" xml:space="preserve">
+    <value>Modo Treino</value>
   </data>
   <data name="Settings_Heading" xml:space="preserve">
     <value>Configurações</value>
@@ -226,7 +263,7 @@
     <value>Limpar Dados</value>
   </data>
   <data name="Settings_Shortcut_MouseThrough_Tooltip" xml:space="preserve">
-    <value>Foque nesta caixa e pressione um atalho (ex: Ctrl+F6). Pressione Delete para limpar.</value>
+    <value>Foque nesta caixa e pressione um atalho (ex: F6). Pressione Delete para limpar.</value>
   </data>
   <data name="Settings_Shortcut_ClearData_Tooltip" xml:space="preserve">
     <value>Foque nesta caixa e pressione um atalho (ex: F9). Pressione Delete para limpar.</value>
@@ -267,17 +304,80 @@
   <data name="Settings_Display_Opacity" xml:space="preserve">
     <value>Opacidade da sobreposição</value>
   </data>
-  <data name="Settings_Display_PlayerNameBlur" xml:space="preserve">
-    <value>Ocultar nomes dos jogadores</value>
+  <data name="Settings_Display_PlayerNameMask" xml:space="preserve">
+    <value>Anonimização de informações do jogador</value>
+  </data>
+  <data name="Settings_Display_MarqueeText" xml:space="preserve">
+    <value>Rolar nomes longos</value>
+  </data>
+  <data name="Settings_Display_MarqueeText_Tooltip" xml:space="preserve">
+    <value>Ative a rolagem automática quando o nome do jogador exceder o espaço disponível.</value>
+  </data>
+  <data name="Settings_PlayerInfo_Preset_Default_Tooltip" xml:space="preserve">
+    <value>NomeDoJogador - Icicle (25000-8)</value>
+  </data>
+  <data name="Settings_PlayerInfo_Preset_Simple_Tooltip" xml:space="preserve">
+    <value>NomeDoJogador (25000)</value>
+  </data>
+  <data name="Settings_PlayerInfo_Preset_Detailed_Tooltip" xml:space="preserve">
+    <value>NomeDoJogador - Icicle [S8 Nv50] (25000)</value>
+  </data>
+  <data name="Settings_PlayerInfo_Name" xml:space="preserve">
+    <value>NomeDoJogador</value>
+  </data>
+  <data name="Settings_PlayerInfo_Tip" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Settings_PlayerInfo_ClassSpec" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Settings_PlayerInfo_Separator_Space" xml:space="preserve">
+    <value>Espaço</value>
+  </data>
+  <data name="Settings_Display_ShowDamage" xml:space="preserve">
+    <value>Mostrar dano total</value>
+  </data>
+  <data name="Settings_Display_ShowDps" xml:space="preserve">
+    <value>Mostrar DPS/HPS/DTPS</value>
+  </data>
+  <data name="Settings_Display_ShowPercentage" xml:space="preserve">
+    <value>Mostrar porcentagem de dano</value>
+  </data>
+  <data name="Settings_Display_DpsMode" xml:space="preserve">
+    <value>Modo de exibição de DPS</value>
+  </data>
+  <data name="Settings_Display_DpsMode_Tooltip" xml:space="preserve">
+    <value>Escolha como o DPS é calculado: dano total dividido pela duração ou DPS médio geral.</value>
+  </data>
+  <data name="Settings_Display_DpsMode_On" xml:space="preserve">
+    <value>DPS geral</value>
+  </data>
+  <data name="Settings_Display_DpsMode_Off" xml:space="preserve">
+    <value>Total/Duração</value>
+  </data>
+  <data name="Settings_Display_DpsMode_Switch_Tooltip" xml:space="preserve">
+    <value>Ligado = dano total / duração; Desligado = DPS médio geral (ValuePerSecond).</value>
+  </data>
+  <data name="Settings_Display_TimeSeriesCapacity" xml:space="preserve">
+    <value>Capacidade de amostras da série temporal</value>
+  </data>
+  <data name="Settings_Display_TimeSeriesCapacity_Tooltip" xml:space="preserve">
+    <value>Número máximo de pontos de dados armazenados para gráficos de tendência de DPS/HPS/DTPS. Valores maiores mostram mais histórico, mas usam mais memória. Intervalo: 50-1000 amostras.</value>
+  </data>
+  <data name="Settings_Common_Samples" xml:space="preserve">
+    <value>amostras</value>
+  </data>
+  <data name="Settings_Theme_CustomColor_Tooltip" xml:space="preserve">
+    <value>Cor personalizada</value>
+  </data>
+  <data name="Settings_Theme_ClearImage" xml:space="preserve">
+    <value>Limpar</value>
   </data>
   <data name="Settings_PlayerNameMask_Warning_Title" xml:space="preserve">
     <value>Aviso</value>
   </data>
   <data name="Settings_PlayerNameMask_Warning_Message" xml:space="preserve">
     <value>Não use os resultados dos dados para discriminar ou prejudicar a comunidade do jogo.</value>
-  </data>
-  <data name="Menu_TemporaryMaskPlayerName" xml:space="preserve">
-    <value>Mascaramento temporário</value>
   </data>
   <data name="Settings_Section_Language_Title" xml:space="preserve">
     <value>Configurações de exibição</value>
@@ -324,188 +424,11 @@
   <data name="Window_About_Title" xml:space="preserve">
     <value>Sobre</value>
   </data>
-  <data name="About_Intro_Primary" xml:space="preserve">
-    <value>Uma ferramenta de análise de dados de combate construída para jogadores de BPSR.</value>
-  </data>
-  <data name="About_Intro_Details" xml:space="preserve">
-    <value>Esta ferramenta não requer modificações no cliente e permanece dentro dos termos de serviço do jogo. Ela ajuda os jogadores a entender dados de combate, reduzir esforços desnecessários e melhorar a experiência de jogo em BPSR. Por favor, não use os resultados para discriminação de poder ou qualquer comportamento que prejudique a comunidade.</value>
-  </data>
-  <data name="About_Version_Label" xml:space="preserve">
-    <value>Versão atual:</value>
-  </data>
-  <data name="About_Developers_Label" xml:space="preserve">
-    <value>Contribuidores para esta versão (sem ordem específica):</value>
-  </data>
-  <data name="About_Developer_Lead" xml:space="preserve">
-    <value>惊奇猫猫盒 (anying1073: fundador do projeto)</value>
-  </data>
-  <data name="About_Developer_RocyJune" xml:space="preserve">
-    <value>露詩（Rocy-June）</value>
-  </data>
-  <data name="About_Developer_QingLan" xml:space="preserve">
-    <value>青岚宗王腾</value>
-  </data>
-  <data name="About_Developer_Ihonliu" xml:space="preserve">
-    <value>尻鸭（ihonliu）</value>
-  </data>
-  <data name="About_OpenSource_Prefix" xml:space="preserve">
-    <value>Este projeto é código aberto em</value>
-  </data>
-  <data name="About_OpenSource_RepositoryUrl" xml:space="preserve">
-    <value>https://github.com/anying1073/StarResonanceDps</value>
-  </data>
-  <data name="About_OpenSource_Suffix" xml:space="preserve">
-    <value>, Se você encontrar algum problema, por favor abra uma issue lá.</value>
-  </data>
-  <data name="About_Contribution" xml:space="preserve">
-    <value>Para contribuir, por favor faça um fork do repositório e envie um pull request.</value>
-  </data>
-  <data name="About_Community_Invite" xml:space="preserve">
-    <value>Se você não consegue acessar o GitHub ou quer encontrar companheiros de equipe, junte-se aos grupos do Tencent QQ:</value>
-  </data>
-  <data name="About_Community_GroupOne" xml:space="preserve">
-    <value>678150498 (Grupo 1)</value>
-  </data>
-  <data name="About_Community_GroupTwo" xml:space="preserve">
-    <value>1022797551 (Grupo 2)</value>
-  </data>
-  <data name="About_Thanks_Prefix" xml:space="preserve">
-    <value>Agradecimentos especiais a</value>
-  </data>
-  <data name="About_Thanks_RepositoryUrl" xml:space="preserve">
-    <value>https://github.com/dmlgzs/StarResonanceDamageCounter</value>
-  </data>
-  <data name="About_Thanks_Suffix" xml:space="preserve">
-    <value>por apoiar e inspirar este projeto.</value>
-  </data>
-  <data name="About_Copyright" xml:space="preserve">
-    <value>Copyright (C) 2025 anying1073/StarResonanceDps Team.</value>
-  </data>
-  <data name="About_PoweredBy" xml:space="preserve">
-    <value>Powered by .NET 8, Licenciado sob GNU AGPL v3.</value>
-  </data>
   <data name="Window_DamageReference_Title" xml:space="preserve">
     <value>Referência de Dano</value>
   </data>
-  <data name="DamageReference_Header_Title" xml:space="preserve">
-    <value>Detalhamento de Habilidades</value>
-  </data>
-  <data name="DamageReference_Ribbon_Title" xml:space="preserve">
-    <value>Referência de Dano</value>
-  </data>
-  <data name="DamageReference_Classes_All" xml:space="preserve">
-    <value>Todas as Classes</value>
-  </data>
-  <data name="Classes_Stormblade" xml:space="preserve">
-    <value>Stormblade</value>
-  </data>
-  <data name="Classes_FrostMage" xml:space="preserve">
-    <value>Frost Mage</value>
-  </data>
-  <data name="Classes_WindKnight" xml:space="preserve">
-    <value>Wind Knight</value>
-  </data>
-  <data name="Classes_VerdantOracle" xml:space="preserve">
-    <value>Verdant Oracle</value>
-  </data>
-  <data name="Classes_HeavyGuardian" xml:space="preserve">
-    <value>Heavy Guardian</value>
-  </data>
-  <data name="Classes_Marksman" xml:space="preserve">
-    <value>Marksman</value>
-  </data>
-  <data name="Classes_ShieldKnight" xml:space="preserve">
-    <value>Shield Knight</value>
-  </data>
-  <data name="Classes_SoulMusician" xml:space="preserve">
-    <value>Beat Performer</value>
-  </data>
-  <data name="DamageReference_Table_Title" xml:space="preserve">
-    <value>Referência de Dano</value>
-  </data>
-  <data name="DamageReference_NoData" xml:space="preserve">
-    <value>Ainda não há dados</value>
-  </data>
-  <data name="DamageReference_Disclaimer" xml:space="preserve">
-    <value>Os dados são apenas para entretenimento e referência. Não os use para discriminação de poder ou qualquer comportamento que prejudique a comunidade; violações resultarão em revogação permanente.</value>
-  </data>
   <data name="Window_Debug_Title" xml:space="preserve">
     <value>Visualização de Debug</value>
-  </data>
-  <data name="Debug_LoadPcap" xml:space="preserve">
-    <value>Carregar PCAP</value>
-  </data>
-  <data name="Debug_AddSampleData" xml:space="preserve">
-    <value>Adicionar Dados de Exemplo</value>
-  </data>
-  <data name="Debug_ClearLogs" xml:space="preserve">
-    <value>Limpar Logs</value>
-  </data>
-  <data name="Debug_AddTestLog" xml:space="preserve">
-    <value>Adicionar Log de Teste</value>
-  </data>
-  <data name="Debug_SaveLogs" xml:space="preserve">
-    <value>Salvar Logs</value>
-  </data>
-  <data name="Debug_AutoScroll" xml:space="preserve">
-    <value>Rolagem Automática</value>
-  </data>
-  <data name="Debug_Filter_Level" xml:space="preserve">
-    <value>Nível:</value>
-  </data>
-  <data name="Debug_Filter_Label" xml:space="preserve">
-    <value>Filtro:</value>
-  </data>
-  <data name="Debug_Filter_Tooltip" xml:space="preserve">
-    <value>Filtrar logs por conteúdo de mensagem ou categoria</value>
-  </data>
-  <data name="Debug_Header_Time" xml:space="preserve">
-    <value>Tempo</value>
-  </data>
-  <data name="Debug_Header_Level" xml:space="preserve">
-    <value>Nível</value>
-  </data>
-  <data name="Debug_Header_Category" xml:space="preserve">
-    <value>Categoria</value>
-  </data>
-  <data name="Debug_Header_Message" xml:space="preserve">
-    <value>Mensagem</value>
-  </data>
-  <data name="Debug_Status_TotalPrefix" xml:space="preserve">
-    <value>Total: </value>
-  </data>
-  <data name="Debug_Status_TotalSuffix" xml:space="preserve">
-    <value> logs</value>
-  </data>
-  <data name="Debug_Status_FilteredPrefix" xml:space="preserve">
-    <value>Filtrados: </value>
-  </data>
-  <data name="Debug_Status_FilteredSuffix" xml:space="preserve">
-    <value> logs</value>
-  </data>
-  <data name="Debug_Status_LastPrefix" xml:space="preserve">
-    <value>Último: </value>
-  </data>
-  <data name="Debug_ThemeTestText" xml:space="preserve">
-    <value>Texto de teste de mudança de tema</value>
-  </data>
-  <data name="Debug_Button_PcapTest" xml:space="preserve">
-    <value>Teste Pcap</value>
-  </data>
-  <data name="Debug_Button_SkillBreakdown" xml:space="preserve">
-    <value>Visualização de Detalhamento de Habilidades</value>
-  </data>
-  <data name="Debug_Button_DamageReference" xml:space="preserve">
-    <value>Visualização de Referência de Dano</value>
-  </data>
-  <data name="Debug_Button_Settings" xml:space="preserve">
-    <value>Visualização de Configurações</value>
-  </data>
-  <data name="Debug_Button_About" xml:space="preserve">
-    <value>Visualização Sobre</value>
-  </data>
-  <data name="Debug_Group_Title" xml:space="preserve">
-    <value>Utilitários de debug</value>
   </data>
   <data name="MainView_Header_Title" xml:space="preserve">
     <value>StarResonance ToolBox</value>
@@ -530,9 +453,6 @@
   </data>
   <data name="MainView_Plugin_AutoStart" xml:space="preserve">
     <value>Iniciar com o aplicativo</value>
-  </data>
-  <data name="Common_Action_Open" xml:space="preserve">
-    <value>Iniciar</value>
   </data>
   <data name="MainView_Plugin_ModuleSolver_Title" xml:space="preserve">
     <value>Solucionador de Módulos</value>
@@ -663,56 +583,29 @@
   <data name="SkillBreakdown_Label_TotalDamage" xml:space="preserve">
     <value>Dano total</value>
   </data>
-  <data name="SkillBreakdown_Value_TotalDamage" xml:space="preserve">
-    <value>42.64K</value>
-  </data>
   <data name="SkillBreakdown_Label_Dps" xml:space="preserve">
     <value>DPS</value>
-  </data>
-  <data name="SkillBreakdown_Value_Dps" xml:space="preserve">
-    <value>29.01K</value>
   </data>
   <data name="SkillBreakdown_Label_HitCount" xml:space="preserve">
     <value>Acertos</value>
   </data>
-  <data name="SkillBreakdown_Value_HitCount" xml:space="preserve">
-    <value>6</value>
-  </data>
   <data name="SkillBreakdown_Label_CritRate" xml:space="preserve">
     <value>Taxa de crítico</value>
-  </data>
-  <data name="SkillBreakdown_Value_CritRate" xml:space="preserve">
-    <value>16.67%</value>
   </data>
   <data name="SkillBreakdown_Label_LuckRate" xml:space="preserve">
     <value>Taxa de sorte</value>
   </data>
-  <data name="SkillBreakdown_Value_LuckRate" xml:space="preserve">
-    <value>0%</value>
-  </data>
   <data name="SkillBreakdown_Label_CritCount" xml:space="preserve">
     <value>Acertos críticos</value>
-  </data>
-  <data name="SkillBreakdown_Value_CritCount" xml:space="preserve">
-    <value>1</value>
   </data>
   <data name="SkillBreakdown_Label_NormalDamage" xml:space="preserve">
     <value>Dano normal</value>
   </data>
-  <data name="SkillBreakdown_Value_NormalDamage" xml:space="preserve">
-    <value>28.71K</value>
-  </data>
   <data name="SkillBreakdown_Label_CritDamage" xml:space="preserve">
     <value>Dano Crítico</value>
   </data>
-  <data name="SkillBreakdown_Value_CritDamage" xml:space="preserve">
-    <value>13.92K</value>
-  </data>
   <data name="SkillBreakdown_Label_LuckCount" xml:space="preserve">
     <value>Acertos de sorte</value>
-  </data>
-  <data name="SkillBreakdown_Value_LuckCount" xml:space="preserve">
-    <value>0</value>
   </data>
   <data name="SkillBreakdown_Label_LuckDamage" xml:space="preserve">
     <value>Dano de sorte</value>
@@ -720,38 +613,14 @@
   <data name="SkillBreakdown_Label_Others" xml:space="preserve">
     <value>Outros</value>
   </data>
-  <data name="SkillBreakdown_Value_LuckDamage" xml:space="preserve">
-    <value>0</value>
-  </data>
   <data name="SkillBreakdown_Label_AverageDamage" xml:space="preserve">
     <value>Acerto médio</value>
-  </data>
-  <data name="SkillBreakdown_Value_AverageDamage" xml:space="preserve">
-    <value>7106</value>
   </data>
   <data name="SkillBreakdown_Label_DamageTakenCount" xml:space="preserve">
     <value>Vezes atingido</value>
   </data>
-  <data name="SkillBreakdown_Value_DamageTakenCount" xml:space="preserve">
-    <value>3</value>
-  </data>
   <data name="SkillBreakdown_Placeholder_Form" xml:space="preserve">
     <value>Imagine uma tabela de dados aqui</value>
-  </data>
-  <data name="SkillBreakdown_Info_Name" xml:space="preserve">
-    <value>--Nome de Exemplo--</value>
-  </data>
-  <data name="SkillBreakdown_Info_Uid" xml:space="preserve">
-    <value>UID: 123456</value>
-  </data>
-  <data name="SkillBreakdown_Info_Power" xml:space="preserve">
-    <value>Poder: 25000</value>
-  </data>
-  <data name="SkillBreakdown_Info_Level" xml:space="preserve">
-    <value>Nível: 60</value>
-  </data>
-  <data name="SkillBreakdown_Info_Badge" xml:space="preserve">
-    <value>Emblema: 190</value>
   </data>
   <data name="SkillBreakdown_Tab_Output" xml:space="preserve">
     <value>DPS</value>
@@ -783,34 +652,11 @@
   <data name="DpsStatistics_TestButton_Tooltip" xml:space="preserve">
     <value>Adicionar Item de Teste</value>
   </data>
-  <data name="Common_SkillDisplayLimitChanged" xml:space="preserve">
-    <value>Limite de exibição de habilidades definido para</value>
-  </data>
-  <data name="Common_SkillDisplayLimitSaved" xml:space="preserve">
-    <value>Limite de exibição de habilidades salvo na configuração:</value>
-  </data>
-  <data name="Common_SkillListRefreshed" xml:space="preserve">
-    <value>Lista de habilidades atualizada para todos os slots</value>
-  </data>
-  <data name="Command_OpenSkillLog" xml:space="preserve">
-    <value>Abrir janela de registro de habilidades</value>
-  </data>
   <data name="Warning_UidNotConfigured" xml:space="preserve">
     <value>Tentativa de abrir o modo de treino pessoal sem UID configurado</value>
   </data>
-  <data name="Dialog_UidRequired_Title" xml:space="preserve">
-    <value>UID do personagem necessário</value>
-  </data>
-  <data name="Dialog_UidRequired_Message" xml:space="preserve">
-    <value>Configure o UID do personagem nas Configurações antes de usar o modo de treino pessoal.
-
-Como obter o UID: no jogo, o número do jogador no canto inferior esquerdo é o UID.</value>
-  </data>
   <data name="Info_OpeningPersonalDps" xml:space="preserve">
     <value>Abrindo modo de treino pessoal</value>
-  </data>
-  <data name="Common_Dash" xml:space="preserve">
-    <value>-</value>
   </data>
   <data name="SkillBreakdown_Section_DamageDistribution" xml:space="preserve">
     <value>Distribuição de dano</value>
@@ -828,7 +674,7 @@ Como obter o UID: no jogo, o número do jogador no canto inferior esquerdo é o 
     <value>Dano Recebido de NPC</value>
   </data>
   <data name="DpsStatistics_TeamTotal_Damage" xml:space="preserve">
-    <value>DPS do time</value>
+    <value>Dano do time</value>
   </data>
   <data name="DpsStatistics_TeamTotal_Healing" xml:space="preserve">
     <value>Cura do time</value>
@@ -855,58 +701,7 @@ Como obter o UID: no jogo, o número do jogador no canto inferior esquerdo é o 
     <value>Alternar sempre no topo</value>
   </data>
   <data name="Settings_Shortcut_TopMost_Tooltip" xml:space="preserve">
-    <value>Foque nesta caixa e pressione um atalho (ex: Ctrl+F9). Pressione Delete para limpar.</value>
-  </data>
-  <data name="ClassSpec_Unknown" xml:space="preserve">
-    <value>Unknown</value>
-  </data>
-  <data name="ClassSpec_ShieldKnightRecovery" xml:space="preserve">
-    <value>Recovery</value>
-  </data>
-  <data name="ClassSpec_ShieldKnightShield" xml:space="preserve">
-    <value>Shield</value>
-  </data>
-  <data name="ClassSpec_HeavyGuardianEarthfort" xml:space="preserve">
-    <value>Earthfort</value>
-  </data>
-  <data name="ClassSpec_HeavyGuardianBlock" xml:space="preserve">
-    <value>Block</value>
-  </data>
-  <data name="ClassSpec_StormbladeIaidoSlash" xml:space="preserve">
-    <value>IaidoSlash</value>
-  </data>
-  <data name="ClassSpec_StormbladeMoonStrike" xml:space="preserve">
-    <value>MoonStrike</value>
-  </data>
-  <data name="ClassSpec_WindKnightVanGuard" xml:space="preserve">
-    <value>VanGuard</value>
-  </data>
-  <data name="ClassSpec_WindKnightSkyward" xml:space="preserve">
-    <value>Skyward</value>
-  </data>
-  <data name="ClassSpec_FrostMageIcicle" xml:space="preserve">
-    <value>Icicle</value>
-  </data>
-  <data name="ClassSpec_FrostMageFrostBeam" xml:space="preserve">
-    <value>FrostBeam</value>
-  </data>
-  <data name="ClassSpec_MarksmanWildpack" xml:space="preserve">
-    <value>Wildpack</value>
-  </data>
-  <data name="ClassSpec_MarksmanFalconry" xml:space="preserve">
-    <value>Falconry</value>
-  </data>
-  <data name="ClassSpec_VerdantOracleSmite" xml:space="preserve">
-    <value>Smite</value>
-  </data>
-  <data name="ClassSpec_VerdantOracleLifeBind" xml:space="preserve">
-    <value>LifeBind</value>
-  </data>
-  <data name="ClassSpec_SoulMusicianDissonance" xml:space="preserve">
-    <value>Dissonance</value>
-  </data>
-  <data name="ClassSpec_SoulMusicianConcerto" xml:space="preserve">
-    <value>Concerto</value>
+    <value>Foque nesta caixa e pressione um atalho (ex: F9). Pressione Delete para limpar.</value>
   </data>
   <data name="Settings_NetworkAdapterAutoSelect_Failed" xml:space="preserve">
     <value>Falha na seleção automática do adaptador de rede, verifique se você tem conexões de rede adequadas</value>
@@ -916,15 +711,6 @@ Como obter o UID: no jogo, o número do jogador no canto inferior esquerdo é o 
   </data>
   <data name="Window_BossTracker_Title" xml:space="preserve">
     <value>Rastreador de status do boss</value>
-  </data>
-  <data name="Debug_Localization_Language" xml:space="preserve">
-    <value>Idioma:</value>
-  </data>
-  <data name="Debug_Localization_TestKey" xml:space="preserve">
-    <value>Chave de teste:</value>
-  </data>
-  <data name="Debug_Localization_Test" xml:space="preserve">
-    <value>Teste</value>
   </data>
   <data name="MainView_Plugin_Search_PlaceHolder" xml:space="preserve">
     <value>Pesquisar...</value>
@@ -967,12 +753,6 @@ Como obter o UID: no jogo, o número do jogador no canto inferior esquerdo é o 
   </data>
   <data name="MainView_Plugin_ThirdPartySdkTips" xml:space="preserve">
     <value>SDK do Plugin em breve!</value>
-  </data>
-  <data name="App_Exit_Confirm_Title" xml:space="preserve">
-    <value>Confirmação</value>
-  </data>
-  <data name="App_Exit_Confirm_Content" xml:space="preserve">
-    <value>Fechar aplicativo?</value>
   </data>
   <data name="Settings_Combat_DpsUpdateMode" xml:space="preserve">
     <value>Modo de Atualização de DPS</value>
@@ -1036,12 +816,6 @@ Como obter: Após uma luta, seu personagem aparecerá automaticamente na janela 
   <data name="Settings_Common_Records" xml:space="preserve">
     <value>registros</value>
   </data>
-  <data name="Debug_Localization_Apply" xml:space="preserve">
-    <value>Aplicar</value>
-  </data>
-  <data name="Menu_SkillDiary" xml:space="preserve">
-    <value>Diário de Habilidades</value>
-  </data>
   <data name="Settings_Language_Korean" xml:space="preserve">
     <value>한국어</value>
   </data>
@@ -1078,8 +852,8 @@ Como obter: Após uma luta, seu personagem aparecerá automaticamente na janela 
   <data name="SkillBreakdown_Label_AverageHps" xml:space="preserve">
     <value>HPS médio</value>
   </data>
-  <data name="SkillBreakdown_Label_TotalHeals" xml:space="preserve">
-    <value>Total de curas</value>
+  <data name="SkillBreakdown_Label_HealCount" xml:space="preserve">
+    <value>Acertos de curas</value>
   </data>
   <data name="SkillBreakdown_Section_HealingSkillsAnalysis" xml:space="preserve">
     <value>Análise de habilidades de cura</value>
@@ -1099,9 +873,6 @@ Como obter: Após uma luta, seu personagem aparecerá automaticamente na janela 
   <data name="SkillBreakdown_Label_AverageDtps" xml:space="preserve">
     <value>DTPS médio</value>
   </data>
-  <data name="SkillBreakdown_Label_TotalHitsTaken" xml:space="preserve">
-    <value>Total de golpes recebidos</value>
-  </data>
   <data name="SkillBreakdown_Section_DamageTakenAnalysis" xml:space="preserve">
     <value>Análise de dano recebido</value>
   </data>
@@ -1111,18 +882,8 @@ Como obter: Após uma luta, seu personagem aparecerá automaticamente na janela 
   <data name="SkillBreakdown_Chart_DamageSourcesDistribution" xml:space="preserve">
     <value>Distribuição de fontes de dano</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="SkillBreakdown_Chart_DpsSeriesXAxis" type="System.Resources.ResXNullRef, System.Windows.Forms">
     <value />
-  </data>
-  <data name="Common_HitType_Lucky" xml:space="preserve">
-    <value>Sorte</value>
-  </data>
-  <data name="Common_HitType_Critical" xml:space="preserve">
-    <value>Crítico</value>
-  </data>
-  <data name="Common_HitType_Normal" xml:space="preserve">
-    <value>Normal</value>
   </data>
   <data name="Settings_PlayerInfoCustomization_Title" xml:space="preserve">
     <value>Exibição de informações do jogador</value>
@@ -1220,22 +981,368 @@ Como obter: Após uma luta, seu personagem aparecerá automaticamente na janela 
   <data name="SkillLog_Popup_LuckyDamage" xml:space="preserve">
     <value>Dano de sorte</value>
   </data>
-  <data name="Menu_Training_Personal" xml:space="preserve">
-    <value>Treino Solo</value>
-  </data>
-  <data name="Menu_Training_Faction" xml:space="preserve">
-    <value>Treino de Facção</value>
-  </data>
-  <data name="Menu_Training_Extreme" xml:space="preserve">
-    <value>Treino Extremo</value>
-  </data>
-  <data name="SkillBreakdown_Label_ValuePercentToTotal" xml:space="preserve">
-    <value>Por cento</value>
-  </data>
   <data name="SkillBreakdown_Label_Percentage" xml:space="preserve">
     <value>Proporção</value>
   </data>
   <data name="SkillBreakdown_Label_SkillName" xml:space="preserve">
     <value>Habilidade(Nome)</value>
+  </data>
+  <data name="SkillBreakdown_Label_Uid" xml:space="preserve">
+    <value>UID</value>
+  </data>
+  <data name="SkillBreakdown_Label_ValuePercentToTotal" xml:space="preserve">
+    <value>Por cento</value>
+  </data>
+  <data name="Menu_About" xml:space="preserve">
+    <value>Sobre</value>
+  </data>
+  <data name="Settings_Section_ClassColors_Title" xml:space="preserve">
+    <value>Cores de Classe</value>
+  </data>
+  <data name="Settings_Section_ClassColors_Description" xml:space="preserve">
+    <value>Personalizar cores para cada classe</value>
+  </data>
+  <data name="Settings_ClassColors_Reset_Tooltip" xml:space="preserve">
+    <value>초기화</value>
+  </data>
+  <data name="Settings_ClassColors_Reset" xml:space="preserve">
+    <value>초기화</value>
+  </data>
+  <data name="App_Name" xml:space="preserve">
+    <value>StarResonance ToolBox</value>
+  </data>
+  <data name="About_Intro_Primary" xml:space="preserve">
+    <value>Uma ferramenta de análise de dados de combate construída para jogadores de BPSR.</value>
+  </data>
+  <data name="About_Intro_Details" xml:space="preserve">
+    <value>Esta ferramenta não requer modificações no cliente e permanece dentro dos termos de serviço do jogo. Ela ajuda os jogadores a entender dados de combate, reduzir esforços desnecessários e melhorar a experiência de jogo em BPSR. Por favor, não use os resultados para discriminação de poder ou qualquer comportamento que prejudique a comunidade.</value>
+  </data>
+  <data name="About_Version_Label" xml:space="preserve">
+    <value>Versão atual:</value>
+  </data>
+  <data name="About_Developers_Label" xml:space="preserve">
+    <value>Contribuidores para esta versão (sem ordem específica):</value>
+  </data>
+  <data name="About_OpenSource_Prefix" xml:space="preserve">
+    <value>Este projeto é código aberto em</value>
+  </data>
+  <data name="About_OpenSource_RepositoryUrl" xml:space="preserve">
+    <value>https://github.com/anying1073/StarResonanceDps</value>
+  </data>
+  <data name="About_OpenSource_Suffix" xml:space="preserve">
+    <value>, Se você encontrar algum problema, por favor abra uma issue lá.</value>
+  </data>
+  <data name="About_Contribution" xml:space="preserve">
+    <value>Para contribuir, por favor faça um fork do repositório e envie um pull request.</value>
+  </data>
+  <data name="About_Community_Invite" xml:space="preserve">
+    <value>Se você não consegue acessar o GitHub ou quer encontrar companheiros de equipe, junte-se aos grupos do Tencent QQ:</value>
+  </data>
+  <data name="About_Community_GroupOne" xml:space="preserve">
+    <value>678150498 (Grupo 1)</value>
+  </data>
+  <data name="About_Community_GroupTwo" xml:space="preserve">
+    <value>1022797551 (Grupo 2)</value>
+  </data>
+  <data name="About_Thanks_Prefix" xml:space="preserve">
+    <value>Agradecimentos especiais a</value>
+  </data>
+  <data name="About_Thanks_RepositoryUrl" xml:space="preserve">
+    <value>https://github.com/dmlgzs/StarResonanceDamageCounter</value>
+  </data>
+  <data name="About_Thanks_Suffix" xml:space="preserve">
+    <value>por apoiar e inspirar este projeto.</value>
+  </data>
+  <data name="About_Copyright" xml:space="preserve">
+    <value>Copyright (C) 2025 anying1073/StarResonanceDps Team.</value>
+  </data>
+  <data name="About_PoweredBy" xml:space="preserve">
+    <value>Powered by .NET 8, Licenciado sob GNU AGPL v3.</value>
+  </data>
+  <data name="DamageReference_Header_Title" xml:space="preserve">
+    <value>Detalhamento de Habilidades</value>
+  </data>
+  <data name="DamageReference_Ribbon_Title" xml:space="preserve">
+    <value>Referência de Dano</value>
+  </data>
+  <data name="DamageReference_Classes_All" xml:space="preserve">
+    <value>Todas as Classes</value>
+  </data>
+  <data name="Classes_Stormblade" xml:space="preserve">
+    <value>Stormblade</value>
+  </data>
+  <data name="Classes_FrostMage" xml:space="preserve">
+    <value>Frost Mage</value>
+  </data>
+  <data name="Classes_WindKnight" xml:space="preserve">
+    <value>Wind Knight</value>
+  </data>
+  <data name="Classes_VerdantOracle" xml:space="preserve">
+    <value>Verdant Oracle</value>
+  </data>
+  <data name="Classes_HeavyGuardian" xml:space="preserve">
+    <value>Heavy Guardian</value>
+  </data>
+  <data name="Classes_Marksman" xml:space="preserve">
+    <value>Marksman</value>
+  </data>
+  <data name="Classes_ShieldKnight" xml:space="preserve">
+    <value>Shield Knight</value>
+  </data>
+  <data name="Classes_SoulMusician" xml:space="preserve">
+    <value>Beat Performer</value>
+  </data>
+  <data name="DamageReference_Table_Title" xml:space="preserve">
+    <value>Referência de Dano</value>
+  </data>
+  <data name="DamageReference_NoData" xml:space="preserve">
+    <value>Ainda não há dados</value>
+  </data>
+  <data name="DamageReference_Disclaimer" xml:space="preserve">
+    <value>Os dados são apenas para entretenimento e referência. Não os use para discriminação de poder ou qualquer comportamento que prejudique a comunidade; violações resultarão em revogação permanente.</value>
+  </data>
+  <data name="Debug_LoadPcap" xml:space="preserve">
+    <value>Carregar PCAP</value>
+  </data>
+  <data name="Debug_AddSampleData" xml:space="preserve">
+    <value>Adicionar Dados de Exemplo</value>
+  </data>
+  <data name="Debug_ClearLogs" xml:space="preserve">
+    <value>Limpar Logs</value>
+  </data>
+  <data name="Debug_AddTestLog" xml:space="preserve">
+    <value>Adicionar Log de Teste</value>
+  </data>
+  <data name="Debug_SaveLogs" xml:space="preserve">
+    <value>Salvar Logs</value>
+  </data>
+  <data name="Debug_AutoScroll" xml:space="preserve">
+    <value>Rolagem Automática</value>
+  </data>
+  <data name="Debug_Filter_Level" xml:space="preserve">
+    <value>Nível:</value>
+  </data>
+  <data name="Debug_Filter_Label" xml:space="preserve">
+    <value>Filtro:</value>
+  </data>
+  <data name="Debug_Filter_Tooltip" xml:space="preserve">
+    <value>Filtrar logs por conteúdo de mensagem ou categoria</value>
+  </data>
+  <data name="Debug_Header_Time" xml:space="preserve">
+    <value>Tempo</value>
+  </data>
+  <data name="Debug_Header_Level" xml:space="preserve">
+    <value>Nível</value>
+  </data>
+  <data name="Debug_Header_Category" xml:space="preserve">
+    <value>Categoria</value>
+  </data>
+  <data name="Debug_Header_Message" xml:space="preserve">
+    <value>Mensagem</value>
+  </data>
+  <data name="Debug_Status_TotalPrefix" xml:space="preserve">
+    <value>Total: </value>
+  </data>
+  <data name="Debug_Status_TotalSuffix" xml:space="preserve">
+    <value> logs</value>
+  </data>
+  <data name="Debug_Status_FilteredPrefix" xml:space="preserve">
+    <value>Filtrados: </value>
+  </data>
+  <data name="Debug_Status_FilteredSuffix" xml:space="preserve">
+    <value> logs</value>
+  </data>
+  <data name="Debug_Status_LastPrefix" xml:space="preserve">
+    <value>Último: </value>
+  </data>
+  <data name="Debug_ThemeTestText" xml:space="preserve">
+    <value>Texto de teste de mudança de tema</value>
+  </data>
+  <data name="Debug_Button_PcapTest" xml:space="preserve">
+    <value>Teste Pcap</value>
+  </data>
+  <data name="Debug_Button_SkillBreakdown" xml:space="preserve">
+    <value>Visualização de Detalhamento de Habilidades</value>
+  </data>
+  <data name="Debug_Button_DamageReference" xml:space="preserve">
+    <value>Visualização de Referência de Dano</value>
+  </data>
+  <data name="Debug_Button_Settings" xml:space="preserve">
+    <value>Visualização de Configurações</value>
+  </data>
+  <data name="Debug_Button_About" xml:space="preserve">
+    <value>Visualização Sobre</value>
+  </data>
+  <data name="Debug_Group_Title" xml:space="preserve">
+    <value>Utilitários de debug</value>
+  </data>
+  <data name="Common_Action_Open" xml:space="preserve">
+    <value>Iniciar</value>
+  </data>
+  <data name="Common_SkillDisplayLimitChanged" xml:space="preserve">
+    <value>Limite de exibição de habilidades definido para</value>
+  </data>
+  <data name="Common_SkillDisplayLimitSaved" xml:space="preserve">
+    <value>Limite de exibição de habilidades salvo na configuração:</value>
+  </data>
+  <data name="Common_SkillListRefreshed" xml:space="preserve">
+    <value>Lista de habilidades atualizada para todos os slots</value>
+  </data>
+  <data name="Command_OpenSkillLog" xml:space="preserve">
+    <value>Abrir janela de registro de habilidades</value>
+  </data>
+  <data name="Dialog_UidRequired_Title" xml:space="preserve">
+    <value>UID do personagem necessário</value>
+  </data>
+  <data name="Dialog_UidRequired_Message" xml:space="preserve">
+    <value>Configure o UID do personagem nas Configurações antes de usar o modo de treino pessoal.
+
+Como obter o UID: no jogo, o número do jogador no canto inferior esquerdo é o UID.</value>
+  </data>
+  <data name="Common_Dash" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="ClassSpec_Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="ClassSpec_ShieldKnightRecovery" xml:space="preserve">
+    <value>Recovery</value>
+  </data>
+  <data name="ClassSpec_ShieldKnightShield" xml:space="preserve">
+    <value>Shield</value>
+  </data>
+  <data name="ClassSpec_HeavyGuardianEarthfort" xml:space="preserve">
+    <value>Earthfort</value>
+  </data>
+  <data name="ClassSpec_HeavyGuardianBlock" xml:space="preserve">
+    <value>Block</value>
+  </data>
+  <data name="ClassSpec_StormbladeIaidoSlash" xml:space="preserve">
+    <value>IaidoSlash</value>
+  </data>
+  <data name="ClassSpec_StormbladeMoonStrike" xml:space="preserve">
+    <value>MoonStrike</value>
+  </data>
+  <data name="ClassSpec_WindKnightVanGuard" xml:space="preserve">
+    <value>VanGuard</value>
+  </data>
+  <data name="ClassSpec_WindKnightSkyward" xml:space="preserve">
+    <value>Skyward</value>
+  </data>
+  <data name="ClassSpec_FrostMageIcicle" xml:space="preserve">
+    <value>Icicle</value>
+  </data>
+  <data name="ClassSpec_FrostMageFrostBeam" xml:space="preserve">
+    <value>FrostBeam</value>
+  </data>
+  <data name="ClassSpec_MarksmanWildpack" xml:space="preserve">
+    <value>Wildpack</value>
+  </data>
+  <data name="ClassSpec_MarksmanFalconry" xml:space="preserve">
+    <value>Falconry</value>
+  </data>
+  <data name="ClassSpec_VerdantOracleSmite" xml:space="preserve">
+    <value>Smite</value>
+  </data>
+  <data name="ClassSpec_VerdantOracleLifeBind" xml:space="preserve">
+    <value>LifeBind</value>
+  </data>
+  <data name="ClassSpec_SoulMusicianDissonance" xml:space="preserve">
+    <value>Dissonance</value>
+  </data>
+  <data name="ClassSpec_SoulMusicianConcerto" xml:space="preserve">
+    <value>Concerto</value>
+  </data>
+  <data name="Debug_Localization_Language" xml:space="preserve">
+    <value>Idioma:</value>
+  </data>
+  <data name="Debug_Localization_TestKey" xml:space="preserve">
+    <value>Chave de teste:</value>
+  </data>
+  <data name="Debug_Localization_Test" xml:space="preserve">
+    <value>Teste</value>
+  </data>
+  <data name="App_Exit_Confirm_Title" xml:space="preserve">
+    <value>Confirmação</value>
+  </data>
+  <data name="App_Exit_Confirm_Content" xml:space="preserve">
+    <value>Fechar aplicativo?</value>
+  </data>
+  <data name="Debug_Localization_Apply" xml:space="preserve">
+    <value>Aplicar</value>
+  </data>
+  <data name="Common_HitType_Lucky" xml:space="preserve">
+    <value>Sorte</value>
+  </data>
+  <data name="Common_HitType_Critical" xml:space="preserve">
+    <value>Crítico</value>
+  </data>
+  <data name="Common_HitType_Normal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="Settings_Language_Japanese" xml:space="preserve">
+    <value>日本語</value>
+  </data>
+  <data name="About_Founder" xml:space="preserve">
+    <value>fundador do projeto</value>
+  </data>
+  <data name="DpsDetail_Popup_TotalDamage" xml:space="preserve">
+    <value>Dano total:</value>
+  </data>
+  <data name="DpsDetail_Popup_HitCount" xml:space="preserve">
+    <value>Acertos:</value>
+  </data>
+  <data name="DpsDetail_Popup_Critical" xml:space="preserve">
+    <value>  Crítico:</value>
+  </data>
+  <data name="DpsDetail_Popup_Average" xml:space="preserve">
+    <value>  Média:</value>
+  </data>
+  <data name="Dialog_UidRequired_Message2" xml:space="preserve">
+    <value>Configure o UID do personagem nas Configurações antes de usar o registro de habilidades.
+
+Como obter o UID: no jogo, o número do jogador no canto inferior esquerdo é o UID.</value>
+  </data>
+  <data name="Settings_PlayerUid_Get" xml:space="preserve">
+    <value>Pegar</value>
+  </data>
+  <data name="Common_HitType_CriticalHeal" xml:space="preserve">
+    <value>Crítico</value>
+  </data>
+  <data name="Common_HitType_LuckyHeal" xml:space="preserve">
+    <value>Sorte</value>
+  </data>
+  <data name="Common_HitType_NormalHeal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalHitsTaken" xml:space="preserve">
+    <value>Total de golpes recebidos</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalHeals" xml:space="preserve">
+    <value>Total de curas</value>
+  </data>
+  <data name="DpsDetail_Popup_TotalHealing" xml:space="preserve">
+    <value>Cura total:</value>
+  </data>
+  <data name="DpsDetail_Popup_TotalDamageTaken" xml:space="preserve">
+    <value>Dano total recebido:</value>
+  </data>
+  <data name="DpsDetail_Popup_HealCount" xml:space="preserve">
+    <value>Acertos de curas:</value>
+  </data>
+  <data name="DpsDetail_Popup_DamageTakenCount" xml:space="preserve">
+    <value>Vezes atingido:</value>
+  </data>
+  <data name="SkillLog_Label_CriticalHeal" xml:space="preserve">
+    <value>Critical</value>
+  </data>
+  <data name="SkillLog_Label_LuckyHeal" xml:space="preserve">
+    <value>Sorte</value>
+  </data>
+  <data name="Settings_PlayerInfo_PlayerUID" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Classes_Unknown" xml:space="preserve">
+    <value>Unknown</value>
   </data>
 </root>

@@ -12,23 +12,26 @@ public sealed class StatisticsContext
     private readonly Dictionary<long, PlayerStatistics> _sectionStats = new();
     private readonly List<BattleLog> _fullBattleLogs = new();
     private readonly List<BattleLog> _sectionBattleLogs = new();
-    
+
     // ? Time series sample capacity configuration
-    private readonly int _timeSeriesSampleCapacity;
-    
+    private readonly int? _timeSeriesSampleCapacityOverride;
+
     // Locks for thread safety
     private readonly object _statsLock = new();
     private readonly object _logsLock = new();
-    
+
+    private int CurrentTimeSeriesSampleCapacity
+    => _timeSeriesSampleCapacityOverride ?? StatisticsConfiguration.TimeSeriesSampleCapacity;
+
     /// <summary>
     /// Constructor with configurable time series capacity
     /// </summary>
     /// <param name="timeSeriesSampleCapacity">Maximum samples to store for time series data. If null, uses global configuration.</param>
     public StatisticsContext(int? timeSeriesSampleCapacity = null)
     {
-        _timeSeriesSampleCapacity = timeSeriesSampleCapacity ?? StatisticsConfiguration.TimeSeriesSampleCapacity;
+        _timeSeriesSampleCapacityOverride = timeSeriesSampleCapacity;
     }
-    
+
     /// <summary>
     /// Get or create full-session statistics for a player
     /// </summary>
@@ -38,7 +41,7 @@ public sealed class StatisticsContext
         {
             if (!_fullStats.TryGetValue(uid, out var stats))
             {
-                stats = new PlayerStatistics(uid, _timeSeriesSampleCapacity);
+                stats = new PlayerStatistics(uid, CurrentTimeSeriesSampleCapacity);
                 _fullStats[uid] = stats;
             }
             return stats;
@@ -54,7 +57,7 @@ public sealed class StatisticsContext
         {
             if (!_sectionStats.TryGetValue(uid, out var stats))
             {
-                stats = new PlayerStatistics(uid, _timeSeriesSampleCapacity);
+                stats = new PlayerStatistics(uid, CurrentTimeSeriesSampleCapacity);
                 _sectionStats[uid] = stats;
             }
             return stats;
@@ -66,6 +69,7 @@ public sealed class StatisticsContext
     /// </summary>
     public void AddBattleLog(BattleLog log)
     {
+        if (!CombatStarted) return;
         lock (_logsLock)
         {
             _fullBattleLogs.Add(log);
@@ -74,7 +78,7 @@ public sealed class StatisticsContext
     }
     
     /// <summary>
-    /// Get all full battle logs (returns snapshot)
+    /// Get all full battle logs (returns History)
     /// </summary>
     public IReadOnlyList<BattleLog> FullBattleLogs
     {
@@ -88,7 +92,7 @@ public sealed class StatisticsContext
     }
     
     /// <summary>
-    /// Get all section battle logs (returns snapshot)
+    /// Get all section battle logs (returns History)
     /// </summary>
     public IReadOnlyList<BattleLog> SectionBattleLogs
     {
@@ -115,6 +119,8 @@ public sealed class StatisticsContext
         {
             _sectionBattleLogs.Clear();
         }
+
+        CombatStarted = false;
     }
     
     /// <summary>
@@ -133,10 +139,17 @@ public sealed class StatisticsContext
             _fullBattleLogs.Clear();
             _sectionBattleLogs.Clear();
         }
+
+        CombatStarted = false;
     }
-    
+
     /// <summary>
-    /// Get all full statistics (returns snapshot)
+    /// Gets or sets a value indicating whether combat has started.
+    /// </summary>
+    public bool CombatStarted { get; set; }
+
+    /// <summary>
+    /// Get all full statistics (returns History)
     /// </summary>
     public IReadOnlyDictionary<long, PlayerStatistics> FullStatistics
     {
@@ -150,7 +163,7 @@ public sealed class StatisticsContext
     }
     
     /// <summary>
-    /// Get all section statistics (returns snapshot)
+    /// Get all section statistics (returns History)
     /// </summary>
     public IReadOnlyDictionary<long, PlayerStatistics> SectionStatistics
     {

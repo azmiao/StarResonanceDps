@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Logging;
+using StarResonanceDpsAnalysis.WPF.Localization;
 using StarResonanceDpsAnalysis.WPF.Models;
+using StarResonanceDpsAnalysis.WPF.Properties;
 
 namespace StarResonanceDpsAnalysis.WPF.Services;
 
@@ -10,15 +12,18 @@ namespace StarResonanceDpsAnalysis.WPF.Services;
 public class TeamStatsUIManager : ITeamStatsUIManager
 {
     private readonly ILogger<TeamStatsUIManager> _logger;
+    private readonly LocalizationManager _localizationManager;
 
-    public TeamStatsUIManager(ILogger<TeamStatsUIManager> logger)
+    public TeamStatsUIManager(ILogger<TeamStatsUIManager> logger, LocalizationManager localizationManager)
     {
         _logger = logger;
+        _localizationManager = localizationManager;
+        TeamTotalLabel = GetTeamLabel(StatisticType.Damage);
     }
 
     public ulong TeamTotalDamage { get; private set; }
     public double TeamTotalDps { get; private set; }
-    public string TeamTotalLabel { get; private set; } = "团队DPS";
+    public string TeamTotalLabel { get; private set; }
     public bool ShowTeamTotal { get; set; }
 
     public event EventHandler<TeamStatsUpdatedEventArgs>? TeamStatsUpdated;
@@ -28,14 +33,7 @@ public class TeamStatsUIManager : ITeamStatsUIManager
         if (!ShowTeamTotal) return;
 
         // Update label based on statistic type
-        TeamTotalLabel = statisticType switch
-        {
-            StatisticType.Damage => "团队DPS",
-            StatisticType.Healing => "团队治疗",
-            StatisticType.TakenDamage => "团队承伤",
-            StatisticType.NpcTakenDamage => "NPC承伤",
-            _ => "团队DPS"
-        };
+        TeamTotalLabel = GetTeamLabel(statisticType);
 
         // Only update if there's new data
         if (teamStats.TotalValue > 0 || hasData)
@@ -74,5 +72,24 @@ public class TeamStatsUIManager : ITeamStatsUIManager
         TeamTotalDps = 0;
         
         _logger.LogDebug("Team stats reset to zero");
+    }
+
+    private string GetTeamLabel(StatisticType statisticType)
+    {
+        return statisticType switch
+        {
+            StatisticType.Damage => GetLocalizedString(ResourcesKeys.DpsStatistics_TeamLabel_Damage, "Team DPS"),
+            StatisticType.Healing => GetLocalizedString(ResourcesKeys.DpsStatistics_TeamLabel_Healing, "Team HPS"),
+            StatisticType.TakenDamage =>
+                GetLocalizedString(ResourcesKeys.DpsStatistics_TeamLabel_TakenDamage, "Team DTPS"),
+            StatisticType.NpcTakenDamage =>
+                GetLocalizedString(ResourcesKeys.DpsStatistics_TeamLabel_NpcTakenDamage, "NPC DTPS"),
+            _ => GetLocalizedString(ResourcesKeys.DpsStatistics_TeamLabel_Damage, "Team DPS")
+        };
+    }
+
+    private string GetLocalizedString(string key, string defaultValue)
+    {
+        return _localizationManager.GetString(key, defaultValue: defaultValue);
     }
 }

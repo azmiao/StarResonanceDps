@@ -1,16 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using AntdUI;
 using SharpPcap;
 using StarResonanceDpsAnalysis.Assets;
-using StarResonanceDpsAnalysis.Core.Analyze;
 using StarResonanceDpsAnalysis.Core.Analyze.Exceptions;
+using StarResonanceDpsAnalysis.Core.Analyze.V1;
 using StarResonanceDpsAnalysis.Core.Data;
 using StarResonanceDpsAnalysis.Core.Extends.System;
 using StarResonanceDpsAnalysis.WinForm.Control.GDI;
@@ -47,12 +39,12 @@ namespace StarResonanceDpsAnalysis.WinForm.Forms
         /// <summary>
         /// 分析器
         /// </summary>
-        private PacketAnalyzer PacketAnalyzer { get; } = new(null); // # 抓包/分析器：每个到达的数据包交由该分析器处理
+        private PacketAnalyzer PacketAnalyzer { get; } = new(new MessageAnalyzer(DataStorage.Instance), DataStorage.Instance); // # 抓包/分析器：每个到达的数据包交由该分析器处理
         #endregion
 
         private void LoadAppConfig()
         {
-            DataStorage.SectionTimeout = TimeSpan.FromSeconds(AppConfig.CombatTimeClearDelaySeconds);
+            DataStorage.Instance.SectionTimeout = TimeSpan.FromSeconds(AppConfig.CombatTimeClearDelaySeconds);
         }
 
         /// <summary>
@@ -62,7 +54,7 @@ namespace StarResonanceDpsAnalysis.WinForm.Forms
         {
             try
             {
-                DataStorage.LoadPlayerInfoFromFile();
+                DataStorage.Instance.LoadPlayerInfoFromFile();
             }
             catch (FileNotFoundException)
             {
@@ -72,8 +64,8 @@ namespace StarResonanceDpsAnalysis.WinForm.Forms
             {
                 AppMessageBox.ShowMessage("用户缓存被篡改，或文件损坏。为软件正常运行，将清空用户缓存。", this);
 
-                DataStorage.ClearAllPlayerInfos();
-                DataStorage.SavePlayerInfoToFile();
+                DataStorage.Instance.ClearAllPlayerInfos();
+                DataStorage.Instance.SavePlayerInfoToFile();
             }
         }
 
@@ -261,7 +253,7 @@ namespace StarResonanceDpsAnalysis.WinForm.Forms
 
         private void HandleClearAllData()
         {
-            DataStorage.ClearAllDpsData();
+            DataStorage.Instance.ClearAllDpsData();
 
             _fullBattleTimer.Reset();
             _battleTimer.Reset();
@@ -269,7 +261,7 @@ namespace StarResonanceDpsAnalysis.WinForm.Forms
 
         private void HandleClearData()
         {
-            DataStorage.ClearDpsData();
+            DataStorage.Instance.ClearSectionDpsData();
 
             _battleTimer.Reset();
         }

@@ -4,6 +4,9 @@
     <Platform Name="x86" />
   </Configurations>
   <Folder Name="/Solution Items/">
+    <File Path=".github/workflows/dotnet-desktop-release.yml" />
+    <File Path=".github/workflows/sync-gitee-release.yml" />
+    <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
     <File Path="LICENSE.txt" />
     <File Path="TODO.md" />
@@ -23,6 +26,7 @@
   <Project Path="StarResonanceDpsAnalysis.Tests/StarResonanceDpsAnalysis.Tests.csproj">
     <Platform Project="x64" />
   </Project>
+  <Project Path="StarResonanceDpsAnalysis.UpdateHost/StarResonanceDpsAnalysis.UpdateHost.csproj" />
   <Project Path="StarResonanceDpsAnalysis.WinForm/StarResonanceDpsAnalysis.WinForm.csproj">
     <Platform Project="x64" />
   </Project>

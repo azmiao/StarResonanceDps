@@ -1,9 +1,10 @@
-using System.ComponentModel;
-using System.IO;
 using Microsoft.Extensions.Logging;
-using StarResonanceDpsAnalysis.Core.Analyze.Exceptions;
+using StarResonanceDpsAnalysis.Core.Statistics;
 using StarResonanceDpsAnalysis.WPF.Config;
 using StarResonanceDpsAnalysis.WPF.Models;
+using StarResonanceDpsAnalysis.WPF.Properties;
+using StarResonanceDpsAnalysis.WPF.ViewModels.DpsStatisticDataEngine;
+using System.ComponentModel;
 
 namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 
@@ -45,43 +46,15 @@ public partial class DpsStatisticsViewModel
             AppConfig.DpsUpdateMode,
             AppConfig.DpsUpdateInterval);
 
-        if (_resumeActiveTimerHandler != null)
+        _dataSourceEngine.Configure(new DataSourceEngineParam()
         {
-            _storage.DpsDataUpdated -= _resumeActiveTimerHandler;
-            _resumeActiveTimerHandler = null;
-            _logger.LogDebug("Removed resume active timer handler");
-        }
+            Mode = AppConfig.DpsUpdateMode.ToDataSourceMode(),
+            ActiveUpdateInterval = AppConfig.DpsUpdateInterval,
+        });
 
-        switch (AppConfig.DpsUpdateMode)
-        {
-            case DpsUpdateMode.Passive:
-                _updateCoordinator.Stop();
-                _storage.DpsDataUpdated -= UpdateData;
-                _storage.DpsDataUpdated += UpdateData;
-                _storage.NewSectionCreated -= StorageOnNewSectionCreated;
-                _storage.NewSectionCreated += StorageOnNewSectionCreated;
-                _logger.LogDebug("Passive mode enabled: DpsDataUpdated event subscribed (using DpsUpdateCoordinator)");
-                break;
-
-            case DpsUpdateMode.Active:
-                _storage.DpsDataUpdated -= UpdateData;
-                _storage.NewSectionCreated -= StorageOnNewSectionCreated;
-                _storage.NewSectionCreated += StorageOnNewSectionCreated;
-
-                _updateCoordinator.Configure(AppConfig.DpsUpdateMode, AppConfig.DpsUpdateInterval);
-                _updateCoordinator.Start();
-                _logger.LogDebug("Active mode enabled: coordinator started with interval {Interval}ms (using DpsUpdateCoordinator)",
-                    AppConfig.DpsUpdateInterval);
-                break;
-
-            default:
-                _logger.LogWarning("Unknown DPS update mode: {Mode}", AppConfig.DpsUpdateMode);
-                break;
-        }
-
-        _logger.LogInformation("Update mode configuration complete. Mode: {Mode}, Coordinator enabled: {Enabled}",
+        _logger.LogInformation("Update mode configuration complete. Mode: {Mode}, DataSourceEngine Mode: {CurrentMode}",
             AppConfig.DpsUpdateMode,
-            _updateCoordinator.IsUpdateEnabled);
+            _dataSourceEngine.CurrentMode);
     }
 
     private void LoadDpsStatisticsSettings()
@@ -107,23 +80,6 @@ public partial class DpsStatisticsViewModel
         _logger.LogInformation("从配置加载最小记录时长: {Duration}秒", Options.MinimalDurationInSeconds);
 
         Options.PropertyChanged += Options_PropertyChanged;
-    }
-
-    private void LoadPlayerCache()
-    {
-        try
-        {
-            _storage.LoadPlayerInfoFromFile();
-        }
-        catch (FileNotFoundException)
-        {
-            // cache not found
-        }
-        catch (DataTamperedException)
-        {
-            _storage.ClearAllPlayerInfos();
-            _storage.SavePlayerInfoToFile();
-        }
     }
 
     private void Options_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -162,6 +118,33 @@ public partial class DpsStatisticsViewModel
         {
             ApplyPlayerInfoFormatSwitchToPlayers(AppConfig.UseCustomFormat);
         }
+        if (e.PropertyName == nameof(AppConfig.MaskPlayerName))
+        {
+            // まずUI反映（既存処理があるならそれを残す）
+            ApplyMaskToPlayers(AppConfig.MaskPlayerName);
+
+            // “外した時”だけ毎回警告
+            if (!_maskWarningReentry && _isInitialized && !AppConfig.MaskPlayerName)
+            {
+                _maskWarningReentry = true;
+                try
+                {
+                    var title = _localizationManager.GetString(ResourcesKeys.Settings_PlayerNameMask_Warning_Title);
+                    var message = _localizationManager.GetString(ResourcesKeys.Settings_PlayerNameMask_Warning_Message);
+                    var result = _messageDialogService.Show(title, message, _windowManagement.DpsStatisticsView);
+                    if (result != true)
+                    {
+                        AppConfig.MaskPlayerName = true; // キャンセルなら戻す
+                    }
+                }
+                finally
+                {
+                    _maskWarningReentry = false;
+                }
+            }
+
+            return;
+        }
     }
 
     private void ApplyMaskToPlayers(bool mask)
@@ -199,77 +182,85 @@ public partial class DpsStatisticsViewModel
 
     partial void OnIsIncludeNpcDataChanged(bool value)
     {
-        _logger.LogDebug($"IsIncludeNpcData changed to: {value}");
+        _logger.LogDebug("IsIncludeNpcData changed to: {Value}", value);
 
         _configManager.CurrentConfig.IsIncludeNpcData = value;
         _ = _configManager.SaveAsync();
         _logger.LogInformation("统计NPC设置已保存到配置: {Value}", value);
 
-        if (!value)
-        {
-            _logger.LogInformation("Removing NPC data from UI (IsIncludeNpcData=false)");
+        // ★重要：processed は includeNpcData により中身が変わるので古いキャッシュを無効化
+        ClearProcessedCache();
+        PublishEmptyTeamTotal(StatisticIndex);
 
-            foreach (var subViewModel in StatisticData.Values)
-            {
-                var npcSlots = subViewModel.Data
-                    .Where(slot => slot.Player.IsNpc)
-                    .ToList();
-
-                foreach (var npcSlot in npcSlots)
-                {
-                    _dispatcher.Invoke(() =>
-                    {
-                        subViewModel.Data.Remove(npcSlot);
-                        _logger.LogDebug("Removed NPC slot: UID={PlayerUid}, Name={PlayerName}", 
-                            npcSlot.Player.Uid, npcSlot.Player.Name);
-                    });
-                }
-
-                _logger.LogInformation($"Removed {npcSlots.Count} NPC slots from {subViewModel.GetType().Name}");
-            }
-        }
-
+        // 新しい設定で再生成させる
         UpdateData();
     }
 
-    partial void OnScopeTimeChanged(ScopeTime value)
+    partial void OnScopeTimeChanged(ScopeTime oldValue, ScopeTime newValue)
     {
-        _logger.LogInformation("=== ScopeTime changed: {OldValue} -> {NewValue} ===", ScopeTime, value);
+        _logger.LogInformation("ScopeTime changed: {OldValue} -> {NewValue}", oldValue, newValue);
 
         foreach (var subViewModel in StatisticData.Values)
         {
-            subViewModel.ScopeTime = value;
+            // ★修正：oldValue ではなく newValue
+            subViewModel.ScopeTime = newValue;
             subViewModel.Data.Clear();
             subViewModel.DataDictionary.Clear();
         }
 
+        // scope が変わる＝データも総入れ替えなのでキャッシュ無効化
+        ClearProcessedCache();
+        PublishEmptyTeamTotal(StatisticIndex);
+
         UpdateBattleDuration();
+        _dataSourceEngine.Scope = newValue;
         UpdateData();
         OnPropertyChanged(nameof(CurrentStatisticData));
-
-        _logger.LogInformation("=== ScopeTime change complete ===");
     }
 
     partial void OnShowTeamTotalDamageChanged(bool value)
     {
         _logger.LogDebug("ShowTeamTotalDamage changed to: {Value}", value);
 
-        // Update team stats manager
         _teamStatsManager.ShowTeamTotal = value;
 
-        // Save to config
         _configManager.CurrentConfig.ShowTeamTotalDamage = value;
         _ = _configManager.SaveAsync();
         _logger.LogInformation("显示团队总伤设置已保存到配置: {Value}", value);
+
+        // ★ON/OFF 即時反映（残り値防止）
+        if (!value)
+        {
+            _teamStatsManager.ResetTeamStats();
+            TeamTotalDamage = 0;
+            TeamTotalDps = 0;
+            return;
+        }
+
+        // ON に戻したら、最新キャッシュから即再計算（データ到着待ちしない）
+        RecalculateAndPublishTeamTotalFor(StatisticIndex);
     }
 
     partial void OnStatisticIndexChanged(StatisticType value)
     {
-        _logger.LogDebug("OnStatisticIndexChanged: 切换到统计类型 {Type}", value);
+        TeamLabel = GetTeamLabel(value);
+        CurrentPlayerLabel = GetCurrentPlayerLabel(value);
+        TeamTotalLabel = GetTeamTotalLabel(value);
+
+        _logger.LogDebug("OnStatisticIndexChanged: Changed to {Type}", value);
 
         OnPropertyChanged(nameof(CurrentStatisticData));
-        RefreshData();
 
-        _logger.LogDebug("OnStatisticIndexChanged: 统计类型已切换,强制刷新完成");
+        // ★タブ切替で即再計算（キャッシュから）
+        if (ShowTeamTotalDamage)
+        {
+            RecalculateAndPublishTeamTotalFor(value);
+        }
+        else
+        {
+            // 非表示中なら表示値も落としておく（残り値防止）
+            TeamTotalDamage = 0;
+            TeamTotalDps = 0;
+        }
     }
 }

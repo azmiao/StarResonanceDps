@@ -83,8 +83,7 @@ public partial class ProcessorTests
         //const long playerUuidRaw = playerUuid << 16;
         const string playerName = "DirtyPlayer";
 
-        mockStorage.Setup(s => s.CurrentPlayerUUID).Returns(playerUuid);
-        var playerInfo = new PlayerInfo();
+        var playerInfo = new PlayerInfo() { UID = playerUuid };
         mockStorage.Setup(s => s.CurrentPlayerInfo).Returns(playerInfo);
 
         var processor = new SyncContainerDirtyDataProcessor(mockStorage.Object, null);
@@ -128,8 +127,7 @@ public partial class ProcessorTests
         const int curHp = 5000;
         // const int maxHp = 8000;
 
-        mockStorage.Setup(s => s.CurrentPlayerUUID).Returns(playerUuid);
-        var playerInfo = new PlayerInfo();
+        var playerInfo = new PlayerInfo() { UID = playerUuid };
         mockStorage.Setup(s => s.CurrentPlayerInfo).Returns(playerInfo);
 
         var processor = new SyncContainerDirtyDataProcessor(mockStorage.Object, null);

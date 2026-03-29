@@ -12,24 +12,20 @@ public class ResetCoordinator : IResetCoordinator
 {
     private readonly IDataStorage _storage;
     private readonly IDpsTimerService _timerService;
-    private readonly ICombatSectionStateManager _combatState;
     private readonly ITeamStatsUIManager _teamStatsManager;
-    private readonly BattleSnapshotService _snapshotService;
+    private readonly BattleHistoryService _historyService;
     private readonly ILogger<ResetCoordinator> _logger;
 
-    public ResetCoordinator(
-        IDataStorage storage,
+    public ResetCoordinator(IDataStorage storage,
         IDpsTimerService timerService,
-        ICombatSectionStateManager combatState,
         ITeamStatsUIManager teamStatsManager,
-        BattleSnapshotService snapshotService,
+        BattleHistoryService historyService,
         ILogger<ResetCoordinator> logger)
     {
         _storage = storage;
         _timerService = timerService;
-        _combatState = combatState;
         _teamStatsManager = teamStatsManager;
-        _snapshotService = snapshotService;
+        _historyService = historyService;
         _logger = logger;
     }
 
@@ -40,18 +36,12 @@ public class ResetCoordinator : IResetCoordinator
         // Clear current section data
         _storage.ClearDpsData();
 
-        // Start new section in timer service
-        _timerService.StartNewSection();
-
-        // Reset section state
-        _combatState.ResetSectionState();
-
         // Reset team stats
         _teamStatsManager.ResetTeamStats();
 
         _logger.LogInformation("=== ResetCurrentSection COMPLETE ===");
     }
-
+    
     public void ResetAll()
     {
         _logger.LogInformation("=== ResetAll START ===");
@@ -62,9 +52,6 @@ public class ResetCoordinator : IResetCoordinator
         // Reset timer service
         _timerService.Reset();
         _logger.LogInformation("Timer service reset");
-
-        // Reset all state
-        _combatState.ResetAllState();
 
         // Reset team stats
         _teamStatsManager.ResetTeamStats();
@@ -86,36 +73,35 @@ public class ResetCoordinator : IResetCoordinator
         }
     }
 
-    public void ResetWithSnapshot(ScopeTime scope, bool saveSnapshot, TimeSpan battleDuration, int minimalDuration)
+    public void ResetWithHistory(ScopeTime scope, bool saveHistory, TimeSpan battleDuration, int minimalDuration)
     {
-        _logger.LogInformation("=== ResetWithSnapshot START === Scope={Scope}, SaveSnapshot={Save}", scope, saveSnapshot);
+        _logger.LogInformation("=== ResetWithHistory START === Scope={Scope}, SaveHistory={Save}", scope, saveHistory);
 
-        // Save snapshot before reset if requested and data exists
-        if (saveSnapshot && _storage.HasData())
+        // Save History before reset if requested and data exists
+        if (saveHistory && _storage.HasData())
         {
             try
             {
                 if (scope == ScopeTime.Current)
                 {
-                    _snapshotService.SaveCurrentSnapshot(_storage, battleDuration, minimalDuration);
-                    _logger.LogInformation("Current snapshot saved successfully");
-                    _combatState.SkipNextSnapshotSave = true;
+                    _historyService.SaveScopeCurrentHistory(battleDuration, minimalDuration);
+                    _logger.LogInformation("Current History saved successfully");
                 }
                 else
                 {
-                    _snapshotService.SaveTotalSnapshot(_storage, battleDuration, minimalDuration);
-                    _logger.LogInformation("Total snapshot saved successfully");
+                    _historyService.SaveScopeTotalHistory(battleDuration, minimalDuration);
+                    _logger.LogInformation("Total History saved successfully");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to save snapshot before reset");
+                _logger.LogError(ex, "Failed to save History before reset");
             }
         }
 
         // Perform the reset
         Reset(scope);
 
-        _logger.LogInformation("=== ResetWithSnapshot COMPLETE ===");
+        _logger.LogInformation("=== ResetWithHistory COMPLETE ===");
     }
 }

@@ -18,6 +18,14 @@ namespace StarResonanceDpsAnalysis.Core.Analyze
             ContractResolver = new PrivateSetterContractResolver()
         });
 
+
+        /// <summary>
+        /// Read PlayerInfoCache.dat file and return the latest version of PlayerInfoCacheFile
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="NotSupportedException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="DataTamperedException"></exception>
         public static PlayerInfoCacheFileV3_0_0 ReadFile()
         {
             var baseData = ReadFileBase(out var fs);

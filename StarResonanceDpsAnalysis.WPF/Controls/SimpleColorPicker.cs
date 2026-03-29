@@ -1,26 +1,71 @@
-using System.Linq;
+using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace StarResonanceDpsAnalysis.WPF.Controls;
 
-/// <summary>
-/// רҵ��HSV��ɫѡ�����ؼ�
-/// </summary>
+[TemplatePart(Name = PartSvCanvas, Type = typeof(Rectangle))]
+[TemplatePart(Name = PartSvThumb, Type = typeof(FrameworkElement))]
+[TemplatePart(Name = PartHueBar, Type = typeof(Rectangle))]
+[TemplatePart(Name = PartHueThumb, Type = typeof(FrameworkElement))]
+[TemplatePart(Name = PartHexTextBox, Type = typeof(TextBox))]
 public class SimpleColorPicker : Control
 {
+    private const string PartSvCanvas = "PART_SV_Canvas";
+    private const string PartSvThumb = "PART_SV_Thumb";
+    private const string PartHueBar = "PART_Hue_Bar";
+    private const string PartHueThumb = "PART_Hue_Thumb";
+    private const string PartHexTextBox = "PART_HexTextBox";
+
+    private Rectangle? _svCanvas;
+    private FrameworkElement? _svThumb;
+    private Rectangle? _hueBar;
+    private FrameworkElement? _hueThumb;
+    private TextBox? _hexTextBox;
+
+    // 実際にマウス入力を受ける要素
+    // PART_SV_Canvas / PART_Hue_Bar の上に他要素が重なっているため、
+    // 親要素側でイベントを拾う
+    private UIElement? _svInputElement;
+    private UIElement? _hueInputElement;
+
+    private bool _isDraggingSv;
+    private bool _isDraggingHue;
+    private bool _isUpdatingHexText;
+    private bool _isInternalHsvUpdate;
+
+    private double _hue;        // 0 - 360
+    private double _saturation; // 0 - 1
+    private double _value;      // 0 - 1
+
+    private string _lastValidHexText = "#FFFFFF";
+
     static SimpleColorPicker()
     {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(SimpleColorPicker), 
+        DefaultStyleKeyProperty.OverrideMetadata(
+            typeof(SimpleColorPicker),
             new FrameworkPropertyMetadata(typeof(SimpleColorPicker)));
     }
 
+    public SimpleColorPicker()
+    {
+        Loaded += SimpleColorPicker_Loaded;
+    }
+
     public static readonly DependencyProperty SelectedColorProperty =
-        DependencyProperty.Register(nameof(SelectedColor), typeof(Color), typeof(SimpleColorPicker),
-            new FrameworkPropertyMetadata(Colors.Gray, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectedColorChanged));
+        DependencyProperty.Register(
+            nameof(SelectedColor),
+            typeof(Color),
+            typeof(SimpleColorPicker),
+            new FrameworkPropertyMetadata(
+                Colors.White,
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                OnSelectedColorChanged));
 
     public Color SelectedColor
     {
@@ -28,278 +73,584 @@ public class SimpleColorPicker : Control
         set => SetValue(SelectedColorProperty, value);
     }
 
-    private static void OnSelectedColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        if (d is SimpleColorPicker picker && e.NewValue is Color color && !picker._isUpdatingFromControls)
-        {
-            picker.UpdateFromColor(color);
-        }
-    }
-
-    private Grid? _svCanvas;  // Changed from Canvas to Grid
-    private Ellipse? _svThumb;
-    private Rectangle? _hueBar;
-    private Border? _hueThumb;
-    private Rectangle? _svBackground; // New: for updating hue
-    private bool _isUpdatingFromControls;
-    private bool _isDraggingSV;
-    private bool _isDraggingHue;
-
-    // HSV values
-    private double _hue = 0;        // 0-360
-    private double _saturation = 0.5; // 0-1
-    private double _value = 0.7;      // 0-1
-
     public override void OnApplyTemplate()
     {
+        UnhookTemplatePartEvents();
+
         base.OnApplyTemplate();
 
-        // ȡ�����ľɿؼ�
-        UnsubscribeEvents();
+        _svCanvas = GetTemplateChild(PartSvCanvas) as Rectangle;
+        _svThumb = GetTemplateChild(PartSvThumb) as FrameworkElement;
+        _hueBar = GetTemplateChild(PartHueBar) as Rectangle;
+        _hueThumb = GetTemplateChild(PartHueThumb) as FrameworkElement;
+        _hexTextBox = GetTemplateChild(PartHexTextBox) as TextBox;
 
-        // ��ȡģ��Ԫ��
-        _svBackground = GetTemplateChild("PART_SV_Canvas") as Rectangle;
-        _svCanvas = _svBackground?.Parent as Grid;
-        var svThumbCanvas = _svCanvas?.Children.OfType<Canvas>().FirstOrDefault();
-        _svThumb = svThumbCanvas?.Children.OfType<Ellipse>().FirstOrDefault();
-        _hueBar = GetTemplateChild("PART_Hue_Bar") as Rectangle;
-        _hueThumb = GetTemplateChild("PART_Hue_Thumb") as Border;
+        _svInputElement = _svCanvas?.Parent as UIElement ?? _svCanvas;
+        _hueInputElement = _hueBar?.Parent as UIElement ?? _hueBar;
 
-        // �����¼�
-        SubscribeEvents();
+        HookTemplatePartEvents();
 
-        // ��ʼ����ɫ
-        UpdateFromColor(SelectedColor);
+        UpdateHsvFromColor(SelectedColor);
+        UpdateAllVisuals();
+
+        // Popup 初回表示時は Template 適用直後だと ActualWidth / ActualHeight がまだ 0 のことがある。
+        // 1フレーム遅らせて再同期すると、Hex 値に対して Thumb が正しい位置へ行く。
+        Dispatcher.BeginInvoke(new Action(() =>
+        {
+            UpdateHsvFromColor(SelectedColor);
+            UpdateAllVisuals();
+        }), DispatcherPriority.Loaded);
     }
 
-    private void UnsubscribeEvents()
+    private static void OnSelectedColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
+        if (d is not SimpleColorPicker picker || e.NewValue is not Color color)
+            return;
+
+        // 自分でHSVから色を更新した直後は、RGB→HSVへ戻し直さない
+        // これでHueドラッグ時の丸め誤差によるカクつきを減らす
+        if (!picker._isInternalHsvUpdate)
+        {
+            picker.UpdateHsvFromColor(color);
+        }
+
+        picker.UpdateAllVisuals();
+
+        // Popup 初回表示や遅延レイアウト完了後にも、見た目のカーソル位置を再同期する
+        picker.Dispatcher.BeginInvoke(new Action(() =>
+        {
+            if (!picker._isInternalHsvUpdate)
+            {
+                picker.UpdateHsvFromColor(color);
+            }
+
+            picker.UpdateAllVisuals();
+        }), DispatcherPriority.Loaded);
+    }
+
+    private void HookTemplatePartEvents()
+    {
+        if (_svInputElement != null)
+        {
+            _svInputElement.MouseLeftButtonDown += SvInputElement_MouseLeftButtonDown;
+            _svInputElement.MouseMove += SvInputElement_MouseMove;
+            _svInputElement.MouseLeftButtonUp += SvInputElement_MouseLeftButtonUp;
+            _svInputElement.MouseLeave += SvInputElement_MouseLeave;
+        }
+
+        if (_hueInputElement != null)
+        {
+            _hueInputElement.MouseLeftButtonDown += HueInputElement_MouseLeftButtonDown;
+            _hueInputElement.MouseMove += HueInputElement_MouseMove;
+            _hueInputElement.MouseLeftButtonUp += HueInputElement_MouseLeftButtonUp;
+            _hueInputElement.MouseLeave += HueInputElement_MouseLeave;
+        }
+
         if (_svCanvas != null)
         {
-            _svCanvas.MouseLeftButtonDown -= OnSVMouseDown;
-            _svCanvas.MouseMove -= OnSVMouseMove;
-            _svCanvas.MouseLeftButtonUp -= OnSVMouseUp;
+            _svCanvas.SizeChanged += Part_SizeChanged;
         }
 
         if (_hueBar != null)
         {
-            _hueBar.MouseLeftButtonDown -= OnHueMouseDown;
-            _hueBar.MouseMove -= OnHueMouseMove;
-            _hueBar.MouseLeftButtonUp -= OnHueMouseUp;
+            _hueBar.SizeChanged += Part_SizeChanged;
+        }
+
+        if (_hexTextBox != null)
+        {
+            _hexTextBox.PreviewKeyDown += HexTextBox_PreviewKeyDown;
+            _hexTextBox.LostFocus += HexTextBox_LostFocus;
         }
     }
 
-    private void SubscribeEvents()
+    private void UnhookTemplatePartEvents()
     {
+        if (_svInputElement != null)
+        {
+            _svInputElement.MouseLeftButtonDown -= SvInputElement_MouseLeftButtonDown;
+            _svInputElement.MouseMove -= SvInputElement_MouseMove;
+            _svInputElement.MouseLeftButtonUp -= SvInputElement_MouseLeftButtonUp;
+            _svInputElement.MouseLeave -= SvInputElement_MouseLeave;
+        }
+
+        if (_hueInputElement != null)
+        {
+            _hueInputElement.MouseLeftButtonDown -= HueInputElement_MouseLeftButtonDown;
+            _hueInputElement.MouseMove -= HueInputElement_MouseMove;
+            _hueInputElement.MouseLeftButtonUp -= HueInputElement_MouseLeftButtonUp;
+            _hueInputElement.MouseLeave -= HueInputElement_MouseLeave;
+        }
+
         if (_svCanvas != null)
         {
-            _svCanvas.MouseLeftButtonDown += OnSVMouseDown;
-            _svCanvas.MouseMove += OnSVMouseMove;
-            _svCanvas.MouseLeftButtonUp += OnSVMouseUp;
+            _svCanvas.SizeChanged -= Part_SizeChanged;
         }
 
         if (_hueBar != null)
         {
-            _hueBar.MouseLeftButtonDown += OnHueMouseDown;
-            _hueBar.MouseMove += OnHueMouseMove;
-            _hueBar.MouseLeftButtonUp += OnHueMouseUp;
+            _hueBar.SizeChanged -= Part_SizeChanged;
         }
-    }
 
-    #region SV Canvas �¼�����
-
-    private void OnSVMouseDown(object sender, MouseButtonEventArgs e)
-    {
-        _isDraggingSV = true;
-        _svCanvas?.CaptureMouse();
-        UpdateSVFromMouse(e.GetPosition(_svCanvas));
-    }
-
-    private void OnSVMouseMove(object sender, MouseEventArgs e)
-    {
-        if (_isDraggingSV && _svCanvas != null)
+        if (_hexTextBox != null)
         {
-            UpdateSVFromMouse(e.GetPosition(_svCanvas));
+            _hexTextBox.PreviewKeyDown -= HexTextBox_PreviewKeyDown;
+            _hexTextBox.LostFocus -= HexTextBox_LostFocus;
         }
     }
 
-    private void OnSVMouseUp(object sender, MouseButtonEventArgs e)
+    private void SimpleColorPicker_Loaded(object sender, RoutedEventArgs e)
     {
-        _isDraggingSV = false;
-        _svCanvas?.ReleaseMouseCapture();
+        // 初回 Loaded でもう一度 SelectedColor -> HSV -> Visual を同期する。
+        // Popup 内コントロールはこのタイミングでようやくサイズ確定している場合がある。
+        Dispatcher.BeginInvoke(new Action(() =>
+        {
+            UpdateHsvFromColor(SelectedColor);
+            UpdateAllVisuals();
+        }), DispatcherPriority.Loaded);
     }
 
-    private void UpdateSVFromMouse(Point position)
+    private void Part_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-        if (_svCanvas == null) return;
-
-        var x = Math.Max(0, Math.Min(position.X, _svCanvas.ActualWidth));
-        var y = Math.Max(0, Math.Min(position.Y, _svCanvas.ActualHeight));
-
-        _saturation = x / _svCanvas.ActualWidth;
-        _value = 1 - (y / _svCanvas.ActualHeight);
-
-        UpdateColorFromHSV();
-        UpdateSVThumbPosition();
+        UpdateThumbPositions();
     }
 
-    #endregion
-
-    #region Hue Bar �¼�����
-
-    private void OnHueMouseDown(object sender, MouseButtonEventArgs e)
+    private void SvInputElement_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
+        if (_svInputElement == null)
+            return;
+
+        _isDraggingSv = true;
+        _svInputElement.CaptureMouse();
+        UpdateSvFromPoint(e.GetPosition(_svInputElement));
+    }
+
+    private void SvInputElement_MouseMove(object sender, MouseEventArgs e)
+    {
+        if (!_isDraggingSv || _svInputElement == null)
+            return;
+
+        UpdateSvFromPoint(e.GetPosition(_svInputElement));
+    }
+
+    private void SvInputElement_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        if (_svInputElement == null)
+            return;
+
+        _isDraggingSv = false;
+        _svInputElement.ReleaseMouseCapture();
+    }
+
+    private void SvInputElement_MouseLeave(object sender, MouseEventArgs e)
+    {
+        if (_svInputElement == null || e.LeftButton != MouseButtonState.Released)
+            return;
+
+        _isDraggingSv = false;
+        _svInputElement.ReleaseMouseCapture();
+    }
+
+    private void HueInputElement_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (_hueInputElement == null)
+            return;
+
         _isDraggingHue = true;
-        _hueBar?.CaptureMouse();
-        UpdateHueFromMouse(e.GetPosition(_hueBar));
+        _hueInputElement.CaptureMouse();
+        UpdateHueFromPoint(e.GetPosition(_hueInputElement));
     }
 
-    private void OnHueMouseMove(object sender, MouseEventArgs e)
+    private void HueInputElement_MouseMove(object sender, MouseEventArgs e)
     {
-        if (_isDraggingHue && _hueBar != null)
-        {
-            UpdateHueFromMouse(e.GetPosition(_hueBar));
-        }
+        if (!_isDraggingHue || _hueInputElement == null)
+            return;
+
+        UpdateHueFromPoint(e.GetPosition(_hueInputElement));
     }
 
-    private void OnHueMouseUp(object sender, MouseButtonEventArgs e)
+    private void HueInputElement_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
     {
+        if (_hueInputElement == null)
+            return;
+
         _isDraggingHue = false;
-        _hueBar?.ReleaseMouseCapture();
+        _hueInputElement.ReleaseMouseCapture();
     }
 
-    private void UpdateHueFromMouse(Point position)
+    private void HueInputElement_MouseLeave(object sender, MouseEventArgs e)
     {
-        if (_hueBar == null) return;
+        if (_hueInputElement == null || e.LeftButton != MouseButtonState.Released)
+            return;
 
-        var y = Math.Max(0, Math.Min(position.Y, _hueBar.ActualHeight));
-        _hue = (y / _hueBar.ActualHeight) * 360;
-
-        UpdateColorFromHSV();
-        UpdateHueThumbPosition();
-        UpdateSVCanvasBackground();
+        _isDraggingHue = false;
+        _hueInputElement.ReleaseMouseCapture();
     }
 
-    #endregion
-
-    #region ��ɫת��
-
-    private void UpdateFromColor(Color color)
+    private void UpdateSvFromPoint(Point point)
     {
-        // RGB to HSV
-        double r = color.R / 255.0;
-        double g = color.G / 255.0;
-        double b = color.B / 255.0;
+        var width = Math.Max(1.0, GetSvWidth());
+        var height = Math.Max(1.0, GetSvHeight());
 
-        double max = Math.Max(r, Math.Max(g, b));
-        double min = Math.Min(r, Math.Min(g, b));
-        double delta = max - min;
+        var x = Clamp(point.X, 0, width);
+        var y = Clamp(point.Y, 0, height);
 
-        // Hue
-        if (delta == 0)
-            _hue = 0;
-        else if (max == r)
-            _hue = 60 * (((g - b) / delta) % 6);
-        else if (max == g)
-            _hue = 60 * (((b - r) / delta) + 2);
-        else
-            _hue = 60 * (((r - g) / delta) + 4);
+        _saturation = x / width;
+        _value = 1.0 - (y / height);
 
-        if (_hue < 0) _hue += 360;
-
-        // Saturation
-        _saturation = max == 0 ? 0 : delta / max;
-
-        // Value
-        _value = max;
-
-        UpdateSVCanvasBackground();
-        UpdateSVThumbPosition();
-        UpdateHueThumbPosition();
+        ApplyCurrentHsvToSelectedColor();
     }
 
-    private void UpdateColorFromHSV()
+    private void UpdateHueFromPoint(Point point)
     {
-        _isUpdatingFromControls = true;
+        var height = Math.Max(1.0, GetHueHeight());
+        var y = Clamp(point.Y, 0, height);
+
+        _hue = (1.0 - (y / height)) * 360.0;
+        if (_hue >= 360.0)
+            _hue = 359.999;
+
+        ApplyCurrentHsvToSelectedColor();
+    }
+
+    private void ApplyCurrentHsvToSelectedColor()
+    {
+        var newColor = ColorFromHsv(_hue, _saturation, _value);
+
         try
         {
-            var color = HSVToRGB(_hue, _saturation, _value);
-            SelectedColor = color;
+            _isInternalHsvUpdate = true;
+
+            var oldColor = SelectedColor;
+            SelectedColor = newColor;
+
+            // 灰色系では Hue を動かしても RGB が同じになり得る
+            // その場合でも Thumb / 背景は更新する
+            if (oldColor.Equals(newColor))
+            {
+                UpdateAllVisuals();
+            }
         }
         finally
         {
-            _isUpdatingFromControls = false;
+            _isInternalHsvUpdate = false;
         }
     }
 
-    private static Color HSVToRGB(double h, double s, double v)
+    private void UpdateAllVisuals()
     {
-        double c = v * s;
-        double x = c * (1 - Math.Abs((h / 60) % 2 - 1));
-        double m = v - c;
+        UpdateSvBaseColor();
+        UpdateThumbPositions();
+        UpdateHexTextFromSelectedColor();
+    }
 
-        double r, g, b;
-        if (h < 60)
+    private void UpdateSvBaseColor()
+    {
+        if (_svCanvas == null)
+            return;
+
+        _svCanvas.Fill = new SolidColorBrush(ColorFromHsv(_hue, 1.0, 1.0));
+    }
+
+    private void UpdateThumbPositions()
+    {
+        if (_svThumb != null)
         {
-            r = c; g = x; b = 0;
+            var width = Math.Max(1.0, GetSvWidth());
+            var height = Math.Max(1.0, GetSvHeight());
+
+            var thumbWidth = _svThumb.ActualWidth > 0 ? _svThumb.ActualWidth : _svThumb.Width;
+            var thumbHeight = _svThumb.ActualHeight > 0 ? _svThumb.ActualHeight : _svThumb.Height;
+
+            var x = _saturation * width;
+            var y = (1.0 - _value) * height;
+
+            Canvas.SetLeft(_svThumb, x - thumbWidth / 2.0);
+            Canvas.SetTop(_svThumb, y - thumbHeight / 2.0);
         }
-        else if (h < 120)
+
+        if (_hueThumb != null)
         {
-            r = x; g = c; b = 0;
+            var height = Math.Max(1.0, GetHueHeight());
+            var thumbHeight = _hueThumb.ActualHeight > 0 ? _hueThumb.ActualHeight : _hueThumb.Height;
+
+            var y = (1.0 - (_hue / 360.0)) * height;
+            Canvas.SetTop(_hueThumb, y - thumbHeight / 2.0);
         }
-        else if (h < 180)
+    }
+
+    private double GetSvWidth()
+    {
+        if (_svInputElement is FrameworkElement fe && fe.ActualWidth > 0)
+            return fe.ActualWidth;
+
+        return _svCanvas?.ActualWidth ?? 1.0;
+    }
+
+    private double GetSvHeight()
+    {
+        if (_svInputElement is FrameworkElement fe && fe.ActualHeight > 0)
+            return fe.ActualHeight;
+
+        return _svCanvas?.ActualHeight ?? 1.0;
+    }
+
+    private double GetHueHeight()
+    {
+        if (_hueInputElement is FrameworkElement fe && fe.ActualHeight > 0)
+            return fe.ActualHeight;
+
+        return _hueBar?.ActualHeight ?? 1.0;
+    }
+
+    private void UpdateHsvFromColor(Color color)
+    {
+        RgbToHsv(color, _hue, out var hue, out var saturation, out var value);
+
+        _hue = hue;
+        _saturation = saturation;
+        _value = value;
+    }
+
+    private void UpdateHexTextFromSelectedColor()
+    {
+        var hex = $"#{SelectedColor.R:X2}{SelectedColor.G:X2}{SelectedColor.B:X2}";
+        _lastValidHexText = hex;
+
+        if (_hexTextBox == null)
+            return;
+
+        try
         {
-            r = 0; g = c; b = x;
+            _isUpdatingHexText = true;
+            _hexTextBox.Text = hex;
+            _hexTextBox.CaretIndex = _hexTextBox.Text.Length;
         }
-        else if (h < 240)
+        finally
         {
-            r = 0; g = x; b = c;
+            _isUpdatingHexText = false;
         }
-        else if (h < 300)
+    }
+
+    private void HexTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (_hexTextBox == null)
+            return;
+
+        if (e.Key == Key.Enter)
         {
-            r = x; g = 0; b = c;
+            ApplyHexOrRevert();
+            e.Handled = true;
+        }
+    }
+
+    private void HexTextBox_LostFocus(object sender, RoutedEventArgs e)
+    {
+        if (_isUpdatingHexText)
+            return;
+
+        ApplyHexOrRevert();
+    }
+
+    private void ApplyHexOrRevert()
+    {
+        if (_hexTextBox == null)
+            return;
+
+        if (!TryNormalizeHexInput(_hexTextBox.Text, out var normalizedHex))
+        {
+            RevertHexText();
+            return;
+        }
+
+        if (!TryParseHex6(normalizedHex, out var color))
+        {
+            RevertHexText();
+            return;
+        }
+
+        try
+        {
+            _isUpdatingHexText = true;
+            SelectedColor = color;
+            _lastValidHexText = normalizedHex;
+            _hexTextBox.Text = normalizedHex;
+            _hexTextBox.CaretIndex = _hexTextBox.Text.Length;
+        }
+        finally
+        {
+            _isUpdatingHexText = false;
+        }
+    }
+
+    private void RevertHexText()
+    {
+        if (_hexTextBox == null)
+            return;
+
+        try
+        {
+            _isUpdatingHexText = true;
+            _hexTextBox.Text = _lastValidHexText;
+            _hexTextBox.CaretIndex = _hexTextBox.Text.Length;
+        }
+        finally
+        {
+            _isUpdatingHexText = false;
+        }
+    }
+
+    private static bool TryNormalizeHexInput(string raw, out string normalizedHex)
+    {
+        normalizedHex = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(raw))
+            return false;
+
+        var text = raw.Trim();
+
+        if (text.StartsWith("#", StringComparison.Ordinal))
+            text = text[1..];
+
+        // 入力中は自由だが、確定時はここで検証
+        foreach (var ch in text)
+        {
+            if (!IsHexChar(ch))
+                return false;
+        }
+
+        // 7文字目以降はカット
+        if (text.Length > 6)
+            text = text[..6];
+
+        if (text.Length != 6)
+            return false;
+
+        normalizedHex = "#" + text.ToUpperInvariant();
+        return true;
+    }
+
+    private static bool TryParseHex6(string normalizedHex, out Color color)
+    {
+        color = Colors.White;
+
+        if (string.IsNullOrWhiteSpace(normalizedHex))
+            return false;
+
+        var text = normalizedHex.StartsWith("#", StringComparison.Ordinal)
+            ? normalizedHex[1..]
+            : normalizedHex;
+
+        if (text.Length != 6)
+            return false;
+
+        if (!byte.TryParse(text.Substring(0, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var r))
+            return false;
+        if (!byte.TryParse(text.Substring(2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var g))
+            return false;
+        if (!byte.TryParse(text.Substring(4, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var b))
+            return false;
+
+        color = Color.FromRgb(r, g, b);
+        return true;
+    }
+
+    private static bool IsHexChar(char ch)
+    {
+        return (ch >= '0' && ch <= '9') ||
+               (ch >= 'A' && ch <= 'F') ||
+               (ch >= 'a' && ch <= 'f');
+    }
+
+    private static double Clamp(double value, double min, double max)
+    {
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
+    }
+
+    private static Color ColorFromHsv(double hue, double saturation, double value)
+    {
+        hue %= 360.0;
+        if (hue < 0)
+            hue += 360.0;
+
+        saturation = Clamp(saturation, 0.0, 1.0);
+        value = Clamp(value, 0.0, 1.0);
+
+        var c = value * saturation;
+        var x = c * (1 - Math.Abs((hue / 60.0 % 2) - 1));
+        var m = value - c;
+
+        double r1, g1, b1;
+
+        if (hue < 60)
+        {
+            r1 = c; g1 = x; b1 = 0;
+        }
+        else if (hue < 120)
+        {
+            r1 = x; g1 = c; b1 = 0;
+        }
+        else if (hue < 180)
+        {
+            r1 = 0; g1 = c; b1 = x;
+        }
+        else if (hue < 240)
+        {
+            r1 = 0; g1 = x; b1 = c;
+        }
+        else if (hue < 300)
+        {
+            r1 = x; g1 = 0; b1 = c;
         }
         else
         {
-            r = c; g = 0; b = x;
+            r1 = c; g1 = 0; b1 = x;
         }
 
-        return Color.FromRgb(
-            (byte)Math.Round((r + m) * 255),
-            (byte)Math.Round((g + m) * 255),
-            (byte)Math.Round((b + m) * 255));
+        var r = (byte)Math.Round((r1 + m) * 255);
+        var g = (byte)Math.Round((g1 + m) * 255);
+        var b = (byte)Math.Round((b1 + m) * 255);
+
+        return Color.FromRgb(r, g, b);
     }
 
-    #endregion
-
-    #region UI ����
-
-    private void UpdateSVCanvasBackground()
+    private static void RgbToHsv(Color color, double preserveHueWhenUndefined, out double hue, out double saturation, out double value)
     {
-        if (_svBackground == null) return;
+        var r = color.R / 255.0;
+        var g = color.G / 255.0;
+        var b = color.B / 255.0;
 
-        var baseColor = HSVToRGB(_hue, 1, 1);
-        _svBackground.Fill = new SolidColorBrush(baseColor);
+        var max = Math.Max(r, Math.Max(g, b));
+        var min = Math.Min(r, Math.Min(g, b));
+        var delta = max - min;
+
+        if (delta > 0.00001)
+        {
+            if (Math.Abs(max - r) < 0.00001)
+            {
+                hue = 60.0 * (((g - b) / delta) % 6.0);
+            }
+            else if (Math.Abs(max - g) < 0.00001)
+            {
+                hue = 60.0 * (((b - r) / delta) + 2.0);
+            }
+            else
+            {
+                hue = 60.0 * (((r - g) / delta) + 4.0);
+            }
+
+            if (hue < 0.0)
+                hue += 360.0;
+        }
+        else
+        {
+            // 灰色系では Hue が数学的に未定義になる。
+            // その場合は直前の Hue を維持して、Hue バーの位置が不自然に飛ばないようにする。
+            hue = preserveHueWhenUndefined;
+        }
+
+        saturation = max <= 0.0 ? 0.0 : delta / max;
+        value = max;
     }
-
-    private void UpdateSVThumbPosition()
-    {
-        if (_svThumb == null || _svCanvas == null) return;
-
-        var x = _saturation * _svCanvas.ActualWidth;
-        var y = (1 - _value) * _svCanvas.ActualHeight;
-
-        Canvas.SetLeft(_svThumb, x - _svThumb.Width / 2);
-        Canvas.SetTop(_svThumb, y - _svThumb.Height / 2);
-    }
-
-    private void UpdateHueThumbPosition()
-    {
-        if (_hueThumb == null || _hueBar == null) return;
-
-        var y = (_hue / 360) * _hueBar.ActualHeight;
-        Canvas.SetTop(_hueThumb, y - _hueThumb.Height / 2);
-    }
-
-    #endregion
 }

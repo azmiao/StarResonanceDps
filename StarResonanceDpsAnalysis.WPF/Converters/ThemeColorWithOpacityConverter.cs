@@ -5,20 +5,17 @@ using System.Windows.Media;
 namespace StarResonanceDpsAnalysis.WPF.Converters;
 
 /// <summary>
-/// ½«Ö÷ÌâÑÕÉ«×Ö·û´®×ª»»Îª´øÍ¸Ã÷¶ÈµÄColor
-/// ÊäÈë: [0] ThemeColor (string), [1] Opacity (0-100), [2] MouseThroughEnabled (bool)
-/// Êä³ö: Color with adjusted opacity
+/// ä¸»é¢˜è‰² + ä¸é€æ˜åº¦(0-100) -> Color
+/// ãŸã ã—é€æ˜ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒ’ãƒƒãƒˆãƒ†ã‚¹ãƒˆç¶­æŒã®ãŸã‚ã€alpha ã¯æœ€ä½ 1 ã‚’æ®‹ã™
 /// </summary>
 public sealed class ThemeColorWithOpacityConverter : IMultiValueConverter
 {
     public object Convert(object?[] values, Type targetType, object? parameter, CultureInfo culture)
     {
-        // Ä¬ÈÏÑÕÉ«
         var defaultColor = Color.FromRgb(186, 186, 186); // #BABABA
 
-        // ½âÎöÖ÷ÌâÑÕÉ«
-        Color themeColor = defaultColor;
-        if (values.Length > 0 && values[0] is string colorString && !string.IsNullOrEmpty(colorString))
+        var themeColor = defaultColor;
+        if (values.Length > 0 && values[0] is string colorString && !string.IsNullOrWhiteSpace(colorString))
         {
             try
             {
@@ -30,36 +27,24 @@ public sealed class ThemeColorWithOpacityConverter : IMultiValueConverter
             }
         }
 
-        // ½âÎöÍ¸Ã÷¶È (0-100 -> 0-255)
         double opacity = 100;
-        if (values.Length > 1 && values[1] is double opacityValue)
+        if (values.Length > 1)
         {
-            opacity = opacityValue;
+            if (values[1] is double d)
+                opacity = d;
+            else if (values[1] is int i)
+                opacity = i;
+            else if (values[1] is string s && double.TryParse(s, NumberStyles.Any, culture, out var parsed))
+                opacity = parsed;
         }
 
-        // ½âÎöÊó±ê´©Í¸×´Ì¬
-        bool isMouseThrough = false;
-        if (values.Length > 2 && values[2] is bool mouseThroughValue)
-        {
-            isMouseThrough = mouseThroughValue;
-        }
+        opacity = Math.Clamp(opacity, 0, 100);
 
-        // ¼ÆËã×îÖÕµÄAlphaÖµ
-        byte alpha;
-        if (isMouseThrough)
-        {
-            // Êó±ê´©Í¸Ê±£¬Ê¹ÓÃ·Ç³£µÍµÄÍ¸Ã÷¶È
-            alpha = 1;
-        }
-        else
-        {
-            // Õı³£Ä£Ê½£¬¸ù¾İ»¬¿éÖµ¼ÆËãÍ¸Ã÷¶È
-            // opacity: 5-95 -> alpha: 13-242 (Ô¼ 5%-95%)
-            var normalizedOpacity = Math.Clamp(opacity, 5, 95) / 100.0;
-            alpha = (byte)(normalizedOpacity * 255);
-        }
+        // alpha 0 ã ã¨é€æ˜ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã§ D&D / hit test ãŒæ­»ã¬ã“ã¨ãŒã‚ã‚‹ã®ã§æœ€ä½ 1 ã‚’æ®‹ã™
+        var alpha = opacity <= 0
+            ? (byte)1
+            : (byte)Math.Clamp(Math.Round(opacity / 100d * 255d), 1, 255);
 
-        // ·µ»Ø´øÍ¸Ã÷¶ÈµÄÑÕÉ«
         return Color.FromArgb(alpha, themeColor.R, themeColor.G, themeColor.B);
     }
 

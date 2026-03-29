@@ -376,4 +376,52 @@
         </Style.Triggers>
     </Style>
 
+    <!--  Ant ToggleButton style  -->
+    <Style x:Key="AntToggleButtonStyle" TargetType="ToggleButton">
+        <Setter Property="Background" Value="{StaticResource AntBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource AntBorderBrush}" />
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Padding" Value="{StaticResource AntControlPadding}" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border
+                        x:Name="Bd"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="{StaticResource AntCornerRadius}">
+                        <ContentPresenter
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            RecognizesAccessKey="True" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource AntHoverBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Bd" Property="Opacity" Value="0.9" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource AntPrimaryBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                             <Setter TargetName="Bd" Property="Opacity" Value="0.9" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource AntPrimaryBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource AntDisabledBrush}" />
+                            <Setter Property="Foreground" Value="#FFAAAAAA" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource AntBorderBrush}" />
+                            <Setter TargetName="Bd" Property="Opacity" Value="0.8" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

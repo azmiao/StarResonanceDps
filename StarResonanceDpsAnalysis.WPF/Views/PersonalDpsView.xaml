@@ -7,156 +7,83 @@
         xmlns:vms="clr-namespace:StarResonanceDpsAnalysis.WPF.ViewModels"
         xmlns:ctrl="clr-namespace:StarResonanceDpsAnalysis.WPF.Controls"
         xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        xmlns:loc="clr-namespace:StarResonanceDpsAnalysis.WPF.Properties"
         xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:behaviors="clr-namespace:StarResonanceDpsAnalysis.WPF.Behaviors"
         mc:Ignorable="d"
-        Title="PersonalDpsView"
-        Width="700" Height="96"
+        Title="{lex:Loc Key={x:Static loc:ResourcesKeys.Window_PersonalDps_Title}}"
+        SizeToContent="Width"
+         Height="76"
         lex:LocalizeDictionary.DesignCulture="en-US"
         Style="{StaticResource TransparentWindow}"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         WindowState="Normal"
-        d:DataContext="{d:DesignInstance Type=vms:PersonalDpsViewModel}">
+        d:DataContext="{d:DesignInstance Type=vms:PersonalDpsDesignTimeViewModel,
+                                     IsDesignTimeCreatable=True}">
 
     <Window.Resources>
 
+        <Style x:Key="SAOTTBase" TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
+            <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#SAO Welcome TT" />
+        </Style>
+
         <Style x:Key="CustomShadowWindowBorder" TargetType="Border" BasedOn="{StaticResource ShadowWindowBorder}">
-            <Setter Property="CornerRadius" Value="17.5" />
-            <Setter Property="BorderBrush" Value="#FFF" />
-            <Setter Property="BorderThickness" Value="2.6" />
+            <Setter Property="CornerRadius" Value="33" />
             <EventSetter Event="MouseDown" Handler="ViewBorder_MouseDown"/>
         </Style>
 
         <Style x:Key="DragMoveBar" TargetType="Border">
             <Setter Property="Width" Value="48" />
-            <Setter Property="Height" Value="3.5" />
+            <Setter Property="Height" Value="4" />
             <Setter Property="Background" Value="#D6D7DB" />
-            <Setter Property="CornerRadius" Value="1.75" />
+            <Setter Property="CornerRadius" Value="2" />
             <Setter Property="VerticalAlignment" Value="Top" />
             <Setter Property="Margin" Value="0,7,0,0" />
         </Style>
 
-        <Style x:Key="RingProgressBar" TargetType="ctrl:RingProgressBar">
-            <Setter Property="Margin" Value="17.5,6.1,0,6.1" />
-            <Setter Property="RingThickness" Value="3.5" />
-            <!-- ⭐ 修改：使用主题颜色绑定 -->
-            <Setter Property="ProgressBrush" Value="{Binding ThemeColor, Converter={StaticResource ColorStringToBrushConverter}}" />
-            <Setter Property="TrackBrush" Value="#FFF" />
+        <Style x:Key="TimerBox" TargetType="Border">
+            <Setter Property="Width" Value="80" />
+            <Setter Property="Background" Value="#091B28" />
+            <Setter Property="Margin" Value="12,12,0,12" />
+            <Setter Property="CornerRadius" Value="21" />
         </Style>
 
-        <Style x:Key="RingProgressBarCircleBorder" TargetType="Border">
-            <!-- ⭐ 修改：使用主题颜色渐变 -->
-            <Setter Property="Background" Value="{Binding ThemeColor, Converter={StaticResource ThemeColorToGradientConverter}}" />
-            <Setter Property="CornerRadius" Value="999" />
-            <Setter Property="Margin" Value="6.1" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="VerticalAlignment" Value="Stretch" />
-        </Style>
-
-        <Style x:Key="DpsPersentText" TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
-            <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#SAO Welcome TT" />
-            <Setter Property="FontSize" Value="17.5" />
-        </Style>
-
-        <Style x:Key="DpsStackPanel" TargetType="StackPanel">
+        <Style x:Key="TimerText" TargetType="TextBlock" BasedOn="{StaticResource SAOTTBase}">
+            <Setter Property="Foreground" Value="#FFF" />
+            <Setter Property="FontSize" Value="20" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
 
-        <Style x:Key="DpsTextBase" TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
-            <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="FontSize" Value="13.75" />
-            <Setter Property="Margin" Value="0,0,0,7" />
-        </Style>
-
-        <Style x:Key="DpsText" TargetType="TextBlock" BasedOn="{StaticResource DpsTextBase}">
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="FontWeight" Value="Bold" />
-            <!-- ⭐ 修改：使用主题颜色 -->
+        <Style x:Key="TotalDamageText" TargetType="TextBlock" BasedOn="{StaticResource SAOTTBase}">
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="FontSize" Value="26" />
             <Setter Property="Foreground" Value="{Binding ThemeColor, Converter={StaticResource ColorStringToBrushConverter}}" />
         </Style>
 
-        <Style x:Key="SpliterBorder" TargetType="Border">
-            <Setter Property="Height" Value="52.5" />
-            <Setter Property="Background" Value="#D6D7DB" />
+        <Style x:Key="DpsText" TargetType="TextBlock" BasedOn="{StaticResource SAOTTBase}">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Foreground" Value="#666" />
         </Style>
 
         <Style x:Key="IconButton" TargetType="Button" BasedOn="{StaticResource IconButtonStyle}">
             <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#IconFont" />
-            <Setter Property="FontSize" Value="36.75" />
-            <Setter Property="Foreground" Value="#181919" />
-            <Setter Property="Width" Value="39.4" />
-            <Setter Property="Height" Value="39.4" />
-            <Setter Property="Margin" Value="13.1,0,13.1,0" />
+            <Setter Property="FontSize" Value="22" />
+            <Setter Property="Foreground" Value="#FF000000" />
+            <Setter Property="Width" Value="28" />
         </Style>
 
-        <Style x:Key="FunctionSwitchButton" TargetType="ctrl:SwitchControl" BasedOn="{StaticResource {x:Type ctrl:SwitchControl}}">
-            <Setter Property="Height" Value="52.5" />
-            <Setter Property="FontSize" Value="28" />
-            <Setter Property="Padding" Value="5.25" />
-        </Style>
-
-        <Style x:Key="SwitchSelectBorder" TargetType="Border">
-            <Setter Property="Height" Value="52.5" />
-            <Setter Property="Width" Value="175" />
-            <Setter Property="Padding" Value="0,0,3.5,0" />
-            <Setter Property="Margin" Value="8.75" />
-            <Setter Property="Background" Value="#EEE" />
-            <Setter Property="CornerRadius" Value="26.25" />
-        </Style>
-
-        <Style x:Key="SwitchSelectStackPanel" TargetType="StackPanel">
-            <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Orientation" Value="Horizontal" />
-        </Style>
-
-        <Style x:Key="SelectorToggleButton" TargetType="ToggleButton">
-            <Setter Property="Width" Value="75.25" />
-            <Setter Property="Height" Value="40.25" />
-            <Setter Property="Margin" Value="3.5,3.5,0,3.5" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="#777" />
-            <Setter Property="FontSize" Value="15.75" />
+        <Style x:Key="PercentProgressBar" TargetType="ctrl:CustomProgressBar" BasedOn="{StaticResource {x:Type ctrl:CustomProgressBar}}">
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="Height" Value="4" />
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="BorderBrush" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0.875" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ToggleButton">
-                        <Border
-                            x:Name="bd"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="20.1">
-
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="bd" Property="Background" Value="#FFF" />
-                                <!--<Setter TargetName="bd" Property="BorderBrush" Value="#FFF" />-->
-                                <Setter Property="Foreground" Value="#000" />
-                                <Setter Property="Effect">
-                                    <Setter.Value>
-                                        <DropShadowEffect
-                                            BlurRadius="8.75"
-                                            Opacity="0.1"
-                                            ShadowDepth="0"
-                                            Color="#000" />
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="bd" Property="Background" Value="#F8F8F8" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="Margin" Value="28,0,28,4" />
+            <Setter Property="Background" Value="#F3F3F3" />
+            <Setter Property="Foreground" Value="{Binding ThemeColor, Converter={StaticResource ColorStringToBrushConverter}}" />
         </Style>
 
     </Window.Resources>
@@ -176,118 +103,90 @@
 
             <Grid>
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <Grid Grid.Column="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" MinWidth="78.75" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource TimerBox}" Grid.Column="0"
+                        >
+                    <TextBlock
+                        Style="{StaticResource TimerText}"
+                        Text="{Binding RemainingTimeDisplay}" />
+                </Border>
 
-                    <Grid Grid.Column="0">
-                        <ctrl:RingProgressBar
-                            Style="{StaticResource RingProgressBar}"
-                            Maximum="100"
-                            Value="{Binding RemainingPercent}"
-                            Visibility="{Binding EnableTrainingMode, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <ctrl:RingProgressBar.InnerContent>
-                                <Border Style="{StaticResource RingProgressBarCircleBorder}">
-                                    <!-- ⭐ 功能1：倒计时颜色设置为白色+淡阴影 -->
-                                    <TextBlock
-                                        Style="{StaticResource DpsPersentText}"
-                                        Text="{Binding RemainingTimeDisplay}"
-                                        FontSize="11"
-                                        FontWeight="Bold"
-                                        Foreground="White"
-                                        VerticalAlignment="Center"
-                                        HorizontalAlignment="Center">
-                                        <TextBlock.Effect>
-                                            <DropShadowEffect
-                                                BlurRadius="4"
-                                                Opacity="0.3"
-                                                ShadowDepth="0.5"
-                                                Color="#000000" />
-                                        </TextBlock.Effect>
-                                    </TextBlock>
-                                </Border>
-                            </ctrl:RingProgressBar.InnerContent>
-                        </ctrl:RingProgressBar>
-                        <ctrl:RingProgressBar
-                            Style="{StaticResource RingProgressBar}"
-                            Maximum="100"
-                            Value="{Binding TeamDamagePercent}"
-                            Visibility="{Binding EnableTrainingMode, Converter={StaticResource BoolToInvertedVisibilityConverter}}">
-                            <ctrl:RingProgressBar.InnerContent>
-                                <Border Style="{StaticResource RingProgressBarCircleBorder}">
-                                    <!-- ⭐ 修改：非打桩模式下的百分比也改为白色+淡阴影 -->
-                                    <TextBlock
-                                        Style="{StaticResource DpsPersentText}"
-                                        Text="{Binding TeamPercentDisplay}"
-                                        FontSize="11"
-                                        FontWeight="Bold"
-                                        Foreground="White"
-                                        VerticalAlignment="Center"
-                                        HorizontalAlignment="Center">
-                                        <TextBlock.Effect>
-                                            <DropShadowEffect
-                                                BlurRadius="4"
-                                                Opacity="0.3"
-                                                ShadowDepth="0.5"
-                                                Color="#000000" />
-                                        </TextBlock.Effect>
-                                    </TextBlock>
-                                </Border>
-                            </ctrl:RingProgressBar.InnerContent>
-                        </ctrl:RingProgressBar>
-                    </Grid>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="12">
+                    <StackPanel 
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        MinWidth="140">
+                        <TextBlock Style="{StaticResource TotalDamageText}">
+                            <TextBlock.Text>
+                                <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
+                                    <Binding Path="TotalDamage" />
+                                    <Binding Path="AppConfig.DamageDisplayType" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
 
-                    <StackPanel Style="{StaticResource DpsStackPanel}" Grid.Column="1">
-                        <TextBlock Style="{StaticResource DpsTextBase}" Text="当前伤害"/>
-                        <TextBlock Style="{StaticResource DpsText}" Text="{Binding CurrentDpsDisplay}"/>
+                        <TextBlock Style="{StaticResource DpsText}" VerticalAlignment="Bottom">
+                            <TextBlock.Text>
+                                <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}" StringFormat="{}({0})">
+                                    <Binding Path="Dps" />
+                                    <Binding Path="AppConfig.DamageDisplayType" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
                     </StackPanel>
-                </Grid>
 
-                <Grid Grid.Column="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1.75"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="1.75"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Border 
-                        Style="{StaticResource SpliterBorder}"
-                        Grid.Column="0" />
-
-                    <Grid Grid.Column="2">
-                        <Button
+                    <!--  Mouse-through indicator (visible when click-through is enabled)  -->
+                    <TextBlock
+                            FontSize="22"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontFamily="pack://application:,,,/Assets/Fonts/#IconFont"
+                            Text="&#xe83a;"
+                            Width="28"
+                            TextAlignment="Center"
+                            ToolTip="{lex:Loc Key={x:Static loc:ResourcesKeys.DpsStatistics_Indicator_ClickThrough_Tooltip}}"
+                            Visibility="{Binding DataContext.AppConfig.MouseThroughEnabled, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    <Button
                             Style="{StaticResource IconButton}"
                             Content="&#xec4c;"
                             Command="{Binding OpenSkillLogCommand}"
-                            Visibility="{Binding EnableTrainingMode, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                        <Button
+                           />
+                    <Button
                             Style="{StaticResource IconButton}"
                             Content="&#xe612;"
-                            Command="{Binding ShowStatisticsAndHidePersonalCommand}"
-                            Visibility="{Binding EnableTrainingMode, Converter={StaticResource BoolToInvertedVisibilityConverter}}"/>
-                    </Grid>
+                            Command="{Binding ShowStatisticsAndHidePersonalCommand}" />
 
                     <Button
                         Style="{StaticResource IconButton}"
                         Content="&#xeb95;"
-                        Command="{Binding OpenSkillBreakdownViewCommand}"
-                        Grid.Column="3"/>
-
+                        Command="{Binding OpenSkillBreakdownViewCommand}" />
+                    <!--  Topmost toggle button (pin / pin-fill)  -->
+                    <Button
+                            x:Name="TopmostButton"
+                            Command="{Binding ToggleTopmostCommand}"
+                            FontFamily="pack://application:,,,/Assets/Fonts/#iconfont"
+                            ToolTip="{lex:Loc Key={x:Static loc:ResourcesKeys.DpsStatistics_Indicator_WindowTopMost_Tooltip}}">
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource IconButton}" TargetType="Button">
+                                <Setter Property="Content" Value="&#xe864;" />
+                                <Style.Triggers>
+                                    <DataTrigger
+                                            Binding="{Binding Topmost, RelativeSource={RelativeSource AncestorType=Window}}"
+                                            Value="True">
+                                        <Setter Property="Content" Value="&#xe863;" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                     <Button
                         Style="{StaticResource IconButton}"
-                        Content="&#xe6ad;"
-                        Grid.Column="4">
+                        Content="&#xe6ad;">
                         <b:Interaction.Behaviors>
                             <behaviors:OpenContextMenuBehavior />
                         </b:Interaction.Behaviors>
@@ -295,22 +194,17 @@
                             <ContextMenu Style="{StaticResource ModernContextMenu}">
                                 <ContextMenu.Resources>
                                     <Style BasedOn="{StaticResource ModernMenuItem}" TargetType="MenuItem" />
-                                    <Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" BasedOn="{StaticResource ModernMenuSeparator}" TargetType="Separator" />
                                 </ContextMenu.Resources>
-                                <MenuItem
-                                    Header="打桩模式"
-                                    IsCheckable="True"
-                                    IsChecked="{Binding EnableTrainingMode}" />
 
                                 <!-- 木桩选择菜单 -->
-                                <MenuItem Header="木桩选择">
+                                <MenuItem Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_Select_Training_Dummy}}">
                                     <MenuItem
-                                        Header="中间木桩"
+                                        Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_Training_Dummy_Elite_Enemy}}"
                                         IsCheckable="True"
                                         IsChecked="{Binding SelectedDummyTarget, Mode=TwoWay, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Center}"
                                         StaysOpenOnClick="True" />
                                     <MenuItem
-                                        Header="T木桩"
+                                        Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_Training_Dummy_Elite_Tank}}"
                                         IsCheckable="True"
                                         IsChecked="{Binding SelectedDummyTarget, Mode=TwoWay, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=TDummy}"
                                         StaysOpenOnClick="True" />
@@ -318,36 +212,21 @@
 
                                 <MenuItem
                                     Command="{Binding ClearCommand}"
-                                    Header="清空" />
+                                    Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_PlayerInfo_Clear}}" />
                                 <Separator />
                                 <MenuItem
-                                    Command="{Binding CloseWindowCommand}"
-                                    Header="关闭" />
+                                    Command="{Binding ShowStatisticsAndHidePersonalCommand}"
+                                    Header="{lex:Loc Key={x:Static loc:ResourcesKeys.SkillLog_Button_Close}}" />
                             </ContextMenu>
                         </Button.ContextMenu>
                     </Button>
-
-                    <Border 
-                        Style="{StaticResource SpliterBorder}"
-                        Grid.Column="6" />
-                </Grid>
-
-                <Border Grid.Column="2" Style="{StaticResource SwitchSelectBorder}">
-                    <StackPanel x:Name="TabControlIndexChanger" Style="{StaticResource SwitchSelectStackPanel}">
-
-                        <ToggleButton
-                            Content="关闭"
-                            Style="{StaticResource SelectorToggleButton}"
-                            IsChecked="{Binding StartTraining, Mode=TwoWay, Converter={StaticResource BoolNegationConverter}}"/>
-                        <ToggleButton
-                            Content="开启"
-                            Style="{StaticResource SelectorToggleButton}"
-                            IsChecked="{Binding StartTraining, Mode=TwoWay}"/>
-
-                    </StackPanel>
-                </Border>
-
+                </StackPanel>
             </Grid>
+
+            <ctrl:CustomProgressBar
+                Style="{StaticResource PercentProgressBar}"
+                Maximum="1"
+                Value="{Binding RemainingPercent, Mode=OneWay}" Margin="28,60,28,0" VerticalAlignment="Top" />
 
         </Grid>
     </Border>

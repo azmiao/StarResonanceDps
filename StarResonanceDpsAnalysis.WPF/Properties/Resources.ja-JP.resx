@@ -1,0 +1,1532 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Menu_Settings" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="Menu_StatisticBoss" xml:space="preserve">
+    <value>味方NPCを記録</value>
+  </data>
+  <data name="Menu_ShowTotal" xml:space="preserve">
+    <value>パーティ情報を表示</value>
+  </data>
+  <data name="Menu_Personal_Training_Mode" xml:space="preserve">
+    <value>トレーニングモード</value>
+  </data>
+  <data name="Menu_SkillDiary" xml:space="preserve">
+    <value>スキルログ</value>
+  </data>
+  <data name="Menu_RecordSettings" xml:space="preserve">
+    <value>記録設定</value>
+  </data>
+  <data name="Menu_Record_Always" xml:space="preserve">
+    <value>すべての戦闘を記録</value>
+  </data>
+  <data name="Menu_Record_Skip1Min" xml:space="preserve">
+    <value>1分未満の戦闘を無視</value>
+  </data>
+  <data name="Menu_Record_Skip2Min" xml:space="preserve">
+    <value>2分未満の戦闘を無視</value>
+  </data>
+  <data name="Menu_SkillDisplay" xml:space="preserve">
+    <value>スキル表示</value>
+  </data>
+  <data name="Menu_SkillDisplay_Top5" xml:space="preserve">
+    <value>上位5件</value>
+  </data>
+  <data name="Menu_SkillDisplay_Top8" xml:space="preserve">
+    <value>上位8件</value>
+  </data>
+  <data name="Menu_SkillDisplay_Top10" xml:space="preserve">
+    <value>上位10件</value>
+  </data>
+  <data name="Menu_SkillDisplay_Top15" xml:space="preserve">
+    <value>上位15件</value>
+  </data>
+  <data name="Menu_SkillDisplay_All" xml:space="preserve">
+    <value>すべて表示</value>
+  </data>
+  <data name="Menu_History" xml:space="preserve">
+    <value>履歴</value>
+  </data>
+  <data name="Menu_History_Current" xml:space="preserve">
+    <value>戦闘別データ</value>
+  </data>
+  <data name="Menu_History_Total" xml:space="preserve">
+    <value>累計戦闘データ</value>
+  </data>
+  <data name="Menu_ExitHistoryMode" xml:space="preserve">
+    <value>履歴表示モードを終了</value>
+  </data>
+  <data name="DpsStatistics_History_ViewFull_Title" xml:space="preserve">
+    <value>［累計戦闘データ］履歴を表示</value>
+  </data>
+  <data name="DpsStatistics_History_ViewFull_EmptyMessage" xml:space="preserve">
+    <value>［累計戦闘データ］履歴がありません。</value>
+  </data>
+  <data name="DpsStatistics_History_ViewCurrent_Title" xml:space="preserve">
+    <value>［戦闘別データ］履歴を表示</value>
+  </data>
+  <data name="DpsStatistics_History_ViewCurrent_EmptyMessage" xml:space="preserve">
+    <value>［戦闘別データ］履歴がありません。</value>
+  </data>
+  <data name="DpsStatistics_History_Label" xml:space="preserve">
+    <value>履歴</value>
+  </data>
+  <data name="DpsStatistics_Team_Label" xml:space="preserve">
+    <value>パーティ</value>
+  </data>
+  <data name="DpsStatistics_TeamLabel_Damage" xml:space="preserve">
+    <value>パーティDPS</value>
+  </data>
+  <data name="DpsStatistics_TeamLabel_Healing" xml:space="preserve">
+    <value>パーティHPS</value>
+  </data>
+  <data name="DpsStatistics_TeamLabel_TakenDamage" xml:space="preserve">
+    <value>パーティDTPS</value>
+  </data>
+  <data name="DpsStatistics_TeamLabel_NpcTakenDamage" xml:space="preserve">
+    <value>全NPC DTPS</value>
+  </data>
+  <data name="PlayerInfo_Guild_Unknown" xml:space="preserve">
+    <value>不明</value>
+  </data>
+  <data name="DpsStatistics_Test_Guild" xml:space="preserve">
+    <value>テストギルド</value>
+  </data>
+  <data name="DpsStatistics_Test_Player_Format" xml:space="preserve">
+    <value>テストプレイヤー {0}</value>
+  </data>
+  <data name="DpsStatistics_Test_Skill_Format" xml:space="preserve">
+    <value>テストスキル {0}</value>
+  </data>
+  <data name="DpsStatistics_Test_Heal_Skill_Format" xml:space="preserve">
+    <value>テスト回復スキル {0}</value>
+  </data>
+  <data name="DpsStatistics_Test_Taken_Skill_Format" xml:space="preserve">
+    <value>テスト被ダメージスキル {0}</value>
+  </data>
+  <data name="Menu_Exit" xml:space="preserve">
+    <value>終了</value>
+  </data>
+  <data name="Menu_Training" xml:space="preserve">
+    <value>トレーニングモード</value>
+  </data>
+  <data name="Tooltip_ToggleScope" xml:space="preserve">
+    <value>切替：全体 / 現在</value>
+  </data>
+  <data name="Window_Settings_Title" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="Window_DpsStatistics_Title" xml:space="preserve">
+    <value>ちょ、DPS見ないで！</value>
+  </data>
+  <data name="Window_PersonalDps_Title" xml:space="preserve">
+    <value>トレーニングモード</value>
+  </data>
+  <data name="Settings_Heading" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="Settings_Section_Basic_Title" xml:space="preserve">
+    <value>基本設定</value>
+  </data>
+  <data name="Settings_Section_Basic_Sub" xml:space="preserve">
+    <value>自動検出できない場合は、手動で設定してください</value>
+  </data>
+  <data name="Settings_Section_Shortcut_Title" xml:space="preserve">
+    <value>ショートカット</value>
+  </data>
+  <data name="Settings_Section_Shortcut_Sub" xml:space="preserve">
+    <value>選択中のショートカットは [Delete] キーで削除できます</value>
+  </data>
+  <data name="Settings_Shortcut_MouseThrough" xml:space="preserve">
+    <value>マウス透過</value>
+  </data>
+  <data name="Settings_Shortcut_ClearData" xml:space="preserve">
+    <value>画面をクリア</value>
+  </data>
+  <data name="Settings_Shortcut_MouseThrough_Tooltip" xml:space="preserve">
+    <value>この欄を選択してショートカット（例：F6）を押してください。
+削除するには Delete キーを押してください。</value>
+  </data>
+  <data name="Settings_Shortcut_ClearData_Tooltip" xml:space="preserve">
+    <value>この欄を選択してショートカット（例：F9）を押してください。
+削除するには Delete キーを押してください。</value>
+  </data>
+  <data name="Settings_Section_Display_Title" xml:space="preserve">
+    <value>表示設定</value>
+  </data>
+  <data name="Settings_Language_Title" xml:space="preserve">
+    <value>言語</value>
+  </data>
+  <data name="Settings_Section_Combat_Title" xml:space="preserve">
+    <value>戦闘設定</value>
+  </data>
+  <data name="Settings_Section_Combat_Sub" xml:space="preserve">
+    <value>戦闘離脱しても累計戦闘データは保持されます</value>
+  </data>
+  <data name="Settings_NetworkAdapter_Label" xml:space="preserve">
+    <value>ネットワークアダプター</value>
+  </data>
+  <data name="Settings_Combat_ClearAfterBattle" xml:space="preserve">
+    <value>戦闘離脱後にリセット</value>
+  </data>
+  <data name="Settings_Common_Seconds" xml:space="preserve">
+    <value>秒</value>
+  </data>
+  <data name="Settings_Combat_ClearAfterTeleport" xml:space="preserve">
+    <value>マップ移動時に累計戦闘データをリセット</value>
+  </data>
+  <data name="Settings_Switch_On" xml:space="preserve">
+    <value>オン</value>
+  </data>
+  <data name="Settings_Switch_Off" xml:space="preserve">
+    <value>オフ</value>
+  </data>
+  <data name="Settings_Display_NumberMode" xml:space="preserve">
+    <value>数値表示形式</value>
+  </data>
+  <data name="Settings_Display_Opacity" xml:space="preserve">
+    <value>ウィンドウの不透明度</value>
+  </data>
+  <data name="Settings_Display_PlayerNameMask" xml:space="preserve">
+    <value>プレイヤー名を隠す</value>
+  </data>
+  <data name="Settings_Display_MarqueeText" xml:space="preserve">
+    <value>長い名前をスクロール表示</value>
+  </data>
+  <data name="Settings_Display_MarqueeText_Tooltip" xml:space="preserve">
+    <value>プレイヤー名が表示領域を超えた場合に自動でスクロールします。</value>
+  </data>
+  <data name="Settings_PlayerInfo_Preset_Default_Tooltip" xml:space="preserve">
+    <value>プレイヤー名 - 氷牙型 (25000-8)</value>
+  </data>
+  <data name="Settings_PlayerInfo_Preset_Simple_Tooltip" xml:space="preserve">
+    <value>プレイヤー名 (25000)</value>
+  </data>
+  <data name="Settings_PlayerInfo_Preset_Detailed_Tooltip" xml:space="preserve">
+    <value>プレイヤー名 - 氷牙型 [S8 Lv50] (25000)</value>
+  </data>
+  <data name="Settings_PlayerInfo_Name" xml:space="preserve">
+    <value>プレイヤー名</value>
+  </data>
+  <data name="Settings_PlayerInfo_Tip" xml:space="preserve">
+    <value>例：</value>
+  </data>
+  <data name="Settings_PlayerInfo_ClassSpec" xml:space="preserve">
+    <value>クラス</value>
+  </data>
+  <data name="Settings_PlayerInfo_Separator_Space" xml:space="preserve">
+    <value>スペース</value>
+  </data>
+  <data name="Settings_Display_ShowDamage" xml:space="preserve">
+    <value>与ダメ/回復/被ダメの合計を表示</value>
+  </data>
+  <data name="Settings_Display_ShowDps" xml:space="preserve">
+    <value>DPS/HPS/DTPSを表示</value>
+  </data>
+  <data name="Settings_Display_ShowPercentage" xml:space="preserve">
+    <value>与ダメ/回復/被ダメの割合を表示</value>
+  </data>
+  <data name="Settings_Display_DpsMode" xml:space="preserve">
+    <value>DPS表示方式</value>
+  </data>
+  <data name="Settings_Display_DpsMode_Tooltip" xml:space="preserve">
+    <value>DPSの算出方法：総ダメージ÷時間、または全体平均DPS</value>
+  </data>
+  <data name="Settings_Display_DpsMode_On" xml:space="preserve">
+    <value>累計平均DPS</value>
+  </data>
+  <data name="Settings_Display_DpsMode_Off" xml:space="preserve">
+    <value>総ダメージ/時間</value>
+  </data>
+  <data name="Settings_Display_DpsMode_Switch_Tooltip" xml:space="preserve">
+    <value>オン＝総ダメージ÷時間、オフ＝累計平均DPS（ValuePerSecond）</value>
+  </data>
+  <data name="Settings_Display_TimeSeriesCapacity" xml:space="preserve">
+    <value>時系列データのサンプル数</value>
+  </data>
+  <data name="Settings_Display_TimeSeriesCapacity_Tooltip" xml:space="preserve">
+    <value>DPS/HPS/DTPSの推移グラフに保存する最大サンプル数
+（値を大きくすると保持できる履歴が長くなりますが、メモリ使用量も増えます）
+範囲：50～1000</value>
+  </data>
+  <data name="Settings_Common_Samples" xml:space="preserve">
+    <value>サンプル</value>
+  </data>
+  <data name="Settings_Theme_CustomColor_Tooltip" xml:space="preserve">
+    <value>カスタムカラー</value>
+  </data>
+  <data name="Settings_Theme_ClearImage" xml:space="preserve">
+    <value>クリア</value>
+  </data>
+  <data name="Settings_PlayerNameMask_Warning_Title" xml:space="preserve">
+    <value>警告</value>
+  </data>
+  <data name="Settings_PlayerNameMask_Warning_Message" xml:space="preserve">
+    <value>取得したデータを差別やコミュニティ環境を損なう目的で使用しないでください。</value>
+  </data>
+  <data name="Settings_Section_Language_Title" xml:space="preserve">
+    <value>表示設定</value>
+  </data>
+  <data name="Settings_Section_Language_Description" xml:space="preserve">
+    <value>インターフェースに関する設定</value>
+  </data>
+  <data name="Settings_Language_Auto" xml:space="preserve">
+    <value>システムと同じ</value>
+  </data>
+  <data name="Settings_Language_Chinese" xml:space="preserve">
+    <value>简体中文</value>
+  </data>
+  <data name="Settings_Language_English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Settings_Language_Portuguese" xml:space="preserve">
+    <value>Português (Brasil)</value>
+  </data>
+  <data name="NumberDisplay_Wan" xml:space="preserve">
+    <value>日本語表記の桁略記 (万億兆)</value>
+  </data>
+  <data name="NumberDisplay_KMB" xml:space="preserve">
+    <value>英語表記の桁略記 (KMBT)</value>
+  </data>
+  <data name="NumberSuffix_K" xml:space="preserve">
+    <value>K</value>
+  </data>
+  <data name="NumberSuffix_M" xml:space="preserve">
+    <value>M</value>
+  </data>
+  <data name="NumberSuffix_B" xml:space="preserve">
+    <value>B</value>
+  </data>
+  <data name="NumberSuffix_Wan" xml:space="preserve">
+    <value>万</value>
+  </data>
+  <data name="NumberSuffix_Yi" xml:space="preserve">
+    <value>億</value>
+  </data>
+  <data name="NumberSuffix_Zhao" xml:space="preserve">
+    <value>兆</value>
+  </data>
+  <data name="Window_About_Title" xml:space="preserve">
+    <value>このアプリについて</value>
+  </data>
+  <data name="Window_DamageReference_Title" xml:space="preserve">
+    <value>ダメージ参照</value>
+  </data>
+  <data name="Window_Debug_Title" xml:space="preserve">
+    <value>デバッグ表示</value>
+  </data>
+  <data name="MainView_Header_Title" xml:space="preserve">
+    <value>スタレゾツールボックス</value>
+  </data>
+  <data name="MainView_PluginList_Title" xml:space="preserve">
+    <value>プラグイン</value>
+  </data>
+  <data name="MainView_Plugin_Label_Intro" xml:space="preserve">
+    <value>概要：</value>
+  </data>
+  <data name="MainView_Plugin_DpsTool_Title" xml:space="preserve">
+    <value>ちょ、DPS見ないで！</value>
+  </data>
+  <data name="MainView_Plugin_DpsTool_Description" xml:space="preserve">
+    <value>DPS統計やスキル内訳などの機能を搭載しています</value>
+  </data>
+  <data name="MainView_Plugin_Label_Author" xml:space="preserve">
+    <value>作者：</value>
+  </data>
+  <data name="MainView_Plugin_Author_OfficialTeam" xml:space="preserve">
+    <value>【公式】StarResonanceToolBox チーム</value>
+  </data>
+  <data name="MainView_Plugin_AutoStart" xml:space="preserve">
+    <value>ゲーム起動時に自動起動</value>
+  </data>
+  <data name="MainView_Plugin_ModuleSolver_Title" xml:space="preserve">
+    <value>モジュールソルバー</value>
+  </data>
+  <data name="MainView_Plugin_ModuleSolver_Description" xml:space="preserve">
+    <value>最適なモジュール組み合わせを素早く計算する機能</value>
+  </data>
+  <data name="MainView_Plugin_WorldBoss_Title" xml:space="preserve">
+    <value>フィールドボス情報チェッカー</value>
+  </data>
+  <data name="MainView_Plugin_WorldBoss_Description" xml:space="preserve">
+    <value>コミュニティから各チャンネルのフィールドボスの情報を共有します</value>
+  </data>
+  <data name="MainView_Plugin_PigTracker_Title" xml:space="preserve">
+    <value>ウリボ・ナッボ情報チェッカー</value>
+  </data>
+  <data name="MainView_Plugin_PigTracker_Description" xml:space="preserve">
+    <value>コミュニティからウリボ・ナッボの出現場所の情報を共有します</value>
+  </data>
+  <data name="MainView_Debug_Group_Title" xml:space="preserve">
+    <value>デバッグ機能</value>
+  </data>
+  <data name="MainView_Debug_ThemeTest" xml:space="preserve">
+    <value>テーマ切替テストテキスト</value>
+  </data>
+  <data name="MainView_Debug_Button_PcapTest" xml:space="preserve">
+    <value>Pcap テスト</value>
+  </data>
+  <data name="MainView_Debug_Button_SkillBreakdown" xml:space="preserve">
+    <value>スキル詳細表示</value>
+  </data>
+  <data name="MainView_Debug_Button_DamageReference" xml:space="preserve">
+    <value>ダメージ参考表示</value>
+  </data>
+  <data name="MainView_Debug_Button_Settings" xml:space="preserve">
+    <value>設定表示</value>
+  </data>
+  <data name="MainView_Debug_Button_About" xml:space="preserve">
+    <value>このアプリについて表示</value>
+  </data>
+  <data name="Window_ModuleSolve_Title" xml:space="preserve">
+    <value>モジュールソルバー</value>
+  </data>
+  <data name="ModuleSolve_Header_Title" xml:space="preserve">
+    <value>モジュールソルバー</value>
+  </data>
+  <data name="ModuleSolve_TargetProperties_Title" xml:space="preserve">
+    <value>目標オプション・レベル（0は既定）［入力して検索］</value>
+  </data>
+  <data name="ModuleSolve_Property1_Label" xml:space="preserve">
+    <value>オプション1：</value>
+  </data>
+  <data name="ModuleSolve_Property2_Label" xml:space="preserve">
+    <value>オプション2：</value>
+  </data>
+  <data name="ModuleSolve_Property3_Label" xml:space="preserve">
+    <value>オプション3：</value>
+  </data>
+  <data name="ModuleSolve_Property4_Label" xml:space="preserve">
+    <value>オプション4：</value>
+  </data>
+  <data name="ModuleSolve_Property5_Label" xml:space="preserve">
+    <value>オプション5：</value>
+  </data>
+  <data name="ModuleSolve_ExpectedLevel_Label" xml:space="preserve">
+    <value>希望レベル：</value>
+  </data>
+  <data name="ModuleSolve_ExcludeProperties_Title" xml:space="preserve">
+    <value>除外オプション（目標と競合）［入力して検索］</value>
+  </data>
+  <data name="ModuleSolve_ModuleType_Label" xml:space="preserve">
+    <value>モジュール種別：</value>
+  </data>
+  <data name="ModuleSolve_ModuleType_All" xml:space="preserve">
+    <value>すべて</value>
+  </data>
+  <data name="ModuleSolve_ModuleType_Offense" xml:space="preserve">
+    <value>攻撃モジュール</value>
+  </data>
+  <data name="ModuleSolve_ModuleType_Defense" xml:space="preserve">
+    <value>防御モジュール</value>
+  </data>
+  <data name="ModuleSolve_ModuleType_Support" xml:space="preserve">
+    <value>支援モジュール</value>
+  </data>
+  <data name="ModuleSolve_Sort_Label" xml:space="preserve">
+    <value>並び替え：</value>
+  </data>
+  <data name="ModuleSolve_Sort_Attribute" xml:space="preserve">
+    <value>ステータス優先</value>
+  </data>
+  <data name="ModuleSolve_Sort_Level" xml:space="preserve">
+    <value>レベル優先</value>
+  </data>
+  <data name="ModuleSolve_Analyze_Button" xml:space="preserve">
+    <value>モジュールを解析</value>
+  </data>
+  <data name="ModuleSolve_UsingTip" xml:space="preserve">
+    <value>この画面を開いた後、エリア移動または再ログインしてから解析してください。オプション項目は右クリックでクリアできます。</value>
+  </data>
+  <data name="Window_SkillBreakdown_Title" xml:space="preserve">
+    <value>スキル詳細</value>
+  </data>
+  <data name="SkillBreakdown_Header_Title" xml:space="preserve">
+    <value>スキル詳細</value>
+  </data>
+  <data name="SkillBreakdown_Card_RealtimeChart" xml:space="preserve">
+    <value>リアルタイムDPS/HPS/DTPSグラフ</value>
+  </data>
+  <data name="SkillBreakdown_Placeholder_LineChart" xml:space="preserve">
+    <value>ここに折れ線グラフが表示されます</value>
+  </data>
+  <data name="SkillBreakdown_Card_ShareChart" xml:space="preserve">
+    <value>スキル割合グラフ</value>
+  </data>
+  <data name="SkillBreakdown_Placeholder_PieChart" xml:space="preserve">
+    <value>ここに円グラフが表示されます</value>
+  </data>
+  <data name="SkillBreakdown_Card_DamageDistribution" xml:space="preserve">
+    <value>ダメージ内訳</value>
+  </data>
+  <data name="SkillBreakdown_Placeholder_BarChart" xml:space="preserve">
+    <value>ここに棒グラフが表示されます</value>
+  </data>
+  <data name="SkillBreakdown_Section_DamageInfo" xml:space="preserve">
+    <value>ダメージ情報</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalDamage" xml:space="preserve">
+    <value>総ダメージ</value>
+  </data>
+  <data name="SkillBreakdown_Label_Dps" xml:space="preserve">
+    <value>DPS</value>
+  </data>
+  <data name="SkillBreakdown_Label_HitCount" xml:space="preserve">
+    <value>ヒット数</value>
+  </data>
+  <data name="SkillBreakdown_Label_CritRate" xml:space="preserve">
+    <value>会心率</value>
+  </data>
+  <data name="SkillBreakdown_Label_LuckRate" xml:space="preserve">
+    <value>幸運率</value>
+  </data>
+  <data name="SkillBreakdown_Label_CritCount" xml:space="preserve">
+    <value>会心回数</value>
+  </data>
+  <data name="SkillBreakdown_Label_NormalDamage" xml:space="preserve">
+    <value>通常率</value>
+  </data>
+  <data name="SkillBreakdown_Label_CritDamage" xml:space="preserve">
+    <value>会心ダメージ</value>
+  </data>
+  <data name="SkillBreakdown_Label_LuckCount" xml:space="preserve">
+    <value>幸運回数</value>
+  </data>
+  <data name="SkillBreakdown_Label_LuckDamage" xml:space="preserve">
+    <value>幸運ダメージ</value>
+  </data>
+  <data name="SkillBreakdown_Label_Others" xml:space="preserve">
+    <value>その他</value>
+  </data>
+  <data name="SkillBreakdown_Label_AverageDamage" xml:space="preserve">
+    <value>平均ダメージ</value>
+  </data>
+  <data name="SkillBreakdown_Label_DamageTakenCount" xml:space="preserve">
+    <value>被弾回数</value>
+  </data>
+  <data name="SkillBreakdown_Placeholder_Form" xml:space="preserve">
+    <value>ここにデータ表が表示されます</value>
+  </data>
+  <data name="SkillBreakdown_Tab_Output" xml:space="preserve">
+    <value>DPS</value>
+  </data>
+  <data name="SkillBreakdown_Tab_Healing" xml:space="preserve">
+    <value>回復</value>
+  </data>
+  <data name="SkillBreakdown_Tab_Tanking" xml:space="preserve">
+    <value>被ダメージ</value>
+  </data>
+  <data name="SkillBreakdown_Tab_Summary" xml:space="preserve">
+    <value>概要</value>
+  </data>
+  <data name="SkillBreakdown_Tab_Details" xml:space="preserve">
+    <value>詳細</value>
+  </data>
+  <data name="SkillBreakdown_Placeholder_Details" xml:space="preserve">
+    <value>詳細（プレースホルダー）</value>
+  </data>
+  <data name="SkillBreakdown_Tab_Graph" xml:space="preserve">
+    <value>グラフ</value>
+  </data>
+  <data name="SkillBreakdown_Placeholder_Graph" xml:space="preserve">
+    <value>グラフ（プレースホルダー）</value>
+  </data>
+  <data name="DpsStatistics_TestButton_Content" xml:space="preserve">
+    <value>T</value>
+  </data>
+  <data name="DpsStatistics_TestButton_Tooltip" xml:space="preserve">
+    <value>テスト項目を追加</value>
+  </data>
+  <data name="Warning_UidNotConfigured" xml:space="preserve">
+    <value>UID未設定のままトレーニングモードを開こうとしました</value>
+  </data>
+  <data name="Info_OpeningPersonalDps" xml:space="preserve">
+    <value>トレーニングモードを開く</value>
+  </data>
+  <data name="SkillBreakdown_Section_DamageDistribution" xml:space="preserve">
+    <value>ダメージ内訳</value>
+  </data>
+  <data name="StatisticType_Damage" xml:space="preserve">
+    <value>与ダメ</value>
+  </data>
+  <data name="StatisticType_Healing" xml:space="preserve">
+    <value>回復</value>
+  </data>
+  <data name="StatisticType_TakenDamage" xml:space="preserve">
+    <value>被ダメ</value>
+  </data>
+  <data name="StatisticType_NpcTakenDamage" xml:space="preserve">
+    <value>NPC被ダメ</value>
+  </data>
+  <data name="DpsStatistics_TeamTotal_Damage" xml:space="preserve">
+    <value>パーティダメージ</value>
+  </data>
+  <data name="DpsStatistics_TeamTotal_Healing" xml:space="preserve">
+    <value>パーティ回復量</value>
+  </data>
+  <data name="DpsStatistics_TeamTotal_TakenDamage" xml:space="preserve">
+    <value>パーティ被ダメージ</value>
+  </data>
+  <data name="DpsStatistics_TeamTotal_NpcTakenDamage" xml:space="preserve">
+    <value>NPC被ダメージ</value>
+  </data>
+  <data name="ScopeTime_Current" xml:space="preserve">
+    <value>現在</value>
+  </data>
+  <data name="ScopeTime_Total" xml:space="preserve">
+    <value>累計</value>
+  </data>
+  <data name="DpsStatistics_Indicator_ClickThrough_Tooltip" xml:space="preserve">
+    <value>マウス透過が有効です</value>
+    <comment>鼠标穿透已启用</comment>
+  </data>
+  <data name="Settings_Shortcut_TopMost" xml:space="preserve">
+    <value>最前面に固定</value>
+  </data>
+  <data name="DpsStatistics_Indicator_WindowTopMost_Tooltip" xml:space="preserve">
+    <value>最前面に固定</value>
+    <comment>切换置顶</comment>
+  </data>
+  <data name="Settings_Shortcut_TopMost_Tooltip" xml:space="preserve">
+    <value>この欄を選択してショートカット（例：F7）を押してください。
+削除するには Delete キーを押してください。</value>
+  </data>
+  <data name="Settings_NetworkAdapterAutoSelect_Failed" xml:space="preserve">
+    <value>ネットワークアダプターの自動選択に失敗しました。ネットワーク接続を確認してください。</value>
+  </data>
+  <data name="Settings_NetworkAdapterAutoSelect_Button" xml:space="preserve">
+    <value>自動</value>
+  </data>
+  <data name="Window_BossTracker_Title" xml:space="preserve">
+    <value>ボス情報チェッカー</value>
+  </data>
+  <data name="MainView_Plugin_Search_PlaceHolder" xml:space="preserve">
+    <value>検索...</value>
+  </data>
+  <data name="MainView_Plugin_State_Inactive" xml:space="preserve">
+    <value>停止中</value>
+  </data>
+  <data name="MainView_Plugin_State_Running" xml:space="preserve">
+    <value>実行中</value>
+  </data>
+  <data name="MainView_Plugin_Settings" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="Settings_Section_Theme_Title" xml:space="preserve">
+    <value>テーマ設定</value>
+  </data>
+  <data name="Settings_Section_Theme_Description" xml:space="preserve">
+    <value>ツールボックスの外観をカスタマイズ</value>
+  </data>
+  <data name="Settings_Theme_WindowColor" xml:space="preserve">
+    <value>ウィンドウの色</value>
+  </data>
+  <data name="Settings_Theme_BackgroundImage" xml:space="preserve">
+    <value>背景画像</value>
+  </data>
+  <data name="Settings_Theme_SelectImage" xml:space="preserve">
+    <value>画像を選択...</value>
+  </data>
+  <data name="Settings_CancelConfirm_Title" xml:space="preserve">
+    <value>変更を破棄</value>
+  </data>
+  <data name="Settings_CancelConfirm_Message" xml:space="preserve">
+    <value>変更を破棄しますか？ 保存していない変更は失われます。</value>
+  </data>
+  <data name="MainView_Plugin_AutoRunState_Enabled" xml:space="preserve">
+    <value>自動オン</value>
+  </data>
+  <data name="MainView_Plugin_AutoRunState_Disabled" xml:space="preserve">
+    <value>自動オフ</value>
+  </data>
+  <data name="MainView_Plugin_ThirdPartySdkTips" xml:space="preserve">
+    <value>プラグインSDKは近日公開！</value>
+  </data>
+  <data name="Settings_Combat_DpsUpdateMode" xml:space="preserve">
+    <value>DPS更新方式</value>
+  </data>
+  <data name="Settings_Combat_DpsUpdateMode_Tooltip" xml:space="preserve">
+    <value>リアルタイム方式：イベント発生時に更新
+
+タイマー方式：一定間隔で更新
+（CPU負荷が低く、更新間隔を設定できます）</value>
+  </data>
+  <data name="Settings_Combat_DpsUpdateMode_Passive" xml:space="preserve">
+    <value>リアルタイム方式</value>
+  </data>
+  <data name="Settings_Combat_DpsUpdateMode_Active" xml:space="preserve">
+    <value>タイマー方式</value>
+  </data>
+  <data name="Settings_Combat_DpsUpdateInterval" xml:space="preserve">
+    <value>DPS更新間隔</value>
+  </data>
+  <data name="Settings_Combat_DpsUpdateInterval_Tooltip" xml:space="preserve">
+    <value>タイマー方式でのみ有効
+推奨値：500～2000ミリ秒</value>
+  </data>
+  <data name="Settings_Common_Milliseconds" xml:space="preserve">
+    <value>ミリ秒</value>
+  </data>
+  <data name="Window_Training_Title" xml:space="preserve">
+    <value>トレーニングモード</value>
+  </data>
+  <data name="MainView_Plugin_Training_Title" xml:space="preserve">
+    <value>トレーニングモード</value>
+  </data>
+  <data name="MainView_Plugin_Training_Description" xml:space="preserve">
+    <value>トレーニングモードを搭載し、スキルダメージ内訳の分析や各クラスのランキング表示に対応しています</value>
+  </data>
+  <data name="Settings_Shortcut_ToggleDps" xml:space="preserve">
+    <value>DPSウィンドウを切り替え</value>
+  </data>
+  <data name="Settings_Shortcut_ToggleDps_Tooltip" xml:space="preserve">
+    <value>この欄を選択してショートカット（例：F10）を押してください。
+削除するには Delete キーを押してください。</value>
+  </data>
+  <data name="Settings_Section_Character_Title" xml:space="preserve">
+    <value>キャラクター設定</value>
+  </data>
+  <data name="Settings_Section_Character_Sub" xml:space="preserve">
+    <value>トレーニングモードで使用するキャラクターUIDの設定</value>
+  </data>
+  <data name="Settings_Character_Uid" xml:space="preserve">
+    <value>キャラクターUID</value>
+  </data>
+  <data name="Settings_Character_Uid_Tooltip" xml:space="preserve">
+    <value>キャラクターUID（数値）を入力してください。
+確認方法：ゲーム内の画面左下に表示されるプレイヤー番号がUIDです。</value>
+  </data>
+  <data name="Settings_Combat_MaxHistoryCount" xml:space="preserve">
+    <value>履歴の保存上限</value>
+  </data>
+  <data name="Settings_Combat_MaxHistoryCount_Tooltip" xml:space="preserve">
+    <value>保存する戦闘履歴の最大件数（5～50）</value>
+  </data>
+  <data name="Settings_Common_Records" xml:space="preserve">
+    <value>件</value>
+  </data>
+  <data name="Settings_Language_Korean" xml:space="preserve">
+    <value>한국어</value>
+  </data>
+  <data name="SkillBreakdown_Label_Total" xml:space="preserve">
+    <value>合計</value>
+  </data>
+  <data name="SkillBreakdown_Unit_Hits" xml:space="preserve">
+    <value>ヒット</value>
+  </data>
+  <data name="SkillBreakdown_Label_AverageDps" xml:space="preserve">
+    <value>平均DPS</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalHits" xml:space="preserve">
+    <value>総ヒット数</value>
+  </data>
+  <data name="SkillBreakdown_Section_DamageSkillsAnalysis" xml:space="preserve">
+    <value>スキル別ダメージ</value>
+  </data>
+  <data name="SkillBreakdown_Chart_RealTimeDps" xml:space="preserve">
+    <value>リアルタイムDPS</value>
+  </data>
+  <data name="SkillBreakdown_Tooltip_ResetZoom" xml:space="preserve">
+    <value>ズームをリセット</value>
+  </data>
+  <data name="SkillBreakdown_Chart_SkillDamageDistribution" xml:space="preserve">
+    <value>スキル別ダメージ割合</value>
+  </data>
+  <data name="SkillBreakdown_Chart_HitTypeDistribution" xml:space="preserve">
+    <value>ヒット数内訳</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalHealing" xml:space="preserve">
+    <value>総回復量</value>
+  </data>
+  <data name="SkillBreakdown_Label_AverageHps" xml:space="preserve">
+    <value>平均HPS</value>
+  </data>
+  <data name="SkillBreakdown_Label_HealCount" xml:space="preserve">
+    <value>回復回数</value>
+  </data>
+  <data name="SkillBreakdown_Section_HealingSkillsAnalysis" xml:space="preserve">
+    <value>スキル別回復量</value>
+  </data>
+  <data name="SkillBreakdown_Chart_RealTimeHps" xml:space="preserve">
+    <value>リアルタイムHPS</value>
+  </data>
+  <data name="SkillBreakdown_Chart_HealingDistribution" xml:space="preserve">
+    <value>スキル別回復量割合</value>
+  </data>
+  <data name="SkillBreakdown_Chart_HealTypeDistribution" xml:space="preserve">
+    <value>回復回数内訳</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalDamageTaken" xml:space="preserve">
+    <value>総被ダメージ</value>
+  </data>
+  <data name="SkillBreakdown_Label_AverageDtps" xml:space="preserve">
+    <value>平均DTPS</value>
+  </data>
+  <data name="SkillBreakdown_Section_DamageTakenAnalysis" xml:space="preserve">
+    <value>スキル別被ダメージ</value>
+  </data>
+  <data name="SkillBreakdown_Chart_RealTimeDtps" xml:space="preserve">
+    <value>リアルタイムDTPS</value>
+  </data>
+  <data name="SkillBreakdown_Chart_DamageSourcesDistribution" xml:space="preserve">
+    <value>スキル別被ダメージ割合</value>
+  </data>
+  <data name="SkillBreakdown_Chart_DpsSeriesXAxis" xml:space="preserve">
+    <value>時間（秒）</value>
+  </data>
+  <data name="Settings_PlayerInfoCustomization_Title" xml:space="preserve">
+    <value>プレイヤー情報の表示</value>
+  </data>
+  <data name="Settings_PlayerInfoCustomization_Description" xml:space="preserve">
+    <value>プレイヤー情報の表示形式をカスタマイズ</value>
+  </data>
+  <data name="Settings_PlayerInfo_UseCustomFormat" xml:space="preserve">
+    <value>カスタム形式を有効にする</value>
+  </data>
+  <data name="Settings_PlayerInfo_QuickPresets" xml:space="preserve">
+    <value>プリセット</value>
+  </data>
+  <data name="Settings_PlayerInfo_Preset_Default" xml:space="preserve">
+    <value>既定</value>
+  </data>
+  <data name="Settings_PlayerInfo_Preset_Simple" xml:space="preserve">
+    <value>簡易</value>
+  </data>
+  <data name="Settings_PlayerInfo_Preset_Detailed" xml:space="preserve">
+    <value>詳細</value>
+  </data>
+  <data name="Settings_PlayerInfo_Preset_NameOnly" xml:space="preserve">
+    <value>名前のみ</value>
+  </data>
+  <data name="Settings_PlayerInfo_AddFields" xml:space="preserve">
+    <value>表示項目を追加</value>
+  </data>
+  <data name="Settings_PlayerInfo_AddSeparators" xml:space="preserve">
+    <value>区切り文字を追加</value>
+  </data>
+  <data name="Settings_PlayerInfo_FormatString" xml:space="preserve">
+    <value>カスタム形式の文字列</value>
+  </data>
+  <data name="Settings_PlayerInfo_FormatString_Tooltip" xml:space="preserve">
+    <value>上級者向け：{Name}、{Spec}、{PowerLevel} などのプレースホルダーを使って形式文字列を直接編集できます。</value>
+  </data>
+  <data name="Settings_PlayerInfo_Clear" xml:space="preserve">
+    <value>クリア</value>
+  </data>
+  <data name="Settings_PlayerInfo_Clear_Tooltip" xml:space="preserve">
+    <value>形式文字列を消去して再設定</value>
+  </data>
+  <data name="Settings_PlayerInfo_Preview" xml:space="preserve">
+    <value>ライブプレビュー</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="SkillBreakdown_Suffix_Progress" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="SkillBreakdown_Suffix_Casts" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="SkillBreakdown_Suffix_Crits" xml:space="preserve">
+    <value>会心回数</value>
+  </data>
+  <data name="SkillBreakdown_Suffix_Lucky" xml:space="preserve">
+    <value>幸運率</value>
+  </data>
+  <data name="SkillBreakdown_Label_Average" xml:space="preserve">
+    <value>平均</value>
+  </data>
+  <data name="SkillLog_Title" xml:space="preserve">
+    <value>スキルログ</value>
+  </data>
+  <data name="SkillLog_Header_Title" xml:space="preserve">
+    <value>スキルログ</value>
+  </data>
+  <data name="SkillLog_Header_Status" xml:space="preserve">
+    <value>システム稼働中</value>
+  </data>
+  <data name="SkillLog_Popup_TotalDamage" xml:space="preserve">
+    <value>総ダメージ</value>
+  </data>
+  <data name="SkillLog_Popup_HitCount" xml:space="preserve">
+    <value>ヒット数</value>
+  </data>
+  <data name="SkillLog_Popup_AvgDamage" xml:space="preserve">
+    <value>平均ダメージ</value>
+  </data>
+  <data name="SkillLog_Popup_Critical" xml:space="preserve">
+    <value>会心</value>
+  </data>
+  <data name="SkillLog_Popup_LuckyHit" xml:space="preserve">
+    <value>幸運ヒット</value>
+  </data>
+  <data name="SkillLog_Label_Damage" xml:space="preserve">
+    <value>ダメージ</value>
+  </data>
+  <data name="SkillLog_Label_Heal" xml:space="preserve">
+    <value>回復</value>
+  </data>
+  <data name="SkillLog_Footer_Connection" xml:space="preserve">
+    <value>接続：安定</value>
+  </data>
+  <data name="SkillLog_Footer_Logging" xml:space="preserve">
+    <value>ログ記録中</value>
+  </data>
+  <data name="SkillLog_Button_Clear" xml:space="preserve">
+    <value>ログをクリア</value>
+  </data>
+  <data name="SkillLog_Button_Close" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="SkillLog_Popup_CritDamage" xml:space="preserve">
+    <value>会心ダメージ</value>
+  </data>
+  <data name="SkillLog_Popup_LuckyDamage" xml:space="preserve">
+    <value>幸運ダメージ</value>
+  </data>
+  <data name="SkillBreakdown_Label_Percentage" xml:space="preserve">
+    <value>割合</value>
+  </data>
+  <data name="SkillBreakdown_Label_SkillName" xml:space="preserve">
+    <value>スキル名</value>
+  </data>
+  <data name="SkillBreakdown_Label_Uid" xml:space="preserve">
+    <value>UID</value>
+  </data>
+  <data name="SkillBreakdown_Label_Power" xml:space="preserve">
+    <value>能力スコア</value>
+  </data>
+  <data name="SkillBreakdown_Label_ValuePercentToTotal" xml:space="preserve">
+    <value>割合</value>
+  </data>
+  <data name="DpsStatistics_CurrentPlayerRank" xml:space="preserve">
+    <value>現在の順位</value>
+  </data>
+  <data name="Menu_About" xml:space="preserve">
+    <value>このアプリについて</value>
+  </data>
+  <data name="Settings_Section_ClassColors_Title" xml:space="preserve">
+    <value>クラスカラー設定</value>
+  </data>
+  <data name="Settings_Section_ClassColors_Description" xml:space="preserve">
+    <value>各クラスの色をカスタマイズ</value>
+  </data>
+  <data name="Settings_ClassColors_Reset_Tooltip" xml:space="preserve">
+    <value>色を既定に戻す</value>
+  </data>
+  <data name="Settings_ClassColors_Reset" xml:space="preserve">
+    <value>リセット</value>
+  </data>
+  <data name="PreviewVersion" xml:space="preserve">
+    <value>プレビュー版：{0}</value>
+  </data>
+  <data name="App_Name" xml:space="preserve">
+    <value>スタレゾツールボックス</value>
+  </data>
+  <data name="About_Intro_Primary" xml:space="preserve">
+    <value>『ブループロトコル：スターレゾナンス』のプレイヤー向けの戦闘データ集計ツールです。</value>
+  </data>
+  <data name="About_Intro_Details" xml:space="preserve">
+    <value>本ツールはゲームクライアントを改変せず、ゲームの利用規約にも違反しません。戦闘データの分析を支援し、プレイヤーの負担を減らすことで、より快適なプレイ体験を目指しています。ご利用にあたっては、取得したデータを差別や誹謗中傷など、ゲームコミュニティの健全な環境を損なう目的で使用しないようお願いいたします。</value>
+  </data>
+  <data name="About_Version_Label" xml:space="preserve">
+    <value>現在のバージョン：</value>
+  </data>
+  <data name="About_Developers_Label" xml:space="preserve">
+    <value>開発者（順不同）：</value>
+  </data>
+  <data name="About_OpenSource_Prefix" xml:space="preserve">
+    <value>本プロジェクトは</value>
+  </data>
+  <data name="About_OpenSource_RepositoryUrl" xml:space="preserve">
+    <value>https://github.com/anying1073/StarResonanceDps</value>
+  </data>
+  <data name="About_OpenSource_Suffix" xml:space="preserve">
+    <value>でオープンソースとして公開しています。ご利用中に不具合や問題が発生した場合は、Issueでご報告ください。</value>
+  </data>
+  <data name="About_Contribution" xml:space="preserve">
+    <value>開発に参加したい場合は、Fork のうえ Pull Requestを作成してください。</value>
+  </data>
+  <data name="About_Community_Invite" xml:space="preserve">
+    <value>中国語圏の開発コミュニティ（QQグループ）に興味のある方は、ぜひご参加ください:</value>
+  </data>
+  <data name="About_Community_GroupOne" xml:space="preserve">
+    <value>678150498 (グループ1)</value>
+  </data>
+  <data name="About_Community_GroupTwo" xml:space="preserve">
+    <value>1022797551 (グループ2)</value>
+  </data>
+  <data name="About_Thanks_Prefix" xml:space="preserve">
+    <value>謝辞:</value>
+  </data>
+  <data name="About_Thanks_RepositoryUrl" xml:space="preserve">
+    <value>https://github.com/dmlgzs/StarResonanceDamageCounter</value>
+  </data>
+  <data name="About_Thanks_Suffix" xml:space="preserve">
+    <value>本プロジェクトの開発にあたり、多大なるご協力・ご支援を賜りました。</value>
+  </data>
+  <data name="About_Copyright" xml:space="preserve">
+    <value>Copyright (C) 2025 anying1073/StarResonanceDps Team.</value>
+  </data>
+  <data name="About_PoweredBy" xml:space="preserve">
+    <value>Powered by .NET 8, Licensed under the GNU AGPL v3.</value>
+  </data>
+  <data name="DamageReference_Header_Title" xml:space="preserve">
+    <value>スキル詳細</value>
+  </data>
+  <data name="DamageReference_Ribbon_Title" xml:space="preserve">
+    <value>ダメージ参考</value>
+  </data>
+  <data name="DamageReference_Classes_All" xml:space="preserve">
+    <value>全クラス</value>
+  </data>
+  <data name="Classes_Stormblade" xml:space="preserve">
+    <value>ストームブレイド</value>
+  </data>
+  <data name="Classes_FrostMage" xml:space="preserve">
+    <value>フロストメイジ</value>
+  </data>
+  <data name="Classes_WindKnight" xml:space="preserve">
+    <value>ゲイルランサー</value>
+  </data>
+  <data name="Classes_VerdantOracle" xml:space="preserve">
+    <value>ヴァーダントオラクル</value>
+  </data>
+  <data name="Classes_HeavyGuardian" xml:space="preserve">
+    <value>ヘヴィガーディアン</value>
+  </data>
+  <data name="Classes_Marksman" xml:space="preserve">
+    <value>ディバインアーチャー</value>
+  </data>
+  <data name="Classes_ShieldKnight" xml:space="preserve">
+    <value>シールドファイター</value>
+  </data>
+  <data name="Classes_SoulMusician" xml:space="preserve">
+    <value>ビートパフォーマー</value>
+  </data>
+  <data name="DamageReference_Table_Title" xml:space="preserve">
+    <value>ダメージ参考</value>
+  </data>
+  <data name="DamageReference_NoData" xml:space="preserve">
+    <value>データなし</value>
+  </data>
+  <data name="DamageReference_Disclaimer" xml:space="preserve">
+    <value>以上のデータは娯楽・参考目的に限ります。差別などに利用した場合、利用停止などの対応を受ける可能性があります。ゲーム環境の健全性を損なう行為は行わないでください。</value>
+  </data>
+  <data name="Debug_LoadPcap" xml:space="preserve">
+    <value>PCAPを読み込む</value>
+  </data>
+  <data name="Debug_AddSampleData" xml:space="preserve">
+    <value>サンプルデータを追加</value>
+  </data>
+  <data name="Debug_ClearLogs" xml:space="preserve">
+    <value>ログをクリア</value>
+  </data>
+  <data name="Debug_AddTestLog" xml:space="preserve">
+    <value>テストログを追加</value>
+  </data>
+  <data name="Debug_SaveLogs" xml:space="preserve">
+    <value>ログの保存</value>
+  </data>
+  <data name="Debug_AutoScroll" xml:space="preserve">
+    <value>自動スクロール</value>
+  </data>
+  <data name="Debug_Filter_Level" xml:space="preserve">
+    <value>レベル：</value>
+  </data>
+  <data name="Debug_Filter_Label" xml:space="preserve">
+    <value>フィルター：</value>
+  </data>
+  <data name="Debug_Filter_Tooltip" xml:space="preserve">
+    <value>メッセージ内容またはカテゴリでログを絞り込みます</value>
+  </data>
+  <data name="Debug_Header_Time" xml:space="preserve">
+    <value>時間</value>
+  </data>
+  <data name="Debug_Header_Level" xml:space="preserve">
+    <value>レベル</value>
+  </data>
+  <data name="Debug_Header_Category" xml:space="preserve">
+    <value>カテゴリ</value>
+  </data>
+  <data name="Debug_Header_Message" xml:space="preserve">
+    <value>メッセージ</value>
+  </data>
+  <data name="Debug_Status_TotalPrefix" xml:space="preserve">
+    <value>総計：</value>
+  </data>
+  <data name="Debug_Status_TotalSuffix" xml:space="preserve">
+    <value> 件のログ</value>
+  </data>
+  <data name="Debug_Status_FilteredPrefix" xml:space="preserve">
+    <value>Filtered: </value>
+  </data>
+  <data name="Debug_Status_FilteredSuffix" xml:space="preserve">
+    <value> 件のログ</value>
+  </data>
+  <data name="Debug_Status_LastPrefix" xml:space="preserve">
+    <value>最新：</value>
+  </data>
+  <data name="Debug_ThemeTestText" xml:space="preserve">
+    <value>テーマ切替テストテキスト</value>
+  </data>
+  <data name="Debug_Button_PcapTest" xml:space="preserve">
+    <value>Pcap テスト</value>
+  </data>
+  <data name="Debug_Button_SkillBreakdown" xml:space="preserve">
+    <value>スキル詳細表示</value>
+  </data>
+  <data name="Debug_Button_DamageReference" xml:space="preserve">
+    <value>ダメージ参考表示</value>
+  </data>
+  <data name="Debug_Button_Settings" xml:space="preserve">
+    <value>設定表示</value>
+  </data>
+  <data name="Debug_Button_About" xml:space="preserve">
+    <value>このアプリについて表示</value>
+  </data>
+  <data name="Debug_Group_Title" xml:space="preserve">
+    <value>デバッグ機能</value>
+  </data>
+  <data name="Common_Action_Open" xml:space="preserve">
+    <value>起動</value>
+  </data>
+  <data name="Common_SkillDisplayLimitChanged" xml:space="preserve">
+    <value>スキル表示数を設定しました:</value>
+  </data>
+  <data name="Common_SkillDisplayLimitSaved" xml:space="preserve">
+    <value>スキル表示数を設定ファイルに保存しました:</value>
+  </data>
+  <data name="Common_SkillListRefreshed" xml:space="preserve">
+    <value>全スロットのスキル一覧を更新しました</value>
+  </data>
+  <data name="Command_OpenSkillLog" xml:space="preserve">
+    <value>スキルログを開く</value>
+  </data>
+  <data name="Dialog_UidRequired_Title" xml:space="preserve">
+    <value>キャラクターUIDの設定が必要です</value>
+  </data>
+  <data name="Dialog_UidRequired_Message" xml:space="preserve">
+    <value>トレーニングモードを使用するには、設定画面でキャラクターUIDを登録してください。
+
+UIDの確認方法：ゲーム内の画面左下に表示されるプレイヤー番号がUIDです。</value>
+  </data>
+  <data name="Common_Dash" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="ClassSpec_Unknown" xml:space="preserve">
+    <value>不明</value>
+    <comment>Unknown = 0</comment>
+  </data>
+  <data name="ClassSpec_ShieldKnightRecovery" xml:space="preserve">
+    <value>光砕型</value>
+    <comment>ShieldKnightRecovery</comment>
+  </data>
+  <data name="ClassSpec_ShieldKnightShield" xml:space="preserve">
+    <value>光盾型</value>
+    <comment>ShieldKnightShield</comment>
+  </data>
+  <data name="ClassSpec_HeavyGuardianEarthfort" xml:space="preserve">
+    <value>剛身型</value>
+    <comment>HeavyGuardianEarthfort</comment>
+  </data>
+  <data name="ClassSpec_HeavyGuardianBlock" xml:space="preserve">
+    <value>剛守型</value>
+    <comment>HeavyGuardianBlock</comment>
+  </data>
+  <data name="ClassSpec_StormbladeIaidoSlash" xml:space="preserve">
+    <value>雷刃型</value>
+    <comment>StormbladeIaidoSlash</comment>
+  </data>
+  <data name="ClassSpec_StormbladeMoonStrike" xml:space="preserve">
+    <value>月影型</value>
+    <comment>StormbladeMoonStrike</comment>
+  </data>
+  <data name="ClassSpec_WindKnightVanGuard" xml:space="preserve">
+    <value>烈風型</value>
+    <comment>WindKnightVanGuard</comment>
+  </data>
+  <data name="ClassSpec_WindKnightSkyward" xml:space="preserve">
+    <value>乱風型</value>
+    <comment>WindKnightSkyward</comment>
+  </data>
+  <data name="ClassSpec_FrostMageIcicle" xml:space="preserve">
+    <value>氷牙型</value>
+    <comment>FrostMageIcicle</comment>
+  </data>
+  <data name="ClassSpec_FrostMageFrostBeam" xml:space="preserve">
+    <value>霜天型</value>
+    <comment>FrostMageFrostBeam</comment>
+  </data>
+  <data name="ClassSpec_MarksmanWildpack" xml:space="preserve">
+    <value>狼弓型</value>
+    <comment>MarksmanWildpack</comment>
+  </data>
+  <data name="ClassSpec_MarksmanFalconry" xml:space="preserve">
+    <value>鷹弓型</value>
+    <comment>MarksmanFalconry</comment>
+  </data>
+  <data name="ClassSpec_VerdantOracleSmite" xml:space="preserve">
+    <value>威咲型</value>
+    <comment>VerdantOracleSmite</comment>
+  </data>
+  <data name="ClassSpec_VerdantOracleLifeBind" xml:space="preserve">
+    <value>森癒型</value>
+    <comment>VerdantOracleLifeBind</comment>
+  </data>
+  <data name="ClassSpec_SoulMusicianDissonance" xml:space="preserve">
+    <value>狂音型</value>
+    <comment>SoulMusicianDissonance</comment>
+  </data>
+  <data name="ClassSpec_SoulMusicianConcerto" xml:space="preserve">
+    <value>響奏型</value>
+    <comment>SoulMusicianConcerto</comment>
+  </data>
+  <data name="Debug_Localization_Language" xml:space="preserve">
+    <value>言語：</value>
+  </data>
+  <data name="Debug_Localization_TestKey" xml:space="preserve">
+    <value>テストキー：</value>
+  </data>
+  <data name="Debug_Localization_Test" xml:space="preserve">
+    <value>テスト</value>
+  </data>
+  <data name="App_Exit_Confirm_Title" xml:space="preserve">
+    <value>確認</value>
+  </data>
+  <data name="App_Exit_Confirm_Content" xml:space="preserve">
+    <value>アプリケーションを終了しますか？</value>
+  </data>
+  <data name="Debug_Localization_Apply" xml:space="preserve">
+    <value>適用</value>
+  </data>
+  <data name="Common_HitType_Lucky" xml:space="preserve">
+    <value>幸運ダメージ</value>
+  </data>
+  <data name="Common_HitType_Critical" xml:space="preserve">
+    <value>会心ダメージ</value>
+  </data>
+  <data name="Common_HitType_Normal" xml:space="preserve">
+    <value>通常ダメージ</value>
+  </data>
+  <data name="App_RestartAsAdmin_Message" xml:space="preserve">
+    <value>一部の機能は管理者権限が必要になる場合があります。
+
+管理者としてこのアプリを再起動しますか？</value>
+  </data>
+  <data name="App_RestartAsAdmin_Title" xml:space="preserve">
+    <value>管理者権限</value>
+  </data>
+  <data name="App_AlreadyAdmin_Title" xml:space="preserve">
+    <value>すでに管理者権限で実行中です</value>
+  </data>
+  <data name="App_AlreadyAdmin_Message" xml:space="preserve">
+    <value>このアプリはすでに管理者として実行されています。</value>
+  </data>
+  <data name="App_PrivilegeLevel_Admin" xml:space="preserve">
+    <value>管理者</value>
+  </data>
+  <data name="App_PrivilegeLevel_Standard" xml:space="preserve">
+    <value>標準ユーザー</value>
+  </data>
+  <data name="Settings_Language_Japanese" xml:space="preserve">
+    <value>日本語</value>
+  </data>
+  <data name="About_Founder" xml:space="preserve">
+    <value>プロジェクト発起人</value>
+  </data>
+  <data name="Menu_Select_Training_Dummy" xml:space="preserve">
+    <value>ダミーを選択</value>
+  </data>
+  <data name="Menu_Training_Dummy_Elite_Enemy" xml:space="preserve">
+    <value>精鋭エネミー（ダミー）</value>
+  </data>
+  <data name="Menu_Training_Dummy_Elite_Tank" xml:space="preserve">
+    <value>精鋭防御（ダミー）</value>
+  </data>
+  <data name="DpsDetail_Popup_TotalDamage" xml:space="preserve">
+    <value>総ダメージ：</value>
+  </data>
+  <data name="DpsDetail_Popup_HitCount" xml:space="preserve">
+    <value>ヒット：</value>
+  </data>
+  <data name="DpsDetail_Popup_Critical" xml:space="preserve">
+    <value>  会心：</value>
+  </data>
+  <data name="DpsDetail_Popup_Average" xml:space="preserve">
+    <value>  平均：</value>
+  </data>
+  <data name="Common_HitType_CriticalLucky" xml:space="preserve">
+    <value>会心幸運回数</value>
+  </data>
+  <data name="SkillBreakdown_Suffix_CritLucky" xml:space="preserve">
+    <value>会心幸運率</value>
+  </data>
+  <data name="Dialog_UidRequired_Message2" xml:space="preserve">
+    <value>スキルログを使用するには、設定画面でキャラクターUIDを登録してください。
+
+UIDの確認方法：ゲーム内の画面左下に表示されるプレイヤー番号がUIDです。</value>
+  </data>
+  <data name="Settings_PlayerUid_Get" xml:space="preserve">
+    <value>取得</value>
+  </data>
+  <data name="SkillBreakdown_Label_AverageHealing" xml:space="preserve">
+    <value>平均回復量</value>
+  </data>
+  <data name="SkillBreakdown_Label_AverageTaken" xml:space="preserve">
+    <value>平均被ダメージ</value>
+  </data>
+  <data name="SkillBreakdown_Chart_TakenTypeDistribution" xml:space="preserve">
+    <value>被弾回数内訳</value>
+  </data>
+  <data name="Common_HitType_CriticalHeal" xml:space="preserve">
+    <value>会心回復量</value>
+  </data>
+  <data name="Common_HitType_LuckyHeal" xml:space="preserve">
+    <value>幸運回復量</value>
+  </data>
+  <data name="Common_HitType_NormalHeal" xml:space="preserve">
+    <value>通常回復量</value>
+  </data>
+  <data name="SkillBreakdown_Label_NormalCount" xml:space="preserve">
+    <value>通常回数</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalHitsTaken" xml:space="preserve">
+    <value>総被弾回数</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalHeals" xml:space="preserve">
+    <value>総回復回数</value>
+  </data>
+  <data name="DpsDetail_Popup_TotalHealing" xml:space="preserve">
+    <value>総回復量：</value>
+  </data>
+  <data name="DpsDetail_Popup_TotalDamageTaken" xml:space="preserve">
+    <value>総被ダメージ：</value>
+  </data>
+  <data name="DpsDetail_Popup_HealCount" xml:space="preserve">
+    <value>回復回数：</value>
+  </data>
+  <data name="DpsDetail_Popup_DamageTakenCount" xml:space="preserve">
+    <value>被弾回数：</value>
+  </data>
+  <data name="SkillLog_Label_CriticalHeal" xml:space="preserve">
+    <value>会心回復</value>
+  </data>
+  <data name="SkillLog_Label_LuckyHeal" xml:space="preserve">
+    <value>幸運回復</value>
+  </data>
+  <data name="Update_Available_Title" xml:space="preserve">
+    <value>アップデートを確認</value>
+  </data>
+  <data name="Update_Available_Message" xml:space="preserve">
+    <value>現在のバージョン：{0}
+最新バージョン：{1}
+
+今すぐダウンロードページを開きますか？</value>
+  </data>
+  <data name="Update_Available_Notes" xml:space="preserve">
+    <value>更新内容</value>
+  </data>
+  <data name="Update_NoUpdate_Title" xml:space="preserve">
+    <value>アップデートを確認</value>
+  </data>
+  <data name="Update_NoUpdate_Message" xml:space="preserve">
+    <value>現在のバージョンは最新です。</value>
+  </data>
+  <data name="Settings_Section_Update_Title" xml:space="preserve">
+    <value>アップデート</value>
+  </data>
+  <data name="Settings_Section_Update_Sub" xml:space="preserve">
+    <value>新しいバージョンがあるか手動で確認します</value>
+  </data>
+  <data name="Settings_Update_Check_Button" xml:space="preserve">
+    <value>確認</value>
+  </data>
+  <data name="Settings_Update_Check_Message" xml:space="preserve">
+    <value>アップデートを確認</value>
+  </data>
+  <data name="Settings_Update_Check_Tooltip" xml:space="preserve">
+    <value>GitHubまたは独自の更新元から、最新バージョンを確認</value>
+  </data>
+  <data name="DpsStatistics_NPC_Label" xml:space="preserve">
+    <value>全NPC</value>
+  </data>
+  <data name="Settings_UID_Setting_Title" xml:space="preserve">
+    <value>プレイヤーUIDを設定</value>
+  </data>
+  <data name="Settings_UID_Setting_Message1" xml:space="preserve">
+    <value>現在のプレイヤーUIDを取得できませんでした。マップを切り替えて、もう一度試してください。</value>
+  </data>
+  <data name="Settings_UID_Setting_Message2" xml:space="preserve">
+    <value>現在のプレイヤーのUIDを設定しようとしています。この情報は正確でない可能性があります。必ずご自身で確認してください。</value>
+  </data>
+  <data name="Settings_NetworkAdapterAutoSelect_Title" xml:space="preserve">
+    <value>ネットワークアダプターを設定</value>
+  </data>
+  <data name="Settings_Theme_BackgroundImage_Filter" xml:space="preserve">
+    <value>PNG画像 (*.png)|*.png</value>
+  </data>
+  <data name="Settings_PlayerInfo_PlayerUID" xml:space="preserve">
+    <value>プレイヤーUID</value>
+  </data>
+  <data name="Settings_PlayerInfo_GuildName" xml:space="preserve">
+    <value>ギルド名</value>
+  </data>
+  <data name="Settings_PlayerInfo_MyGuild" xml:space="preserve">
+    <value>マイギルド</value>
+  </data>
+  <data name="Settings_CustomFormat_Message" xml:space="preserve">
+    <value>カスタム形式は無効になっています。
+デフォルト表示設定が使用されます。</value>
+  </data>
+  <data name="Settings_Theme_BackgroundColor" xml:space="preserve">
+    <value>背景の色</value>
+  </data>
+  <data name="Settings_Background_Opacity" xml:space="preserve">
+    <value>背景の不透明度</value>
+  </data>
+  <data name="Settings_BackgroundImage_Opacity" xml:space="preserve">
+    <value>背景画像の不透明度</value>
+  </data>
+  <data name="Settings_BackgroundImageFitMode_FitWidth" xml:space="preserve">
+    <value>ページ幅に合わせる</value>
+  </data>
+  <data name="Settings_BackgroundImageFit" xml:space="preserve">
+    <value>背景画像の合わせ方</value>
+  </data>
+  <data name="Settings_BackgroundImageFitMode_FitToWindow" xml:space="preserve">
+    <value>画面のサイズに合わせる</value>
+  </data>
+  <data name="Classes_Unknown" xml:space="preserve">
+    <value>不明</value>
+  </data>
+  <data name="Settings_Theme_Light" xml:space="preserve">
+    <value>ライト</value>
+  </data>
+  <data name="Settings_Theme_Dark" xml:space="preserve">
+    <value>ダーク</value>
+  </data>
+  <data name="Settings_HideTab" xml:space="preserve">
+    <value>タブを非表示</value>
+  </data>
+  <data name="Settings_ClassColors_Opacity" xml:space="preserve">
+    <value>クラスカラーの不透明度</value>
+  </data>
+</root>

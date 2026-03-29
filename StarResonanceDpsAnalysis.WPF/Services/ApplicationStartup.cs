@@ -1,6 +1,9 @@
+using System.Linq;
+using System.Windows;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StarResonanceDpsAnalysis.Core.Analyze;
+using StarResonanceDpsAnalysis.Core.Analyze.V1;
 using StarResonanceDpsAnalysis.Core.Data;
 using StarResonanceDpsAnalysis.Core.Statistics;
 using StarResonanceDpsAnalysis.WPF.Config;
@@ -18,7 +21,9 @@ public sealed class ApplicationStartup : IApplicationStartup
     private readonly IGlobalHotkeyService _hotkeyService;
     private readonly IPacketAnalyzer _packetAnalyzer;
     private readonly IDataStorage _dataStorage;
+    private readonly IClassColorService _classColorService;
     private readonly LocalizationManager _localization;
+    private readonly IAutoUpdateService _autoUpdateService;
     private AppConfig _appConfig;
 
     public ApplicationStartup(ILogger<ApplicationStartup> logger,
@@ -27,7 +32,9 @@ public sealed class ApplicationStartup : IApplicationStartup
         IGlobalHotkeyService hotkeyService,
         IPacketAnalyzer packetAnalyzer,
         IDataStorage dataStorage,
-        LocalizationManager localization)
+        IClassColorService classColorService,
+        LocalizationManager localization,
+        IAutoUpdateService autoUpdateService)
     {
         _logger = logger;
         _configManager = configManager;
@@ -35,9 +42,12 @@ public sealed class ApplicationStartup : IApplicationStartup
         _hotkeyService = hotkeyService;
         _packetAnalyzer = packetAnalyzer;
         _dataStorage = dataStorage;
+        _classColorService = classColorService;
         _localization = localization;
+        _autoUpdateService = autoUpdateService;
         _configManager.ConfigurationUpdated += ConfigManagerOnConfigurationUpdated;
         _appConfig = _configManager.CurrentConfig;
+        _appConfig.MouseThroughEnabled = false;
         ConfigManagerOnConfigurationUpdated(_configManager, _configManager.CurrentConfig);
     }
 
@@ -64,15 +74,14 @@ public sealed class ApplicationStartup : IApplicationStartup
                 StatisticsConfiguration.TimeSeriesSampleCapacity);
 
             // ? Configure sample recording interval from DpsUpdateInterval
-            if (_dataStorage is DataStorageV2 storageV2)
-            {
-                storageV2.SampleRecordingInterval = _configManager.CurrentConfig.DpsUpdateInterval;
-                _logger.LogInformation("Sample recording interval configured: {Interval}ms",
-                    storageV2.SampleRecordingInterval);
-            }
+            _dataStorage.SampleRecordingInterval = _configManager.CurrentConfig.DpsUpdateInterval;
+            _logger.LogInformation("Sample recording interval configured: {Interval}ms",
+                _dataStorage.SampleRecordingInterval);
 
             // Apply localization
             _localization.Initialize(_configManager.CurrentConfig.Language);
+            ApplySavedClassColorTemplate(_configManager.CurrentConfig.ClassColorTemplate);
+            _classColorService.Init();
 
             await TryFindBestNetworkAdapter().ConfigureAwait(false);
 
@@ -80,6 +89,14 @@ public sealed class ApplicationStartup : IApplicationStartup
             // Start analyzer
             _packetAnalyzer.Start();
             _hotkeyService.Start();
+
+            if (_appConfig is { EnableAutoUpdate: true, AutoUpdateCheckOnStartup: true })
+            {
+                _ = _autoUpdateService.CheckForUpdatesAsync(true)
+                    .ContinueWith(task => _logger.LogWarning(task.Exception, "Auto update task failed"),
+                        TaskContinuationOptions.OnlyOnFaulted);
+            }
+
             _logger.LogInformation(WpfLogEvents.StartupInit, "Startup initialization completed");
         }
         catch (Exception ex)
@@ -105,10 +122,7 @@ public sealed class ApplicationStartup : IApplicationStartup
         }
 
         // If preferred not found, try automatic selection via routing
-        if (target == null)
-        {
-            target = await _deviceManagementService.GetAutoSelectedNetworkAdapterAsync();
-        }
+        target ??= await _deviceManagementService.GetAutoSelectedNetworkAdapterAsync();
 
         target ??= adapters.Count > 0
             ? new NetworkAdapterInfo(adapters[0].name, adapters[0].description)
@@ -118,8 +132,11 @@ public sealed class ApplicationStartup : IApplicationStartup
         {
             _logger.LogInformation(WpfLogEvents.StartupAdapter, "Activating adapter: {Name}", target.Name);
             _deviceManagementService.SetActiveNetworkAdapter(target);
-            _configManager.CurrentConfig.PreferredNetworkAdapter = target;
-            _ = _configManager.SaveAsync();
+            if (_configManager.CurrentConfig.PreferredNetworkAdapter != target)
+            {
+                _configManager.CurrentConfig.PreferredNetworkAdapter = target;
+                await _configManager.SaveAsync().ConfigureAwait(false);
+            }
         }
         else
         {
@@ -127,7 +144,7 @@ public sealed class ApplicationStartup : IApplicationStartup
         }
     }
 
-    public void Shutdown()
+    public async Task ShutdownAsync()
     {
         try
         {
@@ -136,10 +153,29 @@ public sealed class ApplicationStartup : IApplicationStartup
             _packetAnalyzer.Stop();
             _hotkeyService.Stop();
             _dataStorage.SavePlayerInfoToFile();
+            await _configManager.SaveAsync();
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Shutdown encountered an issue");
         }
     }
+
+    private static void ApplySavedClassColorTemplate(ClassColorTemplate template)
+    {
+        if (Application.Current == null)
+        {
+            return;
+        }
+
+        var classColorsDictionary = Application.Current.Resources.MergedDictionaries
+            .OfType<StarResonanceDpsAnalysis.WPF.Themes.ClassColorsDictionary>()
+            .FirstOrDefault();
+
+        if (classColorsDictionary != null)
+        {
+            classColorsDictionary.Template = template;
+        }
+    }
 }
+

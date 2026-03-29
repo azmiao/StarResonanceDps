@@ -40,7 +40,7 @@ public sealed class DpsConverter : IMultiValueConverter
         }
 
         // Optional toggle: switch between converter-based and direct ValuePerSecond
-        var useConverterBased = true;
+        var useConverterBased = false;
         if (values.Length > 4 && values[4] is bool flag)
         {
             useConverterBased = flag;
@@ -53,7 +53,7 @@ public sealed class DpsConverter : IMultiValueConverter
             valuePerSecond = vps;
         }
 
-        if (!useConverterBased && valuePerSecond.HasValue && double.IsFinite(valuePerSecond.Value))
+        if (useConverterBased && valuePerSecond.HasValue && double.IsFinite(valuePerSecond.Value))
         {
             return NumberFormatHelper.FormatHumanReadable(valuePerSecond.Value, mode, culture);
         }

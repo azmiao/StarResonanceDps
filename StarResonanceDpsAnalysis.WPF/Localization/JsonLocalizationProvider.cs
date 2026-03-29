@@ -14,7 +14,8 @@ public class JsonLocalizationProvider : ILocalizationProvider
     private readonly (string resourceName, string pattern)[] _filenamePatterns =
     [
         ("Monster", "Monster\\monster.{0}.json"),
-        ("DebugData", "DebugData\\debugData.{0}.json")
+        ("DebugData", "DebugData\\debugData.{0}.json"),
+        ("Skills", "Skill\\skills.{0}.json")
     ];
 
     private readonly Dictionary<string, Dictionary<string, Dictionary<string, string>>> _resources = new();

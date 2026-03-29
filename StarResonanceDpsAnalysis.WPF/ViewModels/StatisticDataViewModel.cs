@@ -2,14 +2,22 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using StarResonanceDpsAnalysis.Core.Statistics;
+using StarResonanceDpsAnalysis.WPF.Extensions;
 using StarResonanceDpsAnalysis.WPF.Localization;
 
 namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 
-public record struct SkillViewModelCollection(List<SkillItemViewModel> Damage, List<SkillItemViewModel> Healing, List<SkillItemViewModel> Taken);
+public record struct SkillViewModelCollection(
+    List<SkillItemViewModel> Damage,
+    List<SkillItemViewModel> Healing,
+    List<SkillItemViewModel> Taken)
+{
+    public static SkillViewModelCollection Empty => new([], [], []);
+}
 
 [DebuggerDisplay("Name:{Player?.Name};Value:{Value}")]
-public partial class StatisticDataViewModel(DebugFunctions debug, LocalizationManager localizationManager, Func<long , SkillViewModelCollection> fetchSkillListFunc) : BaseViewModel, IComparable<StatisticDataViewModel>
+public partial class StatisticDataViewModel(DebugFunctions debug, LocalizationManager localizationManager, PlayerStatistics originalData) : BaseViewModel, IComparable<StatisticDataViewModel>
 {
     [ObservableProperty] private long _durationTicks;
     [ObservableProperty] private long _index;
@@ -28,6 +36,7 @@ public partial class StatisticDataViewModel(DebugFunctions debug, LocalizationMa
     public SkillDataCollection Damage { get; } = new();
     public SkillDataCollection Heal { get; } = new();
     public SkillDataCollection TakenDamage { get; } = new();
+    public PlayerStatistics OriginalData { get; set; } = originalData;
 
     public int CompareTo(StatisticDataViewModel? other)
     {
@@ -72,9 +81,9 @@ public partial class StatisticDataViewModel(DebugFunctions debug, LocalizationMa
         SkillListRefreshTrigger++;
     }
 
-    private void FetchSkillList()
+    private void UpdateTotalSkillList()
     {
-        var (damage, healing, taken) = fetchSkillListFunc.Invoke(Player.Uid);
+        var (damage, healing, taken) = OriginalData.ToSkillItemVmList(localizationManager);
         Damage.TotalSkillList = damage;
         Heal.TotalSkillList = healing;
         TakenDamage.TotalSkillList = taken;
@@ -84,7 +93,7 @@ public partial class StatisticDataViewModel(DebugFunctions debug, LocalizationMa
     private void MouseEnterItem(int limit)
     {
         SetHoverStateAction?.Invoke(true);
-        FetchSkillList();
+        UpdateTotalSkillList();
         SortSkillList();
         RefreshFilterLists(limit);
     }

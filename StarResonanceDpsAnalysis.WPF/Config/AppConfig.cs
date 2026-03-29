@@ -3,7 +3,9 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
 using StarResonanceDpsAnalysis.Core.Models;
+using StarResonanceDpsAnalysis.Core.Statistics;
 using StarResonanceDpsAnalysis.WPF.Models;
+using StarResonanceDpsAnalysis.WPF.ViewModels;
 using KeyBinding = StarResonanceDpsAnalysis.WPF.Models.KeyBinding;
 
 namespace StarResonanceDpsAnalysis.WPF.Config;
@@ -17,11 +19,29 @@ public enum DpsUpdateMode
     /// 被动模式：基于事件触发更新
     /// </summary>
     Passive = 0,
-    
+
     /// <summary>
     /// 主动模式：基于定时器定期更新
     /// </summary>
-    Active = 1
+    Active = 1,
+}
+
+public enum UpdateSourceType
+{
+    GitHub = 0,
+    SelfHosted = 1,
+}
+
+public enum BackgroundImageFitMode
+{
+    FitWidth = 0,     // 幅に合わせる
+    FitToWindow = 1 // 画面のサイズに合わせる
+}
+
+public enum ClassColorTemplate
+{
+    Light = 0,
+    Dark = 1
 }
 
 /// <summary>
@@ -73,24 +93,53 @@ public partial class AppConfig : ObservableObject
     /// 是否过图清空全程记录
     /// </summary>
     [ObservableProperty]
-    private bool _clearLogAfterTeleport;
+    private bool _clearLogAfterTeleport = true;
 
     /// <summary>
-    /// 不透明度 (0-100) (有效范围: 5-95), 默认95, 0为全透明(会影响鼠标交互)
+    /// 窗口不透明度 (0-100) 
     /// </summary>
     [ObservableProperty]
     private double _opacity = 100;
 
     /// <summary>
-    /// 玩家名脱敏
+    /// items不透明度 (0-100) 
+    /// </summary>
+    [ObservableProperty]
+    private double _itemOpacity = 100;
+
+    /// <summary>
+    /// 中央背景颜色透明度 (0-100)
+    /// 默认值：30
+    /// </summary>
+    [ObservableProperty]
+    private double _centerBackgroundOpacity = 65;
+
+    /// <summary>
+    /// 背景图片透明度 (0-100)
+    /// 默认值：50
+    /// </summary>
+    [ObservableProperty]
+    private double _backgroundImageOpacity = 50;
+
+    /// <summary>
+    /// 玩家信息打码<br/>
+    /// Mask player info
     /// </summary>
     [ObservableProperty]
     private bool _maskPlayerName = true;
 
     /// <summary>
+    /// DPS统计页面 - 是否隐藏顶部统计切换标签
+    /// 默认值：true (不显示)
+    /// </summary>
+    [ObservableProperty]
+    private bool _hideStatisticTabs = true;
+
+    /// <summary>
     /// 鼠标穿透开关 (WPF)
     /// </summary>
     [ObservableProperty]
+    [JsonIgnore]
     private bool _mouseThroughEnabled;
 
     /// <summary>
@@ -98,6 +147,15 @@ public partial class AppConfig : ObservableObject
     /// </summary>
     [ObservableProperty]
     private string _theme = "Light";
+
+    [ObservableProperty]
+    private ClassColorTemplate _classColorTemplate = ClassColorTemplate.Light;
+
+    /// <summary>
+    /// 自定义职业颜色
+    /// </summary>
+    [ObservableProperty]
+    private ObservableDictionary<Classes, string> _customClassColors = new();
 
     /// <summary>
     /// 当前界面语言（如 zh-CN、en-US、auto）
@@ -159,7 +217,7 @@ public partial class AppConfig : ObservableObject
     private int _dpsUpdateInterval = 1000;
 
     /// <summary>
-    /// 历史记录最大保存数量
+    ///历史记录最大保存数量
     /// 默认值：15条
     /// 范围：5 - 50
     /// </summary>
@@ -171,7 +229,7 @@ public partial class AppConfig : ObservableObject
     /// 默认值：Center (中间木桩)
     /// </summary>
     [ObservableProperty]
-    private int _defaultDummyTarget = 0; // 0=Center, 1=TDummy
+    private DummyTargetType _defaultDummyTarget = DummyTargetType.Center; // 0=Center, 1=TDummy
 
     /// <summary>
     /// DPS统计页面 - 技能显示数量
@@ -195,7 +253,35 @@ public partial class AppConfig : ObservableObject
     private bool _showTeamTotalDamage = true;
 
     /// <summary>
-    /// DPS统计页面 - 快照最小记录时长(秒)
+    /// DPS统计页面 - 是否显示总伤害数值
+    /// 默认值：true
+    /// </summary>
+    [ObservableProperty]
+    private bool _showDamage = true;
+
+    /// <summary>
+    /// DPS统计页面 - 是否显示DPS数值
+    /// 默认值：true
+    /// </summary>
+    [ObservableProperty]
+    private bool _showDps = true;
+
+    /// <summary>
+    /// DPS统计页面 - 是否启用并展示玩家信息滚动特效
+    /// 默认值：true (启用)
+    /// </summary>
+    [ObservableProperty]
+    private bool _enableMarqueeText = true;
+
+    /// <summary>
+    /// DPS统计页面 - 是否显示百分比
+    /// 默认值：true
+    /// </summary>
+    [ObservableProperty]
+    private bool _showPercentage = true;
+
+    /// <summary>
+    /// DPS统计页面 - 历史最小记录时长(秒)
     /// 默认值：5秒
     /// 范围：0 - 300秒
     /// </summary>
@@ -238,19 +324,28 @@ public partial class AppConfig : ObservableObject
     private int _timeSeriesSampleCapacity = 300;
 
     /// <summary>
-    /// ⭐ 新增: 窗口主题颜色（顶部栏和底部栏）
-    /// 默认值：#1690F8 (蓝色)
+    /// 顶部栏和底部栏主题颜色
+    /// 默认值：#1690F8
     /// </summary>
     [ObservableProperty]
     private string _themeColor = "#1690F8";
 
     /// <summary>
-    /// ⭐ 新增: 背景图片路径
-    /// 只支持PNG格式
+    /// 中央背景颜色
+    /// 默认值：#2F2F2F
+    /// </summary>
+    [ObservableProperty]
+    private string _centerBackgroundColor = "#2F2F2F";
+
+    /// <summary>
+    /// 背景图片路径
     /// </summary>
     [ObservableProperty]
     [property: Newtonsoft.Json.JsonConverter(typeof(Converters.JsonEmptyStringToNullConverter))]
     private string? _backgroundImagePath;
+
+    [ObservableProperty]
+    private BackgroundImageFitMode _backgroundImageFitMode = BackgroundImageFitMode.FitWidth;
 
     /// <summary>
     /// DPS显示计算模式
@@ -261,24 +356,50 @@ public partial class AppConfig : ObservableObject
     [ObservableProperty]
     private bool _useConverterBasedDps = true;
 
+    [ObservableProperty]
+    private int _trainingDuration = 180; // Default training duration in seconds (3 minutes)
+
+    [ObservableProperty]
+    private bool _enableAutoUpdate = true;
+
+    [ObservableProperty]
+    private bool _autoUpdateCheckOnStartup = true;
+
+    [ObservableProperty]
+    private UpdateSourceType _updateSource = UpdateSourceType.GitHub;
+
+    [ObservableProperty]
+    private string _githubRepository = "anying1073/StarResonanceDps";
+
+    [ObservableProperty]
+    private bool _githubIncludePrerelease;
+
+    [ObservableProperty]
+    private string _githubAssetNameContains = "WPF";
+
+    [ObservableProperty]
+    private string _selfHostedManifestUrl = string.Empty;
+
+    [ObservableProperty]
+    private int _updateRequestTimeoutSeconds = 10;
+
     public bool UseProcessPortsFilter { get; set; }
 
-    /// <summary>
-    /// Partial method called after BackgroundImagePath has changed.
-    /// Ensures empty strings are converted to null.
-    /// </summary>
     partial void OnBackgroundImagePathChanged(string? value)
     {
-        // If somehow an empty string got through, convert it to null
         if (string.IsNullOrWhiteSpace(value))
         {
             _backgroundImagePath = null;
         }
     }
 
+    partial void OnTimeSeriesSampleCapacityChanged(int value)
+    {
+        StatisticsConfiguration.TimeSeriesSampleCapacity = value;
+    }
+
     public AppConfig Clone()
     {
-        // TODO: Add unittest
         var json = JsonConvert.SerializeObject(this);
         return JsonConvert.DeserializeObject<AppConfig>(json)!;
     }

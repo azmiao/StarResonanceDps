@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using Google.Protobuf;
 using Microsoft.Extensions.Logging.Abstractions;
+using StarResonanceDpsAnalysis.Core.Analyze.V1;
 using Zproto;
 
 namespace StarResonanceDpsAnalysis.Core.Benchmarks;
@@ -34,8 +35,8 @@ public class PacketAnalyzerBenchmarks
     [GlobalSetup]
     public void Setup()
     {
-        _v1 = new PacketAnalyzer();
         _storage = new DataStorageV2(NullLogger<DataStorageV2>.Instance);
+        _v1 = new PacketAnalyzer(new MessageAnalyzer(_storage), _storage);
         _msgV2 = new MessageAnalyzerV2(_storage);
         _v2 = new PacketAnalyzerV2(_storage, _msgV2);
 
@@ -64,9 +65,9 @@ public class PacketAnalyzerBenchmarks
     public void IterationSetup()
     {
         // reset state between iterations
-        DataStorage.ClearAllDpsData();
-        DataStorage.ClearAllPlayerInfos();
-        DataStorage.ClearCurrentPlayerInfo();
+        DataStorage.Instance.ClearAllDpsData();
+        DataStorage.Instance.ClearAllPlayerInfos();
+        DataStorage.Instance.ClearCurrentPlayerInfo();
 
         _storage.ClearAllDpsData();
         _storage.ClearAllPlayerInfos();

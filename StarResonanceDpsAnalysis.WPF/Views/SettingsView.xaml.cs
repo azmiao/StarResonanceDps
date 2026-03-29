@@ -63,4 +63,6 @@ public partial class SettingsView : Window
     private void Nav_Combat_Click(object sender, RoutedEventArgs e) => ScrollToSection(SectionCombat);
     private void Nav_Theme_Click(object sender, RoutedEventArgs e) => ScrollToSection(SectionTheme);
     private void Nav_PlayerInfoCustomization_Click(object sender, RoutedEventArgs e) => ScrollToSection(SectionPlayerInfoCustomization);
+    private void Nav_ClassColors_Click(object sender, RoutedEventArgs e) => ScrollToSection(SectionClassColors);
+    private void Nav_Update_Click(object sender, RoutedEventArgs e)=> ScrollToSection(SectionUpdate);
 }

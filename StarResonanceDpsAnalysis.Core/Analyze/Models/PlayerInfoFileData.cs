@@ -32,6 +32,8 @@ namespace StarResonanceDpsAnalysis.Core.Analyze.Models
         public int? Lucky { get; internal set; }
         [JsonProperty("m")]
         public long? MaxHP { get; internal set; }
+        [JsonProperty("ss")]
+        public int? SeasonStrength { get; internal set; }
         [JsonProperty("h")]
         public byte[] Hash { get; internal set; } = [];
 
@@ -52,7 +54,8 @@ namespace StarResonanceDpsAnalysis.Core.Analyze.Models
                 CombatPower = p.CombatPower,
                 Critical = p.Critical,
                 Lucky = p.Lucky,
-                MaxHP = p.MaxHP
+                MaxHP = p.MaxHP,
+                SeasonStrength = p.SeasonStrength,
             };
             tmp.Hash = CreateMD5(tmp);
             return tmp;

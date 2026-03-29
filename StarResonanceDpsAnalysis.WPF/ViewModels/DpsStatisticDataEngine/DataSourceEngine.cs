@@ -1,0 +1,133 @@
+using Microsoft.Extensions.Logging;
+using StarResonanceDpsAnalysis.Core.Data;
+using StarResonanceDpsAnalysis.Core.Data.Models;
+using StarResonanceDpsAnalysis.WPF.Models;
+using StarResonanceDpsAnalysis.WPF.Services;
+using StarResonanceDpsAnalysis.WPF.ViewModels.DpsStatisticDataEngine.DataSource;
+
+namespace StarResonanceDpsAnalysis.WPF.ViewModels.DpsStatisticDataEngine;
+
+/// <summary>
+/// Central engine that unifies data providers for Passive/Active/History modes
+/// and performs the sub-viewmodel update logic extracted from the main ViewModel.
+/// </summary>
+public partial class DataSourceEngine
+{
+    private readonly ActiveUpdateModeDpsDataSource _activeUpdateModeDpsDataSource;
+    private readonly ILogger<DataSourceEngine> _logger;
+    private readonly Dictionary<DataSourceMode, IDpsDataSource> _providers = new();
+    private readonly HistoryDpsDataSource _historyDpsDataSource;
+    private readonly DummyTrainingModeDataSource _dummyTrainingModeDataSource;
+
+    public DataSourceEngine(
+        IDataStorage dataStorage,
+        IDpsDataProcessor dataProcessor,
+        BattleHistoryService historyService,
+        ILogger<DataSourceEngine> logger,
+        IDpsTimerService timerService)
+    {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+        // Register providers
+        Register(new PassiveUpdateModeDpsDataSource(this, dataStorage, dataProcessor, timerService));
+        _activeUpdateModeDpsDataSource = new ActiveUpdateModeDpsDataSource(this, dataStorage, _logger, dataProcessor, timerService);
+        Register(_activeUpdateModeDpsDataSource);
+        _historyDpsDataSource = new HistoryDpsDataSource(this, historyService, logger, dataProcessor);
+        Register(_historyDpsDataSource);
+        _dummyTrainingModeDataSource = new DummyTrainingModeDataSource(this, dataStorage, logger);
+        Register(_dummyTrainingModeDataSource);
+    }
+
+    public DataSourceMode CurrentMode
+    {
+        get;
+        private set
+        {
+            if (field == value) return;
+            field = value;
+            LogModeChanged(value);
+        }
+    }
+
+    public IDpsDataSource CurrentSource => _providers.TryGetValue(CurrentMode, out var p) ? p : null!;
+
+    public ScopeTime Scope
+    {
+        get;
+        set
+        {
+            if (field == value) return;
+            field = value;
+            WhenScopeChanged(field);
+        }
+    }
+
+    public bool IncludeNpcData { get; set; }
+
+    [LoggerMessage(EventId = 0, Level = LogLevel.Information, Message = "Switched to {Mode} mode.")]
+    private partial void LogModeChanged(DataSourceMode mode);
+
+    public void Configure(DataSourceEngineParam param)
+    {
+        _logger.LogTrace("Configure");
+        if (param.Mode != null) ChangeMode(param.Mode.Value);
+        if (param.BattleHistoryFilePath != null)
+            _historyDpsDataSource.SetHistoryFilePath(param.BattleHistoryFilePath);
+        if (param.ActiveUpdateInterval != null)
+            _activeUpdateModeDpsDataSource.SetUpdateInterval(param.ActiveUpdateInterval.Value);
+        if (param.DummyTarget != null)
+            _dummyTrainingModeDataSource.DummyTarget = param.DummyTarget.Value;
+        if (param.PlayerUid != null)
+            _dummyTrainingModeDataSource.PlayerUid = param.PlayerUid.Value;
+        if(param.TrainingTimeLimit!=null)
+            _dummyTrainingModeDataSource.TimeLimit = param.TrainingTimeLimit.Value;
+        CurrentSource.Refresh();
+    }
+
+    // Event raised when providers deliver preprocessed data ready for UI
+    public event
+        EventHandler<Dictionary<StatisticType, Dictionary<long, DpsDataProcessed>>>? ProcessedDataReady;
+
+    private void Register(IDpsDataSource source)
+    {
+        _providers[source.Mode] = source;
+    }
+
+    public void ChangeMode(DataSourceMode mode)
+    {
+        CurrentMode = mode;
+        foreach (var p in _providers.Values)
+        {
+            p.SetEnable(p.Mode == mode);
+        }
+    }
+
+    private void WhenScopeChanged(ScopeTime scope)
+    {
+        foreach (var provider in _providers.Values)
+        {
+            provider.Scope = scope;
+            provider.Refresh();
+        }
+    }
+
+    public Dictionary<StatisticType, Dictionary<long, DpsDataProcessed>> GetData()
+    {
+        return CurrentSource.GetData();
+    }
+
+    public IReadOnlyDictionary<long, PlayerInfo> GetPlayerInfoDictionary()
+    {
+        return CurrentSource.GetPlayerInfoDictionary();
+    }
+
+    /// <summary>
+    /// Deliver already-preprocessed data to the ViewModel for UI update.
+    /// Providers should call this when they prepare processed datasets.
+    /// </summary>
+    internal void DeliverProcessedData()
+    {
+        var data = CurrentSource.GetData();
+        ProcessedDataReady?.Invoke(CurrentSource, data);
+    }
+}

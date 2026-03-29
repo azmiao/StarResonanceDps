@@ -10,29 +10,31 @@
     xmlns:lex="http://wpflocalizeextension.codeplex.com"
     xmlns:loc="clr-namespace:StarResonanceDpsAnalysis.WPF.Properties"
     xmlns:local="clr-namespace:StarResonanceDpsAnalysis.WPF.Views"
+    xmlns:models="clr-namespace:StarResonanceDpsAnalysis.WPF.Models"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:system="clr-namespace:System;assembly=System.Runtime"
     xmlns:viewModels="clr-namespace:StarResonanceDpsAnalysis.WPF.ViewModels"
+    xmlns:cfg="clr-namespace:StarResonanceDpsAnalysis.WPF.Config"
     Title="{lex:Loc Key={x:Static loc:ResourcesKeys.Window_DpsStatistics_Title}}"
     Width="380"
     Height="360"
     MinWidth="300"
     MinHeight="35"
     d:DesignHeight="650"
-    d:DesignWidth="650"
+    d:DesignWidth="400"
     behaviors:WindowSnapBehavior.PreventSnapMaximize="True"
     d:DataContext="{d:DesignInstance Type=viewModels:DpsStatisticsDesignTimeViewModel,
                                      IsDesignTimeCreatable=True}"
     lex:ResxLocalizationProvider.DefaultAssembly="StarResonanceDpsAnalysis.WPF"
     lex:ResxLocalizationProvider.DefaultDictionary="Resources"
-    lex:LocalizeDictionary.DesignCulture="zh-CN"
+    lex:LocalizeDictionary.DesignCulture="zh-CN"    
     ResizeMode="CanResize"
     WindowState="Normal"
-    Style="{StaticResource TransparentWindow}"
+    Style="{StaticResource MaskedTransparentWindow}"
+
     Topmost="{Binding AppConfig.TopmostEnabled, Mode=OneWay}"
     mc:Ignorable="d">
 
-    <!--  WindowChrome: 开启可拉伸边界  -->
     <WindowChrome.WindowChrome>
         <WindowChrome
             CaptionHeight="0"
@@ -40,6 +42,10 @@
             ResizeBorderThickness="6"
             UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
+
+    <b:Interaction.Behaviors>
+        <behaviors:WindowPlacementBehavior SaveCommand="{Binding RecordWindowPositionCommand}" StartUpState="{Binding AppConfig.StartUpState}" />
+    </b:Interaction.Behaviors>
 
     <b:Interaction.Triggers>
         <b:EventTrigger EventName="Loaded">
@@ -53,6 +59,16 @@
     <Window.Resources>
         <converters:DoubleNegateConverter x:Key="DoubleNegateConverter" />
         <converters:DoubleSumConverter x:Key="DoubleSumConverter" />
+        <converters:OutsideImageAreaClipConverter x:Key="OutsideImageAreaClipConverter" />
+        <converters:StatisticTypeToColoredIconConverter x:Key="StatisticTypeToColoredIconConverter" />
+
+        <Style
+            x:Key="PlayerInfoTextStyle"
+            BasedOn="{StaticResource NormalTextBlockBaseStyle}"
+            TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
 
         <Style
             x:Key="StatisticTypeText"
@@ -81,7 +97,7 @@
 
         <Style x:Key="FooterContentBorder" TargetType="Border">
             <Setter Property="VerticalAlignment" Value="Bottom" />
-            <Setter Property="Height" Value="25" />
+            <!--<Setter Property="Height" Value="25" />-->
             <Setter Property="Opacity" Value="1" />
             <Setter Property="CornerRadius">
                 <Setter.Value>
@@ -128,13 +144,58 @@
             </Style.Triggers>
         </Style>
 
+        <DataTemplate x:Key="CenterToolbarButtonContentTemplate">
+            <StackPanel
+                Orientation="Horizontal"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+                <Image
+                    RenderOptions.BitmapScalingMode="HighQuality"
+                    SnapsToDevicePixels="True"
+                    Source="{Binding Tag,
+                    RelativeSource={RelativeSource AncestorType=ctrl:CenterToolbarButton},
+                    Converter={StaticResource StatisticTypeToColoredIconConverter}}">
+                    <Image.Style>
+                        <Style TargetType="Image">
+                            <Setter Property="Width" Value="14" />
+                            <Setter Property="Height" Value="14" />
+                            <Setter Property="Margin" Value="0,0,4,0" />
+
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=ctrl:CenterToolbarButton}}"
+                                    Value="{x:Static models:StatisticType.NpcTakenDamage}">
+                                    <Setter Property="Width" Value="18" />
+                                    <Setter Property="Height" Value="18" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                </Image>
+
+                <TextBlock
+                    Style="{StaticResource PlayerInfoTextStyle}"
+                    HorizontalAlignment="Center"
+                    TextAlignment="Center"
+                    Text="{Binding}">
+                    <TextBlock.Effect>
+                        <DropShadowEffect
+                            Color="#000"
+                            Opacity="0.5"
+                            ShadowDepth="0"
+                            BlurRadius="5" />
+                    </TextBlock.Effect>
+                </TextBlock>
+            </StackPanel>
+        </DataTemplate>
+
         <DataTemplate x:Key="StatisticDetailDataTemplate" DataType="{x:Type viewModels:StatisticDataViewModel}">
             <Grid HorizontalAlignment="Stretch" ClipToBounds="True">
                 <Grid.Effect>
                     <DropShadowEffect
                         Color="#000"
                         Opacity="0.5"
-                        ShadowDepth="0"
+                        ShadowDepth="2"
                         BlurRadius="5" />
                 </Grid.Effect>
                 <Grid.ColumnDefinitions>
@@ -142,17 +203,23 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" MinWidth="42" />
                 </Grid.ColumnDefinitions>
                 <Grid.Resources>
                     <Style TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
                         <Setter Property="FontSize" Value="12" />
                     </Style>
 
+                    <Style x:Key="ValueTextStyle" TargetType="TextBlock">
+                        <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#HarmonyOS Sans SC" />
+                        <Setter Property="FontWeight" Value="Bold" />
+                        <Setter Property="Foreground" Value="White" />
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                    </Style>
+
                     <Style x:Key="ProfessionImage" TargetType="Image">
-                        <Setter Property="Width" Value="26" />
-                        <Setter Property="Height" Value="26" />
-                        <Setter Property="Margin" Value="5,0,5,0" />
+                        <Setter Property="Width" Value="25" />
+                        <Setter Property="Height" Value="25" />
+                        <Setter Property="Margin" Value="5,0,0,0" />
                         <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
                         <Setter Property="SnapsToDevicePixels" Value="True" />
                     </Style>
@@ -181,8 +248,27 @@
                     Grid.Column="1" />
 
                 <!--  昵称  -->
-                <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <StackPanel.Resources>
+                <Grid
+                    x:Name="PlayerInfoContainer"
+                    ClipToBounds="True"
+                    Margin="5,0,5,0"
+                    Grid.Column="2">
+
+                    <Grid.OpacityMask>
+                        <!-- The indices [0] and [3] in C# refer to these stops -->
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Offset="0" Color="Black" />
+                            <!-- Index [0] -->
+                            <GradientStop Offset="0.1" Color="Black" />
+                            <!-- Index [1] -->
+                            <GradientStop Offset="0.9" Color="Black" />
+                            <!-- Index [2] -->
+                            <GradientStop Offset="1" Color="Transparent" />
+                            <!-- Index [3] -->
+                        </LinearGradientBrush>
+                    </Grid.OpacityMask>
+
+                    <Grid.Resources>
                         <Style
                             x:Key="PlayerInfoTextStyle"
                             BasedOn="{StaticResource NormalTextBlockBaseStyle}"
@@ -190,89 +276,69 @@
                             <Setter Property="VerticalAlignment" Value="Center" />
                             <Setter Property="Foreground" Value="White" />
                         </Style>
-                    </StackPanel.Resources>
-                    <TextBlock Style="{StaticResource PlayerInfoTextStyle}" Text="{Binding Path=Player.PlayerInfo}" />
+                    </Grid.Resources>
 
-                    <!--<TextBlock
-                            x:Name="PlayerName" >
-                        <TextBlock.Style>
-                            <Style BasedOn="{StaticResource PlayerInfoTextStyle}" TargetType="TextBlock">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Player.IsNpc}" Value="False">
-                                        <Setter Property="Text">
-                                            <Setter.Value>
-                                                <MultiBinding Converter="{StaticResource PlayerNameMaskConverter}">
-                                                    <Binding Path="Player.Name" />
-                                                    <Binding Path="Player.Uid" />
-                                                    <Binding Path="DataContext.AppConfig.MaskPlayerName" RelativeSource="{RelativeSource AncestorType=Window}" />
-                                                    <Binding Path="DataContext.TemporaryMaskPlayerName" RelativeSource="{RelativeSource AncestorType=Window}" />
-                                                </MultiBinding>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding Player.IsNpc}" Value="True">
-                                        <Setter Property="Text" Value="{lex:Loc {Binding Player.NpcTemplateId, StringFormat={}Monster:{0}}}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>-->
-                    <!--<TextBlock Text="{lex:Loc {Binding Player.NpcTemplateId, StringFormat={}Monster:{0}}}"/>-->
-                    <!--<TextBlock Visibility="{Binding Player.IsNpc, Converter={StaticResource BoolToInvertedVisibilityConverter }}"
-                               Style="{StaticResource PlayerInfoTextStyle}">
-                        <Run Text=" -" />
-                        <Run Text="{lex:Loc {Binding Player.Spec, StringFormat=ClassSpec_{0}}}" />
-                        <Run Text="(" />
-                        <Run Text="{Binding Player.PowerLevel}" />
-                        <Run Text="-" />
-                        <Run Text="{Binding Player.SeasonStrength}" />
-                        <Run Text=")" />
-                    </TextBlock>-->
+                    <Canvas VerticalAlignment="Center" Height="{Binding ActualHeight, ElementName=PlayerInfoText}"
+                            ClipToBounds="True">
+                        <TextBlock x:Name="PlayerInfoText"
+                                   Canvas.Left="0"
+                                   Style="{StaticResource PlayerInfoTextStyle}"
+                                   Text="{Binding Path=Player.PlayerInfo}">
+                            <b:Interaction.Behaviors>
+                                <behaviors:MarqueeTextBehavior
+                                    x:Name="MarqueeTextBehavior"
+                                    Container="{Binding ElementName=PlayerInfoContainer}"
+                                    IsAnimationEnabled="{Binding DataContext.AppConfig.EnableMarqueeText, RelativeSource={RelativeSource AncestorType=Window}}" />
+                            </b:Interaction.Behaviors>
+                        </TextBlock>
+                    </Canvas>
+                </Grid>
 
-                    <!--Visibility="{Binding Player.IsNpc, Converter={StaticResource BoolToInvertedVisibilityConverter}}"-->
-                </StackPanel>
 
                 <!--  数值  -->
-                <TextBlock
+                <StackPanel
                     Grid.Column="3"
+                    Orientation="Horizontal"
                     HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    FontFamily="pack://application:,,,/Assets/Fonts/#HarmonyOS Sans SC"
-                    FontWeight="Bold"
-                    Foreground="White">
-                    <Run>
-                        <Run.Text>
-                            <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
-                                <Binding Path="Value" />
-                                <Binding Path="DataContext.AppConfig.DamageDisplayType"
-                                         RelativeSource="{RelativeSource AncestorType=Window}" />
-                            </MultiBinding>
-                        </Run.Text>
-                    </Run>
-                    <Run>
-                        <Run.Text>
-                            <MultiBinding Converter="{StaticResource DpsConverter}" StringFormat="{}({0})">
-                                <Binding Path="Value" />
-                                <Binding Path="DataContext.BattleDuration"
-                                         RelativeSource="{RelativeSource AncestorType=Window}" />
-                                <Binding Path="DataContext.AppConfig.DamageDisplayType"
-                                         RelativeSource="{RelativeSource AncestorType=Window}" />
-                                <Binding Path="ValuePerSecond" />
-                                <Binding Path="DataContext.AppConfig.UseConverterBasedDps"
-                                         RelativeSource="{RelativeSource AncestorType=Window}" />
-                            </MultiBinding>
-                        </Run.Text>
-                    </Run>
-                </TextBlock>
-                <TextBlock
-                    Grid.Column="4"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    FontFamily="pack://application:,,,/Assets/Fonts/#HarmonyOS Sans SC"
-                    FontWeight="Bold"
-                    Foreground="White"
-                    Margin="0,0,4,0"
-                    Text="{Binding Percent, StringFormat={}{0:N1}%}" />
+                    VerticalAlignment="Center">
+                    <TextBlock
+                        Style="{StaticResource ValueTextStyle}"
+                        Visibility="{Binding DataContext.AppConfig.ShowDamage, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Run>
+                            <Run.Text>
+                                <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
+                                    <Binding Path="Value" />
+                                    <Binding Path="DataContext.AppConfig.DamageDisplayType"
+                                             RelativeSource="{RelativeSource AncestorType=Window}" />
+                                </MultiBinding>
+                            </Run.Text>
+                        </Run>
+                    </TextBlock>
+                    <TextBlock
+                        Margin="4,0,0,0"
+                        Style="{StaticResource ValueTextStyle}"
+                        Visibility="{Binding DataContext.AppConfig.ShowDps, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Run>
+                            <Run.Text>
+                                <MultiBinding Converter="{StaticResource DpsConverter}" StringFormat="{}({0})">
+                                    <Binding Path="Value" />
+                                    <Binding Path="DataContext.BattleDuration"
+                                             RelativeSource="{RelativeSource AncestorType=Window}" />
+                                    <Binding Path="DataContext.AppConfig.DamageDisplayType"
+                                             RelativeSource="{RelativeSource AncestorType=Window}" />
+                                    <Binding Path="ValuePerSecond" />
+                                    <Binding Path="DataContext.AppConfig.UseConverterBasedDps"
+                                             RelativeSource="{RelativeSource AncestorType=Window}" />
+                                </MultiBinding>
+                            </Run.Text>
+                        </Run>
+                    </TextBlock>
+                    <TextBlock
+                        Margin="4,0,4,0"
+                        Style="{StaticResource ValueTextStyle}"
+                        Text="{Binding Percent, StringFormat={}{0:N1}%}"
+                        Visibility="{Binding DataContext.AppConfig.ShowPercentage, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibilityConverter}}" />
+                </StackPanel>
 
             </Grid>
         </DataTemplate>
@@ -281,7 +347,7 @@
             <ctrl:DpsDetailPopup
                 PlayerName="{Binding Player.PlayerInfo}"
                 PlayerUid="{Binding Player.Uid}"
-                TemporaryMaskPlayerName="{Binding DataContext.TemporaryMaskPlayerName, RelativeSource={RelativeSource AncestorType=Window}}">
+                TemporaryMaskPlayerName="{Binding DataContext.AppConfig.MaskPlayerName, RelativeSource={RelativeSource AncestorType=Window}}">
                 <ctrl:DpsDetailPopup.SkillList>
                     <MultiBinding Converter="{StaticResource StatisticTypeToSkillListConverter}">
                         <Binding Path="." />
@@ -294,9 +360,9 @@
             </ctrl:DpsDetailPopup>
         </DataTemplate>
         <DataTemplate x:Key="ProgressBarDataTemplate" DataType="{x:Type viewModels:StatisticDataViewModel}">
-            <Grid Height="36" Margin="0">
+            <Grid Height="31" Margin="0">
                 <Button
-                    Margin="1"
+                    Margin="0"
                     Padding="0"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
@@ -349,15 +415,8 @@
                             PopupTemplate="{StaticResource PopupTemplate}"
                             SkillDisplayLimit="{Binding DataContext.CurrentStatisticData.SkillDisplayLimit, RelativeSource={RelativeSource AncestorType=Window}}"
                             MouseEnterCommand="{Binding MouseEnterItemCommand}"
-                            MouseLeaveCommand="{Binding MouseLeaveItemCommand}">
-                            <ctrl:DpsIndicatorControl.TrackOpacity>
-                                <MultiBinding Converter="{StaticResource ConditionalPercentToOpacityConverter}">
-                                    <Binding Path="DataContext.AppConfig.Opacity"
-                                             RelativeSource="{RelativeSource AncestorType=Window}" />
-                                    <Binding Path="DataContext.AppConfig.MouseThroughEnabled"
-                                             RelativeSource="{RelativeSource AncestorType=Window}" />
-                                </MultiBinding>
-                            </ctrl:DpsIndicatorControl.TrackOpacity>
+                            MouseLeaveCommand="{Binding MouseLeaveItemCommand}"
+                            TrackOpacity="{Binding DataContext.AppConfig.ItemOpacity, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PercentToOpacityConverter}}">
                         </ctrl:DpsIndicatorControl>
                     </Grid>
                 </Button>
@@ -368,18 +427,11 @@
     <!--  半透明/圆角交给内部 Border  -->
     <Border Style="{StaticResource ShadowWindowBorder}">
         <Grid CacheMode="BitmapCache">
-            <!-- ⭐ 新增：背景图片 -->
-            <Grid.Background>
-                <ImageBrush
-                    ImageSource="{Binding AppConfig.BackgroundImagePath, Converter={StaticResource EmptyStringToNullConverter}}"
-                    Stretch="Uniform"
-                    Opacity="{Binding AppConfig.Opacity, Converter={StaticResource PercentToOpacityConverter}}" />
-            </Grid.Background>
             <Grid.RowDefinitions>
                 <RowDefinition Height="25" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="25" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Border
                 Height="25"
@@ -400,7 +452,6 @@
                             <MultiBinding Converter="{StaticResource ThemeColorWithOpacityConverter}">
                                 <Binding Path="AppConfig.ThemeColor" />
                                 <Binding Path="AppConfig.Opacity" />
-                                <Binding Path="AppConfig.MouseThroughEnabled" />
                             </MultiBinding>
                         </SolidColorBrush.Color>
                     </SolidColorBrush>
@@ -410,7 +461,7 @@
                     <!--  统计类型标注  -->
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="120" />
+                        <ColumnDefinition Width="105" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
@@ -520,8 +571,7 @@
                                     Style="{StaticResource ModernContextMenu}"
                                     PlacementTarget="{x:Reference ButtonSettings}"
                                     DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}"
-                                             d:DataContext="{d:DesignInstance viewModels:DpsStatisticsViewModel}"
-                                             >
+                                    d:DataContext="{d:DesignInstance viewModels:DpsStatisticsViewModel}">
                                     <!--  只给 MenuItem 应用样式，Separator 不受影响  -->
                                     <ContextMenu.Resources>
                                         <Style BasedOn="{StaticResource ModernMenuItem}" TargetType="MenuItem" />
@@ -535,9 +585,8 @@
                                     <Separator />
 
                                     <MenuItem
-                                        Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_TemporaryMaskPlayerName}}"
-                                        IsChecked="{Binding TemporaryMaskPlayerName}"
-                                        Visibility="{Binding AppConfig.MaskPlayerName, Converter={StaticResource BoolToInvertedVisibilityConverter}}"
+                                        Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Display_PlayerNameMask}}"
+                                        IsChecked="{Binding AppConfig.MaskPlayerName}"
                                         Style="{StaticResource CheckableMenuItem}" />
 
                                     <MenuItem
@@ -551,12 +600,17 @@
                                         Style="{StaticResource CheckableMenuItem}" />
 
                                     <MenuItem
+                                        Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_HideTab}}"
+                                        IsChecked="{Binding AppConfig.HideStatisticTabs}"
+                                        Style="{StaticResource CheckableMenuItem}" />
+
+                                    <MenuItem
                                         Command="{Binding OpenPersonalDpsViewCommand}"
                                         Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_Personal_Training_Mode}}" />
 
                                     <MenuItem
                                         Command="{Binding OpenSkillLogCommand}"
-                                        Header="技能日记" />
+                                        Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_SkillDiary}}" />
 
                                     <!--  记录设置  -->
                                     <MenuItem Header="{lex:Loc Key={x:Static loc:ResourcesKeys.Menu_RecordSettings}}"
@@ -701,44 +755,46 @@
                                         </MenuItem>
                                     </MenuItem>
 
-                                    <!--  历史记录  -->
-                                    <MenuItem Header="{lex:Loc Menu_History}">
+                                    <!-- 历史记录  -->
+                                    <MenuItem Header="{lex:Loc {x:Static loc:ResourcesKeys.Menu_History}}">
                                         <!-- 当前战斗历史子菜单 -->
-                                        <MenuItem Header="{lex:Loc Menu_History_Current}"
-                                                  ItemsSource="{Binding SnapshotService.CurrentSnapshots}">
+                                        <MenuItem Header="{lex:Loc {x:Static loc:ResourcesKeys.Menu_History_Current}}"
+                                                  ItemsSource="{Binding HistoryService.ScopeCurrentHistory}">
                                             <MenuItem.ItemContainerStyle>
                                                 <Style TargetType="MenuItem" BasedOn="{StaticResource ModernMenuItem}">
-                                                    <Setter Property="Header" Value="{Binding DisplayLabel}" />
+                                                    <Setter Property="Header" Value="{Binding Title}" />
                                                     <!-- ContextMenu.DataContext is set to PlacementTarget.DataContext, so bind directly -->
-                                                    <Setter Property="Command" Value="{Binding LoadSnapshotCommand}" />
+                                                    <Setter Property="Command" Value="{Binding DataContext.LoadHistoryCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=ContextMenu}}" />
                                                     <Setter Property="CommandParameter" Value="{Binding}" />
                                                 </Style>
                                             </MenuItem.ItemContainerStyle>
                                         </MenuItem>
 
                                         <!-- 全程历史子菜单 -->
-                                        <MenuItem Header="{lex:Loc Menu_History_Total}"
-                                                  ItemsSource="{Binding SnapshotService.TotalSnapshots}">
+                                        <MenuItem Header="{lex:Loc {x:Static loc:ResourcesKeys.Menu_History_Total}}"
+                                                  ItemsSource="{Binding HistoryService.ScopeTotalHistory}">
                                             <MenuItem.ItemContainerStyle>
                                                 <Style TargetType="MenuItem" BasedOn="{StaticResource ModernMenuItem}">
-                                                    <Setter Property="Header" Value="{Binding DisplayLabel}" />
+                                                    <Setter Property="Header" Value="{Binding Title}" />
                                                     <!-- ContextMenu.DataContext is set to PlacementTarget.DataContext, so bind directly -->
-                                                    <Setter Property="Command" Value="{Binding LoadSnapshotCommand}" />
+                                                    <Setter Property="Command" Value="{Binding DataContext.LoadHistoryCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=ContextMenu}}" />
                                                     <Setter Property="CommandParameter" Value="{Binding}" />
                                                 </Style>
                                             </MenuItem.ItemContainerStyle>
                                         </MenuItem>
                                     </MenuItem>
 
-                                    <!-- 退出快照查看模式(只在快照模式时显示) -->
+                                    <!-- 退出历史查看模式(只在历史模式时显示) -->
                                     <MenuItem
-                                        Command="{Binding ExitSnapshotViewModeCommand}"
-                                        Header="{lex:Loc Menu_ExitSnapshotMode}"
-                                        Visibility="{Binding IsViewingSnapshot, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                        Command="{Binding ExitHistoryViewModeCommand}"
+                                        Header="{lex:Loc {x:Static loc:ResourcesKeys.Menu_ExitHistoryMode}}"
+                                        Visibility="{Binding IsViewingHistory, Converter={StaticResource BoolToVisibilityConverter}}" />
 
                                     <Separator />
+                                    <MenuItem Command="{Binding ShowAboutCommand}" Header="{lex:Loc {x:Static loc:ResourcesKeys.Menu_About}}" />
+                                    <Separator />
 
-                                    <MenuItem Command="{Binding ShutdownCommand}" Header="{lex:Loc Menu_Exit}" />
+                                    <MenuItem Command="{Binding ShutdownCommand}" Header="{lex:Loc {x:Static loc:ResourcesKeys.Menu_Exit}}" />
                                 </ContextMenu>
                             </Button.ContextMenu>
                         </Button>
@@ -762,19 +818,204 @@
                 </Grid>
             </Border>
 
-            <Border Grid.Row="1">
-                <!-- ⭐ 修复1: 移除背景色，让壁纸可以透过来 -->
-                <!-- 如果需要半透明背景，可以使用较低的透明度 -->
-                <Border.Background>
-                    <SolidColorBrush Color="#191919" Opacity="0.3" />
-                </Border.Background>
-                <ctrl:SortedDpsControl
-                    Padding="0,5,0,5"
-                    ItemClickCommand="{Binding OpenSkillBreakdownCommand}"
-                    ItemTemplate="{StaticResource ProgressBarDataTemplate}"
-                    ItemsSource="{Binding CurrentStatisticData.Data}"
-                    SelectedItem="{Binding CurrentStatisticData.SelectedSlot}" />
-            </Border>
+            <Grid Grid.Row="1" x:Name="MainContentArea" ClipToBounds="True">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- 背景画像 -->
+                <!-- 幅に合わせる -->
+                <Image
+                    Grid.RowSpan="2"
+                    Source="{Binding AppConfig.BackgroundImagePath, Converter={StaticResource EmptyStringToNullConverter}}"
+                    Stretch="UniformToFill"
+                    Opacity="{Binding AppConfig.BackgroundImageOpacity, Converter={StaticResource PercentToOpacityConverter}}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    IsHitTestVisible="False">
+                    <Image.Style>
+                        <Style TargetType="Image">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding AppConfig.BackgroundImageFitMode}"
+                        Value="{x:Static cfg:BackgroundImageFitMode.FitWidth}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                </Image>
+
+                <!-- 画面のサイズに合わせる -->
+                <Image
+                    Grid.RowSpan="2"
+                    Source="{Binding AppConfig.BackgroundImagePath, Converter={StaticResource EmptyStringToNullConverter}}"
+                    Stretch="Uniform"
+                    Opacity="{Binding AppConfig.BackgroundImageOpacity, Converter={StaticResource PercentToOpacityConverter}}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    IsHitTestVisible="False">
+                    <Image.Style>
+                        <Style TargetType="Image">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding AppConfig.BackgroundImageFitMode}"
+                                    Value="{x:Static cfg:BackgroundImageFitMode.FitToWindow}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                </Image>
+
+                <!-- 画像の外側だけ描くテーマ色半透明背景 -->
+                <Rectangle Grid.RowSpan="2" IsHitTestVisible="False">
+                    <Rectangle.Style>
+                        <Style TargetType="Rectangle">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <!-- FitToWindow のときは表示 -->
+                                <DataTrigger Binding="{Binding AppConfig.BackgroundImageFitMode}"
+                                    Value="{x:Static cfg:BackgroundImageFitMode.FitToWindow}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+
+                                <!-- 背景画像が未設定なら表示 -->
+                                <DataTrigger Binding="{Binding AppConfig.BackgroundImagePath}"
+                                    Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Rectangle.Style>
+
+                    <Rectangle.Fill>
+                        <SolidColorBrush
+                            Color="{Binding AppConfig.CenterBackgroundColor}"
+                            Opacity="{Binding AppConfig.CenterBackgroundOpacity, Converter={StaticResource PercentToOpacityConverter}}" />
+                    </Rectangle.Fill>
+
+                    <Rectangle.Clip>
+                        <MultiBinding Converter="{StaticResource OutsideImageAreaClipConverter}">
+                            <Binding ElementName="MainContentArea" Path="ActualWidth" />
+                            <Binding ElementName="MainContentArea" Path="ActualHeight" />
+                            <Binding Path="AppConfig.BackgroundImagePath" />
+                        </MultiBinding>
+                    </Rectangle.Clip>
+                </Rectangle>
+
+                <!-- 上部4ボタン -->
+                <UniformGrid
+                    Grid.Row="0"
+                    Columns="4"
+                    Margin="8,5,8,0">
+                    <UniformGrid.Style>
+                        <Style TargetType="UniformGrid">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding AppConfig.HideStatisticTabs}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </UniformGrid.Style>
+
+                    <ctrl:CenterToolbarButton
+                        GroupName="StatisticTabs"
+                        Height="22"
+                        Margin="4"
+                        Padding="0"
+                        Content="{lex:Loc Key={x:Static loc:ResourcesKeys.StatisticType_Damage}}"
+                        ContentTemplate="{StaticResource CenterToolbarButtonContentTemplate}"
+                        Command="{Binding SetMetricTypeCommand}"
+                        CommandParameter="{x:Static models:StatisticType.Damage}"
+                        Tag="{x:Static models:StatisticType.Damage}">
+                        <ctrl:CenterToolbarButton.IsChecked>
+                            <MultiBinding Converter="{StaticResource EqualsConverter}" Mode="OneWay">
+                                <Binding Path="StatisticIndex" />
+                                <Binding Path="Tag" RelativeSource="{RelativeSource Self}" />
+                            </MultiBinding>
+                        </ctrl:CenterToolbarButton.IsChecked>
+                    </ctrl:CenterToolbarButton>
+
+                    <ctrl:CenterToolbarButton
+                        GroupName="StatisticTabs"
+                        Height="22"
+                        Margin="4"
+                        Padding="0"
+                        Content="{lex:Loc Key={x:Static loc:ResourcesKeys.StatisticType_Healing}}"
+                        ContentTemplate="{StaticResource CenterToolbarButtonContentTemplate}"
+                        Command="{Binding SetMetricTypeCommand}"
+                        CommandParameter="{x:Static models:StatisticType.Healing}"
+                        Tag="{x:Static models:StatisticType.Healing}">
+                        <ctrl:CenterToolbarButton.IsChecked>
+                            <MultiBinding Converter="{StaticResource EqualsConverter}" Mode="OneWay">
+                                <Binding Path="StatisticIndex" />
+                                <Binding Path="Tag" RelativeSource="{RelativeSource Self}" />
+                            </MultiBinding>
+                        </ctrl:CenterToolbarButton.IsChecked>
+                    </ctrl:CenterToolbarButton>
+
+                    <ctrl:CenterToolbarButton
+                        GroupName="StatisticTabs"
+                        Height="22"
+                        Margin="4"
+                        Padding="0"
+                        Content="{lex:Loc Key={x:Static loc:ResourcesKeys.StatisticType_TakenDamage}}"
+                        ContentTemplate="{StaticResource CenterToolbarButtonContentTemplate}"
+                        Command="{Binding SetMetricTypeCommand}"
+                        CommandParameter="{x:Static models:StatisticType.TakenDamage}"
+                        Tag="{x:Static models:StatisticType.TakenDamage}">
+                        <ctrl:CenterToolbarButton.IsChecked>
+                            <MultiBinding Converter="{StaticResource EqualsConverter}" Mode="OneWay">
+                                <Binding Path="StatisticIndex" />
+                                <Binding Path="Tag" RelativeSource="{RelativeSource Self}" />
+                            </MultiBinding>
+                        </ctrl:CenterToolbarButton.IsChecked>
+                    </ctrl:CenterToolbarButton>
+
+                    <ctrl:CenterToolbarButton
+                        GroupName="StatisticTabs"
+                        Height="22"
+                        Margin="4"
+                        Padding="0"
+                        Content="{lex:Loc Key={x:Static loc:ResourcesKeys.StatisticType_TakenDamage}}"
+                        ContentTemplate="{StaticResource CenterToolbarButtonContentTemplate}"
+                        Command="{Binding SetMetricTypeCommand}"
+                        CommandParameter="{x:Static models:StatisticType.NpcTakenDamage}"
+                        Tag="{x:Static models:StatisticType.NpcTakenDamage}">
+                        <ctrl:CenterToolbarButton.IsChecked>
+                            <MultiBinding Converter="{StaticResource EqualsConverter}" Mode="OneWay">
+                                <Binding Path="StatisticIndex" />
+                                <Binding Path="Tag" RelativeSource="{RelativeSource Self}" />
+                            </MultiBinding>
+                        </ctrl:CenterToolbarButton.IsChecked>
+                    </ctrl:CenterToolbarButton>
+                </UniformGrid>
+
+                <!-- 元のコンテンツ -->
+                <Border Grid.Row="1">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Padding" Value="0,3,0,5" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding AppConfig.HideStatisticTabs}" Value="False">
+                                    <Setter Property="Padding" Value="0,0,0,5" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+
+                    <ctrl:SortedDpsControl
+                        Padding="0"
+                        ItemClickCommand="{Binding OpenSkillBreakdownCommand}"
+                        ItemTemplate="{StaticResource ProgressBarDataTemplate}"
+                        ItemsSource="{Binding CurrentStatisticData.Data}"
+                        SelectedItem="{Binding CurrentStatisticData.SelectedSlot}" />
+                </Border>
+
+            </Grid>
 
             <Border
                 x:Name="LoadingGridHost"
@@ -818,13 +1059,9 @@
                     </Style>
                 </Border.Style>
                 <Border.Background>
-                    <SolidColorBrush>
+                    <SolidColorBrush >
                         <SolidColorBrush.Color>
-                            <MultiBinding Converter="{StaticResource ConditionalPercentToColorConverter}"
-                                          ConverterParameter="#191919">
-                                <Binding Path="AppConfig.Opacity" />
-                                <Binding Path="AppConfig.MouseThroughEnabled" />
-                            </MultiBinding>
+                            <Binding Path="AppConfig.Opacity" Converter="{StaticResource PercentToColorConverter}" ConverterParameter="#191919"/>
                         </SolidColorBrush.Color>
                     </SolidColorBrush>
                 </Border.Background>
@@ -879,46 +1116,53 @@
                             <MultiBinding Converter="{StaticResource ThemeColorWithOpacityConverter}">
                                 <Binding Path="AppConfig.ThemeColor" />
                                 <Binding Path="AppConfig.Opacity" />
-                                <Binding Path="AppConfig.MouseThroughEnabled" />
                             </MultiBinding>
                         </SolidColorBrush.Color>
                     </SolidColorBrush>
                 </Border.Background>
                 <!-- ⭐ 修复2: 恢复底部栏内容 -->
-                <Grid Margin="6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <Grid Margin="4,0"><!-- original is 10,4 -->
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-                    <!-- 左侧：排名或快照标识 -->
-                    <TextBlock
-                        Grid.Column="0"
-                        HorizontalAlignment="Left"
-                        Style="{StaticResource FooterTextContent}">
-                        <!-- 快照模式下显示[快照],战斗模式下显示排名 -->
-                        <TextBlock.Text>
-                            <MultiBinding Converter="{StaticResource SnapshotOrRankConverter}" StringFormat="{}[{0}]">
-                                <Binding Path="IsViewingSnapshot" />
-                                <Binding Path="CurrentStatisticData.CurrentPlayerRank" />
-                            </MultiBinding>
-                        </TextBlock.Text>
-                    </TextBlock>
-
-                    <!-- 中间：战斗时长 + 团队总伤(可选) -->
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left" Margin="6,0,0,0">
-                        <!-- 战斗时长 -->
+                        <!-- 左侧：排名或历史标识 -->
                         <TextBlock
-                            Style="{StaticResource FooterTextContent}"
-                            Text="{Binding Path=BattleDuration, StringFormat={}{0:mm\\:ss}}" />
+                            Grid.Column="0"
+                            HorizontalAlignment="Left"
+                            Tag="{lex:Loc Key={x:Static loc:ResourcesKeys.DpsStatistics_History_Label}}"
+                            ToolTip="{lex:Loc Key={x:Static loc:ResourcesKeys.DpsStatistics_CurrentPlayerRank}}">
+                            <TextBlock.Style>
+                                <Style BasedOn="{StaticResource FooterTextContent}" TargetType="TextBlock">
+                                    <Setter Property="Text" Value="{Binding CurrentStatisticData.CurrentPlayerRank, StringFormat={}[{0}], TargetNullValue=[--], FallbackValue=[--]}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsViewingHistory}" Value="True">
+                                            <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Self}, Path=Tag, StringFormat={}[{0}]}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
 
-                        <!-- 团队总伤 (当ShowTeamTotalDamage=true时显示) -->
-                        <TextBlock
-                            Style="{StaticResource FooterTextContent}"
-                            Margin="8,0,0,0"
-                            Visibility="{Binding ShowTeamTotalDamage, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <Run Text="队伍:" />
+                        <!-- 中间：战斗时长 + 团队总伤(可选) -->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left" Margin="6,0,0,0">
+                            <!-- 战斗时长 -->
+                            <TextBlock
+                                Style="{StaticResource FooterTextContent}"
+                                    Text="{Binding BattleDuration,
+                                        StringFormat={}{0:mm\\:ss},
+                                        TargetNullValue=00:00,
+                                        FallbackValue=00:00}" />
+
+                            <!-- 团队总伤 (当ShowTeamTotalDamage=true时显示) -->
+                            <TextBlock
+                                Style="{StaticResource FooterTextContent}"
+                                Margin="8,0,0,0"
+                                Visibility="{Binding ShowTeamTotalDamage, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <Run Text="{Binding TeamLabel, StringFormat={}{0}:, Mode=OneWay}" />
                             <Run>
                                 <Run.Text>
                                     <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
@@ -927,44 +1171,82 @@
                                     </MultiBinding>
                                 </Run.Text>
                             </Run>
-                        </TextBlock>
-                    </StackPanel>
+                            </TextBlock>
+                        </StackPanel>
 
-                    <!-- 右侧：个人伤害 或 团队秒伤 -->
-                    <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <!-- 个人伤害 (当ShowTeamTotalDamage=false时显示) -->
-                        <TextBlock
+                        <!-- 右侧：个人伤害 或 团队秒伤 -->
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <!-- 个人伤害 (当ShowTeamTotalDamage=false时显示) -->
+                            <TextBlock
                             Margin="0,0,4,0"
-                            Style="{StaticResource FooterTextContent}"
-                            TextAlignment="Right"
-                            Visibility="{Binding ShowTeamTotalDamage, Converter={StaticResource BoolToInvertedVisibilityConverter}}">
-                            <TextBlock.Text>
-                                <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
-                                    <Binding Path="CurrentStatisticData.CurrentPlayerSlot.Value" />
-                                    <Binding Path="DataContext.AppConfig.DamageDisplayType"
-                                             RelativeSource="{RelativeSource AncestorType=Window, Mode=FindAncestor}" />
-                                </MultiBinding>
-                            </TextBlock.Text>
-                        </TextBlock>
+                            TextAlignment="Right">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource FooterTextContent}">
+                                        <!-- デフォルトは非表示 -->
+                                        <Setter Property="Visibility" Value="Collapsed"/>
 
-                        <!-- 团队秒伤 (当ShowTeamTotalDamage=true时显示) -->
-                        <TextBlock
-                            Margin="0,0,4,0"
-                            Style="{StaticResource FooterTextContent}"
-                            TextAlignment="Right"
-                            Visibility="{Binding ShowTeamTotalDamage, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <Run Text="{Binding TeamTotalLabel, StringFormat={}{0}:, Mode=OneWay}" />
-                            <Run>
-                                <Run.Text>
-                                    <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
-                                        <Binding Path="TeamTotalDps" />
-                                        <Binding Path="AppConfig.DamageDisplayType" />
-                                    </MultiBinding>
-                                </Run.Text>
-                            </Run>
-                        </TextBlock>
-                    </StackPanel>
-                </Grid>
+                                        <Style.Triggers>
+                                            <!-- ShowTeamTotalDamage=false の時は表示 -->
+                                            <DataTrigger Binding="{Binding ShowTeamTotalDamage}" Value="False">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+
+                                            <!-- ただし NpcTakenDamage の時は強制で非表示 -->
+                                            <DataTrigger Binding="{Binding StatisticIndex}" Value="NpcTakenDamage">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                                
+                                <Run Text="{Binding CurrentPlayerLabel, StringFormat={}{0}:, Mode=OneWay}" />
+                                <Run>
+                                    <Run.Text>
+                                        <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
+                                            <Binding Path="CurrentStatisticData.CurrentPlayerSlot.ValuePerSecond"          
+                                                FallbackValue="0"
+                                                TargetNullValue="0" />
+                                            <Binding Path="AppConfig.DamageDisplayType" />
+                                        </MultiBinding>
+                                    </Run.Text>
+                                </Run>
+                            </TextBlock>
+
+                            <!-- 团队秒伤 (当ShowTeamTotalDamage=true时显示) -->
+                            <TextBlock
+                                Margin="0,0,4,0"
+                                Style="{StaticResource FooterTextContent}"
+                                TextAlignment="Right"
+                                Visibility="{Binding ShowTeamTotalDamage, Converter={StaticResource BoolToVisibilityConverter}}">
+                                
+                                <Run Text="{Binding TeamTotalLabel, StringFormat={}{0}:, Mode=OneWay}" />
+                                <Run>
+                                    <Run.Text>
+                                        <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
+                                            <Binding Path="TeamTotalDps" />
+                                            <Binding Path="AppConfig.DamageDisplayType" />
+                                        </MultiBinding>
+                                    </Run.Text>
+                                </Run>
+                                
+                            </TextBlock>
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock HorizontalAlignment="Right">
+                        <TextBlock.Style>
+                            <Style BasedOn="{StaticResource FooterTextContent}" TargetType="TextBlock">
+                                <Setter Property="FontSize" Value="8" />
+                                <Setter Property="Margin" Value="0,0,8,0" />
+                            </Style>
+                        </TextBlock.Style>
+                        <TextBlock.Text>
+                            <MultiBinding Converter="{lex:StringFormatConverter}">
+                                <lex:BLoc Key="{x:Static loc:ResourcesKeys.PreviewVersion}" />
+                                <Binding Path="DebugFunctions.Version" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </StackPanel>
             </Border>
         </Grid>
     </Border>

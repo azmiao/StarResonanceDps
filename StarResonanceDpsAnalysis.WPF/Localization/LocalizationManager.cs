@@ -66,7 +66,7 @@ public sealed class LocalizationManager
 
     private void InstanceOnMissingKeyEvent(object? sender, MissingKeyEventArgs e)
     {
-        _logger.LogWarning(e.Key);
+        _logger.LogWarning("Key missing:{key}", e.Key);
         var ret = GetString(e.Key, CultureInfo.InvariantCulture); // Get the fallback string
         if (!string.IsNullOrEmpty(ret))
         {
